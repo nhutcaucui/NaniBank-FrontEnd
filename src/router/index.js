@@ -1,7 +1,7 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import About from '@/components/About'
 import Home from '@/components/Home' // this is the import line to add
 
 Vue.use(Router)
@@ -10,13 +10,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'Trang chủ',
+      component: Home
     },
     {
-        path: '/Home',
-        name: 'Home',
-        component: Home
+        path: '/About',
+        name: 'Thông tin',
+        component: About
     }
   ]
 })
