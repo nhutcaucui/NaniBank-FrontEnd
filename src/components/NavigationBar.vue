@@ -1,4 +1,6 @@
 <template>
+<div class="navigation-bar">
+  <div class="absolute-div">
 <header class = 'header'>
   <div class="outer-container">
   <div class="inner-container">
@@ -14,10 +16,14 @@
   </div>
   </div>
   </div>
-  <ul class="user-menu" :class="{'user-menu--hidden': !showMenu}">
+</header>
+  <div class = "menu-container"> 
+<ul class="user-menu" :class="{'user-menu--hidden': !showMenu}">
         <li class="join-link"><a href="#">Đăng nhập</a></li>
       </ul>
-</header>
+  </div>
+</div>
+</div>
 </template>
 
 <script>
@@ -66,18 +72,18 @@ beforeDestroy () {
 
 <style>
 .user-menu{
-  right: 50px;
-  position: absolute;
+  margin: 0;
+  float:right;
+  margin-right: 50px;
+  margin-top: -5px;
    list-style-type: none;
    background-image: url("../assets/user-box.png");
    background-repeat: no-repeat;
    background-size: contain;
    height: 42px;
    line-height: 42px;
-   margin-top: 0;
    min-width: 330px;
    padding: 5px 40px 15px;
-   margin: -2px 0px 0px;
    vertical-align: middle;
    display: table-cell;
    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
@@ -93,24 +99,6 @@ beforeDestroy () {
   text-decoration: none;
   font-weight: bold;
   display: block;
-}
-.login-link{
-  width: 48%;
-  clear: none;
-  height: 100%;
-  display: inline-block;
-
-  transition: 0.3s ease-out;
-  border-radius: 3px;
-}
-.login-link a{
-  color: #523c89;
-}
-.login-link:hover{
-  background:  #704DDC;
-}
-.login-link:hover a{
-  color: #fff;
 }
 
 .join-link{
@@ -132,6 +120,8 @@ beforeDestroy () {
   float: left;
 }
 .outer-container{
+  background: #fff;
+
  height: 100%;
  width: 100%;
 }
@@ -142,11 +132,12 @@ beforeDestroy () {
     padding: 0 50px;
 }
 .header{
-  position: fixed;
+  position: relative;
       z-index: 501;
     width: 100%;
-    display: block;
-    height: 70px;
+    display: inline-block;
+    height: auto;
+    min-height: 70px;
     background: #ffffff;
 }
 .nav-container{
@@ -192,6 +183,21 @@ text-decoration: none;
 .inactive-divider{
   pointer-events: none;
    cursor: default;
+}
+
+.navigation-bar{
+  position: fixed;
+  width: 100%;
+}
+
+.absolute-div{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.menu-container{
+  position: relative;
 }
 
 </style>

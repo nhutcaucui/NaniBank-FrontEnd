@@ -3,7 +3,7 @@
     <h1 class="header-home">CHÀO MỪNG ĐẾN VỚI NANIBANK</h1>
     <div>
     <h2 class="sub-header-home">Kiểm soát tài khoản, nợ nần nhanh chóng và hiệu quả</h2>
-    <button class="find-out"><a href="/About">Tìm hiểu thêm</a></button>
+    <a href="/#/About"  class="find-out">Tìm hiểu thêm</a>
   </div>
   </div> 
 </template>
@@ -17,7 +17,7 @@ export default {
 .home{
   padding-top: 140px;
   background: url("../assets/home-background.png");
-  height: 100%;
+  height: 768px;
 }
 .header-home{
   color: #704DDC;
@@ -25,13 +25,19 @@ export default {
 }
 
 .find-out{
+  line-height: 50px;
+  display: inline-block;
   height: 50px;
   width: 200px;
   color: white;
-  border-radius: 25dp;
   background: #523C89;
+  border-radius: 25px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: 0.3s ease-out;
 }
-.find-out a{
-  display: block;
+.find-out:hover{
+  background: #9B82E6;
 }
 </style>
