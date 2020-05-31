@@ -19,7 +19,7 @@
 </header>
   <div class = "menu-container"> 
 <ul class="user-menu" :class="{'user-menu--hidden': !showMenu}">
-        <li class="join-link"><a href="#">Đăng nhập</a></li>
+        <li class="join-link"><a href="/#/Login">Đăng nhập</a></li>
       </ul>
   </div>
 </div>

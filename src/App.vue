@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <NavigationBar/>
+    <NavigationBar v-if="notLogin"/>
     <router-view></router-view>
-    <Footer/>
+    <Footer v-if="notLogin"/>
   </div>
 </template>
 
@@ -15,7 +15,13 @@ export default {
   components: {
     NavigationBar,
     Footer
+  },
+  computed:{
+      notLogin(){
+          return this.$route.path != '/Login'
+      }
   }
+  
 }
 </script>
 

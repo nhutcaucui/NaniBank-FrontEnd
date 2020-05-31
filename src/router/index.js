@@ -2,7 +2,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import About from '@/components/About'
-import Home from '@/components/Home' // this is the import line to add
+import Home from '@/components/Home'
+import Login from '@/components/Login' // this is the import line to add
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
         path: '/About',
         name: 'Thông tin',
         component: About
-    }
+    },
+    {
+      path: '/Login',
+      name: 'Đăng nhập',
+      component: Login
+  }
   ]
 })
