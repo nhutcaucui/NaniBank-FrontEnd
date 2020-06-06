@@ -18,7 +18,7 @@ export default {
   },
   computed:{
       notLogin(){
-          return this.$route.path != '/Login'
+          return this.$route.path == '/' || this.$route.path == '/About'
       }
   }
   
@@ -38,6 +38,7 @@ export default {
 }
 
 html, body {
+  height: 100%;
 margin:0;
 padding:0;
 

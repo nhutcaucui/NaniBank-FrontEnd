@@ -4,6 +4,9 @@ import App from './App.vue'
 //import HelloWorld from '@/components/HelloWorld'
 //import Home from '@/components/Home' // this is the import line to add
 import router from '@/router/index.js'
+import VueSidebarMenu from 'vue-sidebar-menu'
+import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
+Vue.use(VueSidebarMenu)
 
 Vue.config.productionTip = false;
 //Vue.use(Router);
