@@ -5,6 +5,10 @@ import Home from '@/components/Home'
 import Login from '@/components/Login' // this is the import line to add
 import Admin from '@/components/Admin'
 import AdminDashboard from '@/components/AdminDashboard.vue'
+import AdminAdd from '@/components/AdminAdd'
+import AdminEdit from '@/components/AdminEdit'
+import AdminDelete from '@/components/AdminDelete'
+import TransactionHistory from '@/components/TransactionHistory'
 
 Vue.use(Router)
 
@@ -36,22 +40,22 @@ export default new Router({
       {
         path: 'Add',
         name: 'Dashboard',
-        component: About,
+        component: AdminAdd,
       },
       {
         path: 'Edit',
         name: 'Dashboard',
-        component: About,
+        component: AdminEdit,
       },
       {
         path: 'Delete',
         name: 'Dashboard',
-        component: About,
+        component: AdminDelete,
       },
       {
         path: 'History',
         name: 'Dashboard',
-        component: About,
+        component: TransactionHistory,
       }],
       component: Admin
     }

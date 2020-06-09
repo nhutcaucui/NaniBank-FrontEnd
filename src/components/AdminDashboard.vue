@@ -1,19 +1,19 @@
 <template>
     <div class="dashboard">
 <div class="dashboard-container">
-            <a href="#" class="dashboard-item">
+            <a href="/#/Admin/Add" class="dashboard-item">
                 <span class="item-icon sb-icon add-icon"></span><br/>
                 Thêm giao dịch viên
             </a>
-            <a href="#" class="dashboard-item">
+            <a href="/#/Admin/Edit" class="dashboard-item">
                 <span class="item-icon sb-icon edit-icon"></span><br/>
                 Cập nhật giao dịch viên
             </a>
-            <a href="#" class="dashboard-item">
+            <a href="/#/Admin/Delete" class="dashboard-item">
                 <span class="item-icon sb-icon del-icon"></span><br/>
                 Xóa giao dịch viên
             </a>
-            <a href="#" class="dashboard-item">
+            <a href="/#/Admin/History" class="dashboard-item">
                 <span class="item-icon sb-icon history-icon"></span><br/>
                 Lịch sử giao dịch
             </a>
@@ -45,7 +45,7 @@ export default {
 }
 
 .dashboard-container{
-    margin-top: 150px;
+    padding-top: 150px;
     height: 100%;
 }
 

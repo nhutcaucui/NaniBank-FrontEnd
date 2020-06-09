@@ -77,7 +77,8 @@ export default {
 .admin{
     width: 100%;
     height: 100%;
-    margin-left: 50px;
+    padding-left: 50px;
+    box-sizing: border-box;
 }
 .sb-icon{
     background-repeat: no-repeat  !important;

@@ -1,5 +1,6 @@
 .v-sidebar-menu {
     background-color: white !important;
+    box-shadow: 0px 0px 5px 0px ;
 }
 .v-sidebar-menu.vsm_expanded {}
 .v-sidebar-menu.vsm_collapsed {}
