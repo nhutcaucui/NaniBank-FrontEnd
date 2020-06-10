@@ -42,6 +42,12 @@ export default {
     border: 1px solid rgba(0,0,0,0.3);
     margin-top: 20px;
     margin-right: 20px;
+    box-sizing: unset;
+}
+
+.dashboard-item:hover{
+color: black;
+text-decoration: none;
 }
 
 .dashboard-container{

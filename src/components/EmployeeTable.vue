@@ -1,109 +1,63 @@
 <template>
 <div class="employee-table-container">
-    <table id="employee">
-          <div style="height:400px; overflow:auto;" class="scrolling-table">
-  <tr>
-    <th>Id</th>
-    <th>Tên</th>
-    <th>Email</th>
-    <th>Địa chỉ</th>
-    <th>Ngày sinh</th>
-    <th>Tài khoản</th>
-  </tr>
-        
-  <tr>
-    <td>1</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>Alfreds Futterkiste</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td>Christina Berglund</td>
-    <td>Sweden</td>
-    <td>Berglunds snabbköp</td>
-    <td>Christina Berglund</td>
-    <td>Sweden</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td>Francisco Chang</td>
-    <td>Mexico</td>
-    <td>Centro comercial Moctezuma</td>
-    <td>Francisco Chang</td>
-    <td>Mexico</td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td>Roland Mendel</td>
-    <td>Austria</td>
-    <td>Ernst Handel</td>
-    <td>Roland Mendel</td>
-    <td>Austria</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td>Helen Bennett</td>
-    <td>UK</td>
-    <td>Island Trading</td>
-    <td>Helen Bennett</td>
-    <td>UK</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td>Philip Cramer</td>
-    <td>Germany</td>
-    <td>Königlich Essen</td>
-    <td>Philip Cramer</td>
-    <td>Germany</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td>Yoshi Tannamuri</td>
-    <td>Canada</td>
-    <td>Laughing Bacchus Winecellars</td>
-    <td>Yoshi Tannamuri</td>
-    <td>Canada</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td>Giovanni Rovelli</td>
-    <td>Italy</td>
-    <td>Magazzini Alimentari Riuniti</td>
-    <td>Giovanni Rovelli</td>
-    <td>Italy</td>
-  </tr>
-  <tr>
-    <td>9</td>
-    <td>Simon Crowther</td>
-    <td>UK</td>
-    <td>North/South</td>
-    <td>Simon Crowther</td>
-    <td>UK</td>
-  </tr>
-  <tr>
-    <td>100</td>
-    <td>Marie Bertrand</td>
-    <td>France</td>
-    <td>Paris spécialités</td>
-    <td>Marie Bertrand</td>
-    <td>France</td>
-  </tr>
+
+  <div style="height:400px; overflow:auto;" class="scrolling-table">
+      <b-table striped hover :items="items" :fields="fields" id="employee"></b-table>
   </div>
-</table>
+
 </div>
 </template>
 
 <script>
 export default {
     name: "EmployeeTable",
+    data(){
+      return{
+        fields: [
+          {
+            key: 'id',
+            label: 'Id',
+            sortable: true
+          },
+          {
+            key: 'ho_ten',
+            label: 'Họ và tên',
+            sortable: true
+          },
+          {
+            key: 'email',
+            sortable: false,
+          },
+          {
+            key: 'sdt',
+            label: 'SĐT',
+            sortable: false,
+          },
+          {
+            key: 'dob',
+            label: 'Ngày sinh',
+            sortable: true,
+          },
+          {
+            key: 'username',
+            label: 'Tài khoản',
+            sortable: false,
+          },
+        ],
+        items: [
+          { isActive: true, id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', dob: '1/1/1990', username:"dickcock" },
+          { isActive: false, id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', dob: '1/1/1990', username:"larva" },
+          { isActive: false, id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', dob: '1/1/1990', username:"havana"  },
+          { isActive: true, id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', dob: '1/1/1990', username:"james"  }
+        ]
+      }
+    }
 }
 </script>
 
 <style>
 .employee-table-container{
+  display: inline-block;
     width: 700px;
 }
 #employee {
@@ -122,7 +76,12 @@ export default {
 
 }
 
-#employee tr:nth-child(even){background-color: #f2f2f2;}
+#employee td:focus, #employee th:focus {
+  outline: none;
+
+}
+
+#employee tr:nth-child(even){background-color:white;}
 
 #employee tr:hover {background-color: #ddd;}
 
@@ -166,19 +125,19 @@ export default {
 }
 
 #employee th:nth-child(5){
-  width: 15%;
+  width: 19%;
 }
 
 #employee td:nth-child(5){
-  width: 15%;
+  width: 19%;
 }
 
 #employee th:nth-child(6){
-  width: 18%;
+  width: 20%;
 }
 
 #employee td:nth-child(6){
-  width: 18%;
+  width: 20%;
 }
 
 .scrolling-table::-webkit-scrollbar{

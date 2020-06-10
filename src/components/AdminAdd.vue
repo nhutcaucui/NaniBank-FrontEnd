@@ -3,27 +3,41 @@
 
         <EmployeeTable/>
 
-<div class="add-box">
+<div class="add-box" id = "add-box">
     <label>Thêm giao dịch viên</label><br/>
     <form>
     <input placeholder="Họ tên"  id="name" name ="name"/>
     <input placeholder="Email"  id="email" name ="email"/>
-    <input placeholder="Địa chỉ"  id="address" name ="address"/>
-    <input placeholder="Ngày sinh"  id="dob" name ="dob"/>
+    <input placeholder="Số điện thoại"  id="phone" name ="phone"/>
+    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" editable="false" v-model="dob"></date-picker>
     <input placeholder="Tài khoản"  id="username" name ="username"/>
     <br/>
     <button class="submit-button" id="submit-add">Thêm</button>
     </form>
-    </div>
+</div>
+
+    <b-popover target="add-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+            <template v-slot:title>Lỗi</template>
+            <label v-bind="errorMessage"></label>
+      </b-popover>
+      <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
 import EmployeeTable from './EmployeeTable';
+import DatePicker from 'vue2-datepicker';
+ import 'vue2-datepicker/index.css';
 export default {
+  data(){
+    return{
+      dob:''
+    }
+  },
     name: 'AdminAdd',
     components:{
-      EmployeeTable
+      EmployeeTable,
+      DatePicker
     }
 }
 </script>
@@ -36,7 +50,7 @@ export default {
 .add-box{
   padding-top: 10px;
     margin-top: 80px;
-    margin-left: 20px;
+    margin-left: 50px;
     height: 350px;
     width: 350px;
     display: block;

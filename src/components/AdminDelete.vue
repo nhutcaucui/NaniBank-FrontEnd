@@ -3,28 +3,41 @@
 
     <EmployeeTable/>
 
-<div class="del-box">
+<div class="del-box" id="del-box">
     <label>Xóa giao dịch viên</label><br/>
     <form>
         <input class="invisible-input" disabled id="id" name ="id"/>
     <input placeholder="Họ tên" disabled id="name" name ="name"/>
     <input placeholder="Email" disabled id="email" name ="email"/>
-    <input placeholder="Địa chỉ" disabled id="address" name ="address"/>
-    <input placeholder="Ngày sinh" disabled id="dob" name ="dob"/>
+    <input placeholder="Số điện thoại" disabled id="phone" name ="phone"/>
+    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" editable="false" v-model="dob"></date-picker>
     <input placeholder="Tài khoản" disabled id="username" name ="username"/>
     <br/>
     <button class="submit-button" id="submit-del">Xóa</button>
     </form>
     </div>
+
+    <b-popover target="del-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+            <template v-slot:title>Lỗi</template>
+            <label v-bind="errorMessage"></label>
+      </b-popover>
+      <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
 import EmployeeTable from './EmployeeTable';
+import DatePicker from 'vue2-datepicker';
 export default {
     name: 'AdminDelete',
+    data(){
+    return{
+      dob:''
+    }
+  },
     components: {
-        EmployeeTable
+        EmployeeTable,
+        DatePicker
     }
 }
 </script>
@@ -37,7 +50,7 @@ export default {
 .del-box{
     padding-top: 10px;
     margin-top: 80px;
-    margin-left: 20px;
+    margin-left: 50px;
     height: 350px;
     width: 350px;
     display: block;

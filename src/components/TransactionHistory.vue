@@ -8,8 +8,9 @@
     <form>
         <input type="radio" id="date" name="type" value="date">
         <label for="date">Theo ngày</label><br>
-        <datepicker :format="customFormatter" placeholder="Từ ngày"></datepicker>
-        <datepicker :format="customFormatter" placeholder="Đến ngày"></datepicker>
+        <date-picker format="DD/MM/YYYY" placeholder="Từ ngày" name ="from" id="from" v-model="from" @input="checkFrom"></date-picker>
+        <date-picker format="DD/MM/YYYY" placeholder="Đến ngày" name ="to" id="to" v-model="to" @input="checkTo"></date-picker>
+        <br>
         <input type="radio" id="bank" name="type" value="bank">
         <label for="bank">Theo ngân hàng</label><br>
         <select name="bank" id="bank-select" class="text-input">
@@ -26,16 +27,41 @@
 <script>
 import moment from 'moment';
 import TransactionTable from './TransactionTable';
-import Datepicker from "vuejs-datepicker/dist/vuejs-datepicker.esm.js";
+import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
 export default {
     name: 'TransactionHistory',
     components:{
         TransactionTable,
-        Datepicker
+        DatePicker
     },
+    data () {
+  return {
+    from: '',
+    to:''
+  }
+},
     methods: {
     customFormatter(date) {
       return moment(date).format('DD/MM/yyyy');
+    },
+    checkFrom: function(){
+      if(this.from != '' && this.to != ''){
+          var dateFrom = this.from
+          var dateTo = this.to
+            if(dateFrom >  dateTo){
+              this.from = dateTo
+      }
+    }
+    },
+    checkTo: function(){
+      if(this.from != '' && this.to != ''){
+          var dateFrom = this.from
+          var dateTo = this.to
+            if(dateTo < dateFrom){
+              this.to = dateFrom
+            }
+      }
     }
   }
 }
@@ -64,7 +90,7 @@ export default {
 margin: 0 auto;
 text-align:center !important;
 }
-.text-input, .vdp-datepicker input{
+.text-input, .mx-datepicker input{
   box-sizing : border-box;
   margin-top: 15px;
     padding-top: 6px;
@@ -112,6 +138,19 @@ text-align:center !important;
     margin-top: 15px;
 
 }
+.mx-datepicker input:hover{
+  border-color: #bebcc4;
+}
 
+.mx-datepicker{
+  position: unset;
+  display: unset;
+  width: 100%;
+}
 
+.mx-input-wrapper{
+  position: unset;
+  display: unset;
+  width: 100%;
+}
 </style>

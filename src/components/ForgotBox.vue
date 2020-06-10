@@ -1,52 +1,70 @@
 <template>
-    <div class="right-box" id="right-box">
-        <img src="../assets/nanibank-logo.png" class="login-logo"/><br/>
+    <div class="forgot-box" id="forgot-box">
+        <router-link to="/Login" class="back-arrow"><i class="fas fa-arrow-left"></i></router-link>
+        <label for="" class="forgot-label">Quên mật khẩu</label>
+        
         <div class="login-form">
             <div class="content-input">
                <div class="form-group">
                    <div class="inner-form-group">
-                       <div class="img-holder" id="test"><img src="../assets/user.png"/></div><input class="login-input" placeholder="Tên đăng nhập" name="username"/>
+                       <input class="login-input" placeholder="Email" name = "email"/>
 				</div>
 
+                <div class="form-group">
+                   <div class="inner-form-group">
+                       <button class="login-button">Gửi OTP</button>
+				</div>
+                </div>
+
+               </div>
+               <div class="form-group">
+                   <div class="inner-form-group">
+                       <input class="login-input" type="password" placeholder="OTP" name ="otp"/>
+				</div>
                </div>	
                <div class="form-group">
                    <div class="inner-form-group">
-                       <div class="img-holder"><img src="../assets/password.png"/></div><input class="login-input" type="password" placeholder="Mật khẩu" name="password"/>
+                       <input class="login-input" type="password" placeholder="Mật khẩu mới" name="newpass"/>
 				</div>
                </div>
-               <div class="center-g-captcha">
-        <vue-recaptcha class="g-recaptcha" sitekey="6LfmcP4UAAAAAB8zn4ADK-qjn3vysFu2innt2V_i"></vue-recaptcha>
-        </div>
+               <div class="form-group">
+                   <div class="inner-form-group">
+                       <input class="login-input" type="password" placeholder="Xác nhận mật khẩu mới" name="cfnewpass"/>
+				</div>
+               </div>
         <div class="form-group">
                    <div class="inner-form-group">
-                       <button class="login-button">Đăng nhập</button>
+                       <button class="login-button">Đặt lại mật khẩu</button>
 				</div>
             </div>
         </div>
         </div>
-        <router-link to="Login/ForgotPass" class="forgot-pass">Quên mật khẩu</router-link>
-
-        <b-popover target="right-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+        <b-popover target="forgot-box" triggers="manual" placement="bottom" container="error-popover">
             <template v-slot:title>Lỗi</template>
             <label v-bind="errorMessage"></label>
+      </b-popover>
+      <b-popover target="forgot-box" triggers="manual" placement="bottom">
+            <template v-slot:title>Đã gửi OTP đến email</template>
       </b-popover>
       <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
-import VueRecaptcha from 'vue-recaptcha';
 export default {
-    name:'RightLoginBox',
-    components:{
-        VueRecaptcha
-    }
+    name:'ForgotBox',
 }
 </script>
 
 <style>
-.right-box{
-
+.forgot-label{
+    margin-left: -25px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #7B5EA8;
+}
+.forgot-box{
+padding-top: 15px;
     position: relative;
     width: 399px;
     min-height: 400px;
@@ -154,5 +172,16 @@ export default {
     margin-right: 25px;
     color: black;
     font-weight: bold;
+}
+
+.back-arrow{
+    margin-left: 25px;
+    float: left;
+    font-size: 20px;
+    color: black;
+}
+.back-arrow:hover{
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.5);
 }
 </style>

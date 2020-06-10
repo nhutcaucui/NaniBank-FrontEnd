@@ -3,29 +3,41 @@
 
     <EmployeeTable/>
 
-<div class="edit-box">
+<div class="edit-box" id="edit-box">
     <label>Chỉnh sửa giao dịch viên</label><br/>
     <form>
     <input class="invisible-input" disabled id="id" name ="id"/>
     <input placeholder="Họ tên"  id="name" name ="name"/>
     <input placeholder="Email"  id="email" name ="email"/>
-    <input placeholder="Địa chỉ"  id="address" name ="address"/>
-    <input placeholder="Ngày sinh"  id="dob" name ="dob"/>
+    <input placeholder="Số điện thoại"  id="phone" name ="phone"/>
+    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" editable="false" v-model="dob"></date-picker>
     <input placeholder="Tài khoản"  id="username" name ="username"/>
     <br/>
     <button class="submit-button" id="submit-edit">Cập nhật</button>
     </form>
     </div>
+
+    <b-popover target="edit-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+            <template v-slot:title>Lỗi</template>
+            <label v-bind="errorMessage"></label>
+      </b-popover>
+      <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
 import EmployeeTable from './EmployeeTable'
-
+import DatePicker from 'vue2-datepicker';
 export default {
-    name: "AdminEdit",
-    components:{
-        EmployeeTable
+    name: 'AdminEdit',
+    data(){
+    return{
+      dob:''
+    }
+  },
+    components: {
+        EmployeeTable,
+        DatePicker
     }
 }
 </script>
@@ -38,7 +50,7 @@ export default {
 .edit-box{
     padding-top: 10px;
     margin-top: 80px;
-    margin-left: 20px;
+    margin-left: 50px;
     height: 350px;
     width: 350px;
     display: block;

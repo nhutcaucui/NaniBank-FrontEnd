@@ -20,7 +20,7 @@ export default {
             return {
                 menu: [
                     {
-                        href: '/Admin/Dashboard',
+                        href: '/Admin',
                         title: 'Dashboard',
                         icon: {
                             element: 'span',

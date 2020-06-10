@@ -1,98 +1,9 @@
 <template>
 <div class="transaction-table-container">
-    <table id="transaction">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-  <tr>
-    <th>STT</th>
-    <th>Người gửi</th>
-    <th>Người nhận</th>
-    <th>Ngày</th>
-    <th>Ngân hàng</th>
-    <th>Số tiền</th>
-  </tr>
-        
-  <tr>
-    <td>1</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>9</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  <tr>
-    <td>100</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-    <td>1/6/2020</td>
-    <td>NaniBank</td>
-    <td>1,500,000</td>
-  </tr>
-  </div>
-</table>
+            <b-table striped hover :items="items" :fields="fields" id="transaction"></b-table>
+          </div>
+
 <div class="total-container"><label>Tổng: </label><label id="total"></label></div>
 </div>
 </template>
@@ -100,6 +11,48 @@
 <script>
 export default {
     name: "TransactionTable",
+    data(){
+      return{
+        fields: [
+          {
+            key: 'stt',
+            label: 'STT',
+            sortable: true
+          },
+          {
+            key: 'sender',
+            label: 'Người gửi',
+            sortable: false
+          },
+          {
+            key: 'receiver',
+            label: 'Người nhận',
+            sortable: false,
+          },
+          {
+            key: 'date',
+            label: 'Ngày',
+            sortable: false,
+          },
+          {
+            key: 'bank',
+            label: 'Ngân hàng',
+            sortable: true,
+          },
+          {
+            key: 'amount',
+            label: 'Số tiền',
+            sortable: false,
+          },
+        ],
+        items: [
+          { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
+          { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
+          { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
+          { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
+        ]
+      }
+    }
 }
 </script>
 
@@ -125,7 +78,7 @@ export default {
 
 }
 
-#transaction tr:nth-child(even){background-color: #f2f2f2;}
+#transaction tr:nth-child(even){background-color: white;}
 
 #transaction tr:hover {background-color: #ddd;}
 

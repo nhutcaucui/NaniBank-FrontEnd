@@ -2,20 +2,18 @@
   <div class="login">
       <div class="center-login">
     <LeftLoginBox/>
-    <RightLoginBox/>
+    <router-view></router-view>
     </div>
   </div> 
 </template>
 
 <script>
 import LeftLoginBox from './LeftLoginBox';
-import RightLoginBox from './RightLoginBox'
 
 export default {
   name: 'Login', //this is the name of the component
   components:{
       LeftLoginBox,
-      RightLoginBox
   }
 }
 </script>

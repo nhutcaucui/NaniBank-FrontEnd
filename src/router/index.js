@@ -9,6 +9,8 @@ import AdminAdd from '@/components/AdminAdd'
 import AdminEdit from '@/components/AdminEdit'
 import AdminDelete from '@/components/AdminDelete'
 import TransactionHistory from '@/components/TransactionHistory'
+import RightLoginBox from '@/components/RightLoginBox'
+import ForgotBox from '@/components/ForgotBox'
 
 Vue.use(Router)
 
@@ -27,34 +29,44 @@ export default new Router({
     {
       path: '/Login',
       name: 'Đăng nhập',
+      children: [{
+        path: '/',
+        name: 'Login',
+        component: RightLoginBox,
+      },
+      {
+        path: 'ForgotPass',
+        name: 'Forgot',
+        component: ForgotBox,
+      }],
       component: Login
     },
     {
       path: '/Admin',
       name: 'Admin',
       children: [{
-        path: 'Dashboard',
+        path: '/',
         name: 'Dashboard',
         component: AdminDashboard,
       },
       {
         path: 'Add',
-        name: 'Dashboard',
+        name: 'Add',
         component: AdminAdd,
       },
       {
         path: 'Edit',
-        name: 'Dashboard',
+        name: 'Edit',
         component: AdminEdit,
       },
       {
         path: 'Delete',
-        name: 'Dashboard',
+        name: 'Delete',
         component: AdminDelete,
       },
       {
         path: 'History',
-        name: 'Dashboard',
+        name: 'History',
         component: TransactionHistory,
       }],
       component: Admin

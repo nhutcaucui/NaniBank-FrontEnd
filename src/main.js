@@ -6,29 +6,16 @@ import App from './App.vue'
 import router from '@/router/index.js'
 import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
+import './plugins/bootstrap'
+
+import store from './store/store';
+
 Vue.use(VueSidebarMenu)
 
 Vue.config.productionTip = false;
-//Vue.use(Router);
-
-// const routes = [
-//   {
-//     path: '/',
-//     name: 'HelloWorld',
-//     component: HelloWorld
-//   },
-//   {
-//       path: '/Home',
-//       name: 'Home',
-//       component: Home
-//   }
-// ]
-
-// const router = new Router({
-//   routes // short for `routes: routes`
-// })
 
 new Vue({
   render: h => h(App),
-  router
+  router,
+  store: store
 }).$mount('#app')

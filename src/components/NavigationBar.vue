@@ -10,7 +10,6 @@
         <router-link v-for="routes in links" 
         v-bind:key="routes.id"
         :to="`${routes.page}`">{{routes.text}}</router-link>
-        <a class="inactive-divider" href="#">|</a>
         <a class="inactive" href="#"></a>
       </nav>
   </div>
@@ -72,10 +71,11 @@ beforeDestroy () {
 
 <style>
 .user-menu{
+  box-sizing:unset;
   margin: 0;
   float:right;
   margin-right: 50px;
-  margin-top: -5px;
+  margin-top: -10px;
    list-style-type: none;
    background-image: url("../assets/user-box.png");
    background-repeat: no-repeat;
@@ -115,6 +115,10 @@ beforeDestroy () {
 
 .join-link a{
   color: #fff;
+}
+.join-link a:hover{
+  color: #fff;
+  text-decoration: none;
 }
 .user-menu li{
   float: left;
@@ -164,11 +168,12 @@ text-decoration: none;
     color: #4A4A4A;
     font-size: 18px;
 
-    transition: 0.3s; 
+    transition: 0.2s ease-out; 
 }
 .top-nav a:hover{
   border-bottom: 2px solid  #523C89;
-  
+  color: #4A4A4A;
+    text-decoration: none;
 }
 .logo{
   padding-top: 10px;
