@@ -1,22 +1,23 @@
 <template>
-    <div class="admin-add">
+    <div class="admin-edit">
 
-        <EmployeeTable/>
+    <EmployeeTable/>
 
-<div class="add-box" id = "add-box">
-    <label>Thêm giao dịch viên</label><br/>
+<div class="edit-box" id="edit-box">
+    <label>Chỉnh sửa giao dịch viên</label><br/>
     <form>
+    <input class="invisible-input" disabled id="id" name ="id"/>
     <input placeholder="Họ tên"  id="name" name ="name"/>
     <input placeholder="Email"  id="email" name ="email"/>
     <input placeholder="Số điện thoại"  id="phone" name ="phone"/>
-    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" editable="false" v-model="dob"></date-picker>
+    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" v-bind:editable="editable" v-model="dob"></date-picker>
     <input placeholder="Tài khoản"  id="username" name ="username"/>
     <br/>
-    <button class="submit-button" id="submit-add">Thêm</button>
+    <button class="submit-button" id="submit-edit">Cập nhật</button>
     </form>
-</div>
+    </div>
 
-    <b-popover target="add-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover target="edit-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
             <label v-bind="errorMessage"></label>
       </b-popover>
@@ -25,30 +26,31 @@
 </template>
 
 <script>
-import EmployeeTable from './EmployeeTable';
+import EmployeeTable from './EmployeeTable'
 import DatePicker from 'vue2-datepicker';
- import 'vue2-datepicker/index.css';
 export default {
-  data(){
+    name: 'AdminEdit',
+    data(){
     return{
-      dob:''
+      dob:'',
+      editable:false,
+      errorMessage:''
     }
   },
-    name: 'AdminAdd',
-    components:{
-      EmployeeTable,
-      DatePicker
+    components: {
+        EmployeeTable,
+        DatePicker
     }
 }
 </script>
 
 <style>
+.invisible-input{
+    display: none !important;
+}
 
-
-
-
-.add-box{
-  padding-top: 10px;
+.edit-box{
+    padding-top: 10px;
     margin-top: 80px;
     margin-left: 50px;
     height: 350px;
@@ -58,14 +60,13 @@ export default {
     background: white;
     box-shadow: 0 0 4px;
 }
-.add-box label{
-  color: black;
+.edit-box label{
+    color: #523C89;
     font-size: 18px;
   font-weight: bold;
 }
 
-.add-box input{
-  
+.edit-box input{
   box-sizing : border-box;
   margin-top: 15px;
     padding-top: 6px;
@@ -85,7 +86,7 @@ export default {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
 
-.add-box input:focus{
+.edit-box input:focus{
   outline: none;
   border: 1px solid #704DDC;
 }
@@ -108,5 +109,4 @@ export default {
     background: #7B5EA8;
     border: 1px solid #7B5EA8;
 }
-
 </style>

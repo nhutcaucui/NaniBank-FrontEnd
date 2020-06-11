@@ -4,7 +4,7 @@
         <TransactionTable/>
 
         <div class="filter-box">
-    <label>Lọc lịch sử</label><br/>
+    <label class="title">Lọc lịch sử</label><br/>
     <form>
         <input type="radio" id="date" name="type" value="date">
         <label for="date">Theo ngày</label><br>
@@ -80,9 +80,13 @@ export default {
     box-shadow: 0 0 4px;
 }
 .filter-box label{
-    color: black;
-    font-size: 18px;
+  color: black;
+  font-size: 18px;
   font-weight: bold;
+}
+
+.title{
+  color: #523C89 !important;
 }
 
 

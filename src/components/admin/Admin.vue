@@ -11,9 +11,10 @@ export default {
     name:'Admin',
     methods: {
     onItemClick(event, item) {
-        if(item.href == '/'){
-            //logout
-        }
+        if(item.name==='logout'){
+            console.log("Hey, listen");
+        this.$router.push("/")
+    }
     }
     },
     data() {
@@ -60,7 +61,7 @@ export default {
                         }
                     },
                     {
-                        href: '/',
+                        name:'logout',
                         title: 'Đăng xuất',
                         icon: {
                             element: 'span',
@@ -88,27 +89,27 @@ export default {
 }
 
 .dashboard-icon{
-    background: url('../assets/dashboard.png');
+    background: url('../../assets/dashboard.png');
 }
 
 .add-icon{
-    background: url('../assets/add.png');
+    background: url('../../assets/add.png');
 }
 
 .edit-icon{
-    background: url('../assets/pencil.png');
+    background: url('../../assets/pencil.png');
 }
 
 .del-icon{
-    background: url('../assets/delete.png');
+    background: url('../../assets/delete.png');
 }
 
 .history-icon{
-    background: url('../assets/clock.png');
+    background: url('../../assets/clock.png');
 }
 .logout-icon{
-    background: url('../assets/logout.png')
+    background: url('../../assets/logout.png')
 }
 
-@import '../style/side-bar.css';
+@import '../../style/side-bar.css';
 </style>

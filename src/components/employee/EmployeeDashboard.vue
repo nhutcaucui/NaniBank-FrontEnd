@@ -1,29 +1,25 @@
 <template>
-    <div class="dashboard">
+    <div class="employee-dashboard">
 <div class="dashboard-container">
-            <a href="/#/Admin/Add" class="dashboard-item">
+            <router-link to="Employee/Add" class="dashboard-item">
                 <span class="item-icon sb-icon add-icon"></span><br/>
-                Thêm giao dịch viên
-            </a>
-            <a href="/#/Admin/Edit" class="dashboard-item">
-                <span class="item-icon sb-icon edit-icon"></span><br/>
-                Cập nhật giao dịch viên
-            </a>
-            <a href="/#/Admin/Delete" class="dashboard-item">
-                <span class="item-icon sb-icon del-icon"></span><br/>
-                Xóa giao dịch viên
-            </a>
-            <a href="/#/Admin/History" class="dashboard-item">
+                Tạo tài khoản khách hàng
+            </router-link>
+            <router-link to="Employee/Recharge" class="dashboard-item">
+                <span class="item-icon sb-icon money-icon"></span><br/>
+                Nạp tiền vào tài khoản
+            </router-link>
+            <router-link to="Employee/History" class="dashboard-item">
                 <span class="item-icon sb-icon history-icon"></span><br/>
                 Lịch sử giao dịch
-            </a>
+            </router-link>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'AdminDashboard',
+    name: 'EmployeeDashboard',
 }
 </script>
 

@@ -10,7 +10,7 @@
     <input placeholder="Họ tên" disabled id="name" name ="name"/>
     <input placeholder="Email" disabled id="email" name ="email"/>
     <input placeholder="Số điện thoại" disabled id="phone" name ="phone"/>
-    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" editable="false" v-model="dob"></date-picker>
+    <date-picker format="DD/MM/YYYY" placeholder="Ngày sinh" id="dob" name="dob" v-bind:editable="editable" v-model="dob"></date-picker>
     <input placeholder="Tài khoản" disabled id="username" name ="username"/>
     <br/>
     <button class="submit-button" id="submit-del">Xóa</button>
@@ -32,7 +32,9 @@ export default {
     name: 'AdminDelete',
     data(){
     return{
-      dob:''
+      dob:'',
+      editable:false,
+      errorMessage:''
     }
   },
     components: {
@@ -59,7 +61,7 @@ export default {
     box-shadow: 0 0 4px;
 }
 .del-box label{
-    color: black;
+    color: #523C89;
     font-size: 18px;
   font-weight: bold;
 }
