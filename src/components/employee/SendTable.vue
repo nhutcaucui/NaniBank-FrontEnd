@@ -78,7 +78,7 @@ export default {
 #send-table th {
   padding-top: 12px;
   padding-bottom: 12px; 
-  background-color: #9B82E6;
+  background-color: rgb(40, 176, 218);
   color: black;
 }
 

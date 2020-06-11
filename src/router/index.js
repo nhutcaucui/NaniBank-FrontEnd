@@ -7,6 +7,7 @@ import RightLoginBox from '@/components/RightLoginBox'
 import ForgotBox from '@/components/ForgotBox'
 import AdminRoutes from './admin'
 import EmployeeRoutes from './employee'
+import CustomerRoutes from './customer'
 
 Vue.use(Router)
 
@@ -42,5 +43,6 @@ export default new Router({
     component: Login
   },
     ...AdminRoutes,
-  ...EmployeeRoutes]
+  ...EmployeeRoutes,
+...CustomerRoutes]
 })
