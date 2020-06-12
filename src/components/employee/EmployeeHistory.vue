@@ -55,5 +55,9 @@ export default {
 </script>
 
 <style>
-
+.employee-history{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+}
 </style>

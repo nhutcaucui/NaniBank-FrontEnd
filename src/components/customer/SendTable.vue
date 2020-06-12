@@ -1,17 +1,14 @@
 <template>
 <div class="transaction-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="transaction">
-            </b-table>
+            <b-table striped hover :items="items" :fields="fields" id="send-table"></b-table>
           </div>
-
-<div class="total-container"><label>Tổng: </label><label id="total"></label></div>
 </div>
 </template>
 
 <script>
 export default {
-    name: "TransactionTable",
+    name: "SendTable",
     data(){
       return{
         fields: [
@@ -19,11 +16,6 @@ export default {
             key: 'stt',
             label: 'STT',
             sortable: true
-          },
-          {
-            key: 'sender',
-            label: 'Người gửi',
-            sortable: false
           },
           {
             key: 'receiver',
@@ -47,10 +39,10 @@ export default {
           },
         ],
         items: [
-          { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
-          { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
-          { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
-          { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
+          { isActive: true, stt: 1, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
+          { isActive: false, stt: 2, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
+          { isActive: false, stt: 3, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
+          { isActive: true, stt: 4, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
         ]
       }
     }
@@ -63,7 +55,7 @@ export default {
   margin-right: 0;
     width: 700px;
 }
-#transaction {
+#send-table {
     display: block;
     float: left;
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -73,68 +65,68 @@ export default {
   padding-left: 20px;
 }
 
-#transaction td, #transaction th {
+#send-table td, #send-table th {
   border: 1px solid #ddd;
   padding: 8px;
 
 }
 
-#transaction tr:nth-child(even){background-color: white;}
+#send-table tr:nth-child(even){background-color: white;}
 
-#transaction tr:hover {background-color: #ddd;}
+#send-table tr:hover {background-color: #ddd;}
 
-#transaction th {
+#send-table th {
   padding-top: 12px;
   padding-bottom: 12px; 
-  background-color: #9B82E6;
+  background-color: rgb(40, 176, 218);
   color: black;
 }
 
-#transaction th:nth-child(1){
+#send-table th:nth-child(1){
   width: 7%;
 }
 
-#transaction td:nth-child(1){
+#send-table td:nth-child(1){
   width: 7%;
 }
 
-#transaction th:nth-child(2){
+#send-table th:nth-child(2){
   width: 20%;
 }
 
-#transaction td:nth-child(2){
+#send-table td:nth-child(2){
   width: 20%;
 }
 
-#transaction th:nth-child(3){
+#send-table th:nth-child(3){
   width: 20%;
 }
 
-#transaction td:nth-child(3){
+#send-table td:nth-child(3){
   width: 20%;
 }
 
-#transaction th:nth-child(4){
+#send-table th:nth-child(4){
   width: 15%;
 }
 
-#transaction td:nth-child(4){
+#send-table td:nth-child(4){
   width: 15%;
 }
 
-#transaction th:nth-child(5){
+#send-table th:nth-child(5){
   width: 20%;
 }
 
-#transaction td:nth-child(5){
+#send-table td:nth-child(5){
   width: 20%;
 }
 
-#transaction th:nth-child(6){
+#send-table th:nth-child(6){
   width: 18%;
 }
 
-#transaction td:nth-child(6){
+#send-table td:nth-child(6){
   width: 18%;
 }
 

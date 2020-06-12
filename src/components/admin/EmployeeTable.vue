@@ -2,7 +2,13 @@
 <div class="employee-table-container">
 
   <div style="height:400px; overflow:auto;" class="scrolling-table">
-      <b-table striped hover :items="items" :fields="fields" id="employee"></b-table>
+      <b-table striped hover :items="items" :fields="fields" id="employee">
+        <template v-slot:cell(action)="">
+        <b-button size="sm" class="mr-1" variant="danger">
+          <b-icon-trash/>
+        </b-button>
+      </template>
+      </b-table>
   </div>
 
 </div>
@@ -43,6 +49,10 @@ export default {
             label: 'Tài khoản',
             sortable: false,
           },
+          {
+            key:'action',
+            label:''
+          }
         ],
         items: [
           { isActive: true, id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', dob: '1/1/1990', username:"dickcock" },

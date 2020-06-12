@@ -1,17 +1,20 @@
 <template>
 <div class="transaction-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="transaction">
+            <b-table striped hover :items="items" :fields="fields" id="debt-table">
+              <template v-slot:cell(action)="">
+        <b-button size="sm" class="mr-1" variant="danger">
+          <b-icon-trash/>
+        </b-button>
+      </template>
             </b-table>
           </div>
-
-<div class="total-container"><label>Tổng: </label><label id="total"></label></div>
 </div>
 </template>
 
 <script>
 export default {
-    name: "TransactionTable",
+    name: "DebtTable",
     data(){
       return{
         fields: [
@@ -23,11 +26,6 @@ export default {
           {
             key: 'sender',
             label: 'Người gửi',
-            sortable: false
-          },
-          {
-            key: 'receiver',
-            label: 'Người nhận',
             sortable: false,
           },
           {
@@ -45,12 +43,21 @@ export default {
             label: 'Số tiền',
             sortable: false,
           },
+          {
+            key: 'status',
+            label: 'Trạng thái',
+            sortable: false,
+          },
+          {
+            key:'action',
+            label:''
+          }
         ],
         items: [
-          { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
-          { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
-          { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
-          { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
+          { isActive: true, stt: 1, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", status:"Đã thanh toán" },
+          { isActive: false, stt: 2, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", status:"Chưa thanh toán" },
+          { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
+          { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
     }
@@ -63,7 +70,7 @@ export default {
   margin-right: 0;
     width: 700px;
 }
-#transaction {
+#debt-table {
     display: block;
     float: left;
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -73,68 +80,68 @@ export default {
   padding-left: 20px;
 }
 
-#transaction td, #transaction th {
+#debt-table td, #debt-table th {
   border: 1px solid #ddd;
   padding: 8px;
 
 }
 
-#transaction tr:nth-child(even){background-color: white;}
+#debt-table tr:nth-child(even){background-color: white;}
 
-#transaction tr:hover {background-color: #ddd;}
+#debt-table tr:hover {background-color: #ddd;}
 
-#transaction th {
+#debt-table th {
   padding-top: 12px;
   padding-bottom: 12px; 
   background-color: #9B82E6;
   color: black;
 }
 
-#transaction th:nth-child(1){
+#debt-table th:nth-child(1){
   width: 7%;
 }
 
-#transaction td:nth-child(1){
+#debt-table td:nth-child(1){
   width: 7%;
 }
 
-#transaction th:nth-child(2){
+#debt-table th:nth-child(2){
   width: 20%;
 }
 
-#transaction td:nth-child(2){
+#debt-table td:nth-child(2){
   width: 20%;
 }
 
-#transaction th:nth-child(3){
+#debt-table th:nth-child(3){
   width: 20%;
 }
 
-#transaction td:nth-child(3){
+#debt-table td:nth-child(3){
   width: 20%;
 }
 
-#transaction th:nth-child(4){
+#debt-table th:nth-child(4){
   width: 15%;
 }
 
-#transaction td:nth-child(4){
+#debt-table td:nth-child(4){
   width: 15%;
 }
 
-#transaction th:nth-child(5){
+#debt-table th:nth-child(5){
   width: 20%;
 }
 
-#transaction td:nth-child(5){
+#debt-table td:nth-child(5){
   width: 20%;
 }
 
-#transaction th:nth-child(6){
+#debt-table th:nth-child(6){
   width: 18%;
 }
 
-#transaction td:nth-child(6){
+#debt-table td:nth-child(6){
   width: 18%;
 }
 

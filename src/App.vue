@@ -43,4 +43,14 @@ margin:0;
 padding:0;
 
 }
+
+.invisible-input{
+  display: none;
+}
+.mx-input-wrapper i{
+  display: none;
+}
+ul {
+    list-style-type: none;
+}
 </style>

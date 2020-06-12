@@ -45,14 +45,6 @@ export default {
                         }
                     },
                     {
-                        href: '/Admin/Delete',
-                        title: 'Xóa giao dịch viên',
-                        icon: {
-                            element: 'span',
-                            class: 'sb-icon del-icon',
-                        }
-                    },
-                    {
                         href: '/Admin/History',
                         title: 'Lịch sử giao dịch',
                         icon: {

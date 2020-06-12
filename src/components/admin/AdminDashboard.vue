@@ -9,10 +9,6 @@
                 <span class="item-icon sb-icon edit-icon"></span><br/>
                 Cập nhật giao dịch viên
             </router-link>
-            <router-link to="Admin/Delete" class="dashboard-item">
-                <span class="item-icon sb-icon del-icon"></span><br/>
-                Xóa giao dịch viên
-            </router-link>
             <router-link to="Admin/History" class="dashboard-item">
                 <span class="item-icon sb-icon history-icon"></span><br/>
                 Lịch sử giao dịch
