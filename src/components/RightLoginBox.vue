@@ -3,43 +3,96 @@
         <img src="../assets/nanibank-logo.png" class="login-logo"/><br/>
         <div class="login-form">
             <div class="content-input">
+                <form v-on:submit.prevent="onSubmit">
                <div class="form-group">
                    <div class="inner-form-group">
-                       <div class="img-holder" id="test"><img src="../assets/user.png"/></div><input class="login-input" placeholder="Tên đăng nhập" name="username"/>
+                       <div class="img-holder" id="test"><img src="../assets/user.png"/></div><input class="login-input" placeholder="Tên đăng nhập" name="username" v-model = "username"/>
 				</div>
 
                </div>	
                <div class="form-group">
                    <div class="inner-form-group">
-                       <div class="img-holder"><img src="../assets/password.png"/></div><input class="login-input" type="password" placeholder="Mật khẩu" name="password"/>
+                       <div class="img-holder"><img src="../assets/password.png"/></div><input class="login-input" type="password" placeholder="Mật khẩu" name="password" v-model = "password"/>
 				</div>
                </div>
                <div class="center-g-captcha">
-        <vue-recaptcha class="g-recaptcha" sitekey="6LfmcP4UAAAAAB8zn4ADK-qjn3vysFu2innt2V_i"></vue-recaptcha>
+        <vue-recaptcha class="g-recaptcha" sitekey="6LfmcP4UAAAAAB8zn4ADK-qjn3vysFu2innt2V_i" @verify="onVerify"></vue-recaptcha>
         </div>
         <div class="form-group">
                    <div class="inner-form-group">
                        <button class="login-button">Đăng nhập</button>
 				</div>
             </div>
+                </form>
         </div>
         </div>
         <router-link to="Login/ForgotPass" class="forgot-pass">Quên mật khẩu</router-link>
 
-        <b-popover target="right-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+        <b-popover :show.sync="showPop" target="right-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label>{{errorMessage}}</label>
       </b-popover>
       <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 import VueRecaptcha from 'vue-recaptcha';
 export default {
     name:'RightLoginBox',
     components:{
         VueRecaptcha
+    },
+    data(){
+        return{
+            verified: false,
+            username: ',',
+            password:'',
+            shopPop: false,
+            errorMessage:''
+        }
+    },
+    methods:{
+        onVerify(){
+            this.verified = true;
+        },
+        onSubmit(){
+            var self = this
+            if(self.username == '' || self.password == ''){
+                self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
+                self.showPopover();
+            }else{
+                axios.get('http://35.240.195.17/users/login',{
+                    username: self.username,
+                    password: self.password
+                }, {headers:{
+                timestamp: moment().unix(),
+                }}).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                    //todo,todo
+                }else{
+                    self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+            }
+        },
+        hidePopover(){
+      this.showPop = false;
+      console.log("hide")
+      
+    },
+    showPopover(){
+      this.showPop = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    }
     }
 }
 </script>
@@ -118,7 +171,7 @@ export default {
     
         display: inline-block;
     position: relative;
-    height: 32px;
+    height: 34px !important;
     width: 15%;
     border: 1px solid #bebcc4;
     border-right: 0;

@@ -1,7 +1,7 @@
 <template>
     <div class="admin-add">
 
-        <EmployeeTable />
+        <EmployeeTable ref="employeeTableAdd"/>
 
 <div class="add-box" id = "add-box">
     <label>Thêm giao dịch viên</label><br/>
@@ -31,6 +31,10 @@
 <script>
 import moment from 'moment'
 import axios from 'axios';
+axios.interceptors.request.use(request => {
+  console.log('Starting Request', request)
+  return request
+})
 import EmployeeTable from './EmployeeTable';
  import 'vue2-datepicker/index.css';
 export default {
@@ -58,6 +62,7 @@ export default {
   },
   methods:{
     onSubmit(){
+      
       var isError = false;
       if(this.name == ''){
         this.errorMessage = 'Xin nhập tên giao dịch viên'
@@ -73,6 +78,10 @@ export default {
         isError = true;
       }else if(this.password == ''){
         this.errorMessage = 'Xin nhập mật khẩu giao dịch viên'
+        isError = true;
+      }
+      else if(this.password.length < 6){
+        this.errorMessage = 'Mật khẩu quá ngắn'
         isError = true;
       }else if(this.cfpassword == ''){
         this.errorMessage = 'Xin nhập xác nhận mật khẩu giao dịch viên'
@@ -91,22 +100,29 @@ export default {
       if(isError){
         this.showPopover();
       }else{
-        axios.post('https://35.240.195.17/users/admin/create',{
-          username: this.username,
-          password:this.password,
-          timestamp: moment.now(),
+        var self = this;
+        axios.post('http://35.240.195.17/users/admin/create',{
+          username: self.username,
+          password:self.password,
+
         }, {headers:{
-          'Access-Control-Allow-Origin': '*'
+          timestamp: moment().unix(),
         }}).then(response =>{
           console.log(response);
+          if(response.data.Status){
+            self.$refs.employeeTableAdd.addRow(self.name, self.email, self.phone, self.username)
+              self.name= ''
+              self.email= ''
+              self.phone= ''
+              self.username= ''
+              self.password= '',
+              self.cfpassword= ''
+          }
+          //self.$refs.employeeTableAdd.addRow(self.name, self.email, self.phone, self.username)
         }).catch(e =>{
           console.log(e);
         })
       }
-    },
-    callUpdate(id, name, email,phone){
-      //todo
-      console.log(id + name + email + phone)
     },
     hidePopover(){
       this.showPop = false;

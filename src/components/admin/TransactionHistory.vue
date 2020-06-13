@@ -1,19 +1,19 @@
 <template>
     <div class="transaction-history">
         
-        <TransactionTable/>
+        <TransactionTable ref = "adminTransactionTable"/>
 
-        <div class="filter-box">
+        <div class="filter-box" id="filter-box">
     <label class="title">Lọc lịch sử</label><br/>
-    <form>
-        <input type="radio" id="date" name="type" value="date">
+    <form v-on:submit.prevent="onSubmit" >
+        <input type="radio" id="date" name="type" value="1" v-model="picked">
         <label for="date">Theo ngày</label><br>
         <date-picker format="DD/MM/YYYY" placeholder="Từ ngày" name ="from" id="from" v-model="from" @input="checkFrom"></date-picker>
         <date-picker format="DD/MM/YYYY" placeholder="Đến ngày" name ="to" id="to" v-model="to" @input="checkTo"></date-picker>
         <br>
-        <input type="radio" id="bank" name="type" value="bank">
+        <input type="radio" id="bank" name="type" value="2" v-model="picked">
         <label for="bank">Theo ngân hàng</label><br>
-        <select name="bank" id="bank-select" class="text-input">
+        <select name="bank" id="bank-select" class="text-input" v-model="bank">
   <option value="NaniBank">NaniBank</option>
   <option value="KiantoBank">KiantoBank</option>
 </select>
@@ -21,6 +21,12 @@
     <button class="submit-button" id="submit-filter">Lọc</button>
     </form>
     </div>
+
+    <b-popover :show.sync="showPop" ref="popover" target="filter-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+            <template v-slot:title>Lỗi</template>
+            <label>{{errorMessage}}</label>
+      </b-popover>
+      <div id="error-popover"></div>
     </div>
 </template>
 
@@ -37,11 +43,36 @@ export default {
     },
     data () {
   return {
+    picked: 0,
     from: '',
-    to:''
+    to:'',
+    bank:'',
+    showPop:false,
+    errorMessage:''
   }
 },
     methods: {
+      onSubmit(){
+        var self = this;
+        var isError = false;
+          if(self.picked == 0){
+            self.errorMessage = "Xin chọn phương thức lọc"
+            isError = true;
+          }else if(self.from == '' || self.to == ''){
+            self.errorMessage = "Xin chọn ngày"
+            isError = true;
+          }
+
+          if(isError){
+            self.showPopover();
+          }else{
+            if(self.picked == 1){
+                self.$refs.adminTransactionTable.filterByDate(self.from,self.to);
+            }else if(self.picked == 2){
+              self.$refs.adminTransactionTable.filterByBank(self.bank);
+            }
+          }
+      },
     customFormatter(date) {
       return moment(date).format('DD/MM/yyyy');
     },
@@ -62,6 +93,17 @@ export default {
               this.to = dateFrom
             }
       }
+    },
+    hidePopover(){
+      this.showPop = false;
+      console.log("hide")
+      
+    },
+    showPopover(){
+      this.showPop = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
     }
   }
 }

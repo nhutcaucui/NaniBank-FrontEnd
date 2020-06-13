@@ -41,8 +41,7 @@ export default {
     top: 50%;
     margin-left: auto;
     margin-right: auto;
-    transform: translateY(-50%);
-       
+    transform: translateY(-50%);     
 }
 
 </style>

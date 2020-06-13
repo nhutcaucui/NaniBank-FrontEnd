@@ -5,9 +5,10 @@
         
         <div class="login-form">
             <div class="content-input">
+                <form v-on:submit.prevent="onSubmitOTP">
                <div class="form-group">
                    <div class="inner-form-group">
-                       <input class="login-input" placeholder="Email" name = "email"/>
+                       <input class="login-input" placeholder="Email" name = "email" v-model="email"/>
 				</div>
 
                 <div class="form-group">
@@ -17,19 +18,21 @@
                 </div>
 
                </div>
+                </form>
+                <form v-on:submit.prevent="onSubmit">
                <div class="form-group">
                    <div class="inner-form-group">
-                       <input class="login-input" type="password" placeholder="OTP" name ="otp"/>
+                       <input v-model="OTP" class="login-input" type="password" placeholder="OTP" name ="otp"/>
 				</div>
                </div>	
                <div class="form-group">
                    <div class="inner-form-group">
-                       <input class="login-input" type="password" placeholder="Mật khẩu mới" name="newpass"/>
+                       <input v-model="newPass" class="login-input" type="password" placeholder="Mật khẩu mới" name="newpass"/>
 				</div>
                </div>
                <div class="form-group">
                    <div class="inner-form-group">
-                       <input class="login-input" type="password" placeholder="Xác nhận mật khẩu mới" name="cfnewpass"/>
+                       <input v-model="cfNewPass" class="login-input" type="password" placeholder="Xác nhận mật khẩu mới" name="cfnewpass"/>
 				</div>
                </div>
         <div class="form-group">
@@ -37,13 +40,14 @@
                        <button class="login-button">Đặt lại mật khẩu</button>
 				</div>
             </div>
+                </form>
         </div>
         </div>
-        <b-popover target="forgot-box" triggers="manual" placement="bottom" container="error-popover">
+        <b-popover :show.sync="showPop" target="forgot-box" triggers="manual" placement="bottom" container="error-popover">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label>{{errorMessage}}</label>
       </b-popover>
-      <b-popover target="forgot-box" triggers="manual" placement="bottom">
+      <b-popover :show.sync="showPopSent" target="forgot-box" triggers="manual" placement="bottom" container="error-popover"> 
             <template v-slot:title>Đã gửi OTP đến email</template>
       </b-popover>
       <div id="error-popover"></div>
@@ -51,8 +55,96 @@
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name:'ForgotBox',
+    data(){
+        return{
+            email:'',
+            OTP:'',
+            newPass:'',
+            cfNewPass:'',
+            showPop:false,
+            showPopSent:false,
+            errorMessage:''
+        }
+    },
+    methods:{
+        onSubmitSent(){
+            if(this.email == ''){
+                this.errorMessage= "Xin nhập emal"
+                this.showPopover()
+            }else{
+                var self = this;
+                axios.get('http://35.240.195.17/users/sendotp',{
+                    email: self.email
+                }, {headers:{
+                timestamp: moment().unix(),
+                }}).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                    //todo,todo
+                }else{
+                    self.errorMessage = 'Email không tồn tại'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+            }
+        },
+        onSubmit(){
+            if(this.OTP == ''){
+                this.errorMessage= "Xin nhập OTP"
+                this.showPopover()
+            }else if(this.newPass == '' || this.cfNewPass==''){
+                this.errorMessage= "Xin nhập mạt khẩu mới"
+                this.showPopover()
+            }else if(this.newPass != this.cfNewPass){
+                this.errorMessage= "Mật khẩu không khớp"
+                this.showPopover()
+            }else{
+                var self = this;
+                axios.get('http://35.240.195.17/users/sendotp',{
+                    OTP: self.OTP,
+                    pass: self.newPass
+                }, {headers:{
+                timestamp: moment().unix(),
+                }}).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                    //todo,todo
+                }else{
+                    self.errorMessage = 'OTP không chính xác'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+            }
+        },
+        hidePopover(){
+      this.showPop = false;
+      
+    },
+    showPopover(){
+      this.showPop = true;
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverSent(){
+      this.showPopSent = false;
+      console.log("hide")
+      
+    },
+    showPopoverSent(){
+      this.showPopSent = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    }
+    }
 }
 </script>
 
@@ -132,18 +224,6 @@ padding-top: 15px;
     right: 0;
 }
 
-.img-holder{
-    
-        display: inline-block;
-    position: relative;
-    height: 32px;
-    width: 15%;
-    border: 1px solid #bebcc4;
-    border-right: 0;
-    vertical-align: middle;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
 .g-recaptcha{
     width: 304px;
     margin: 0 auto;

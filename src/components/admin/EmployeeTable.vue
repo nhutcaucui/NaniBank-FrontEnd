@@ -2,9 +2,9 @@
 <div class="employee-table-container">
 
   <div style="height:400px; overflow:auto;" class="scrolling-table">
-      <b-table striped hover :items="items" :fields="fields" id="employee">
-        <template v-slot:cell(action)="">
-        <b-button size="sm" class="mr-1" variant="danger">
+      <b-table ref="table" striped hover :items="items" :fields="fields" id="employee" @row-clicked="rowClick">
+        <template v-slot:cell(action)="row">
+        <b-button size="sm" class="mr-1" variant="danger" v-on:click="deleteRow(row.index)">
           <b-icon-trash/>
         </b-button>
       </template>
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name: "EmployeeTable",
     mounted() {
@@ -22,12 +24,42 @@ export default {
     },
     methods:{
       loadData(){
-        console.log("heyheyfromemployeetable");
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+      },
+      addRow(name, email, phone, username){
+          var self = this;
+          self.items.push({id: self.items.length +1 , ho_ten: name, email: email, sdt: phone, username:username})
+      },
+      rowClick(record, index){
+        this.$emit('rowClick', record, index)
+      },
+      editRow(id, name, email, phone, index){
+        var self = this;
+        var oldItem = self.items[index];
+        var item = {id: id, ho_ten:name, email: email, sdt:phone, username: oldItem.username}
+        self.items[index] = item;
+        this.$refs.table.refresh();
+      },
+      deleteRow(index){
+        if(confirm("Xóa giao dịch viên?")){
+          this.items.splice(index, 1);
+        }
       }
-
     },
     data(){
       return{
+        item: {},
         fields: [
           {
             key: 'id',
@@ -59,13 +91,18 @@ export default {
           }
         ],
         items: [
-          { isActive: true, id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', username:"dickcock" },
-          { isActive: false, id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', username:"larva" },
-          { isActive: false, id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', username:"havana"  },
-          { isActive: true, id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', username:"james"  }
+          {id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', username:"dickcock" },
+          {id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', username:"larva" },
+          {id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', username:"havana"},
+          {id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', username:"james"}
         ]
       }
-    }
+    },
+watch:{
+  item(newItems){
+      this.items = newItems
+  }
+}
 }
 </script>
 
