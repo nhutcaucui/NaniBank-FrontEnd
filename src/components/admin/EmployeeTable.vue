@@ -17,6 +17,15 @@
 <script>
 export default {
     name: "EmployeeTable",
+    mounted() {
+      this.loadData();
+    },
+    methods:{
+      loadData(){
+        console.log("heyheyfromemployeetable");
+      }
+
+    },
     data(){
       return{
         fields: [
@@ -40,11 +49,6 @@ export default {
             sortable: false,
           },
           {
-            key: 'dob',
-            label: 'Ngày sinh',
-            sortable: true,
-          },
-          {
             key: 'username',
             label: 'Tài khoản',
             sortable: false,
@@ -55,10 +59,10 @@ export default {
           }
         ],
         items: [
-          { isActive: true, id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', dob: '1/1/1990', username:"dickcock" },
-          { isActive: false, id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', dob: '1/1/1990', username:"larva" },
-          { isActive: false, id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', dob: '1/1/1990', username:"havana"  },
-          { isActive: true, id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', dob: '1/1/1990', username:"james"  }
+          { isActive: true, id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', username:"dickcock" },
+          { isActive: false, id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', username:"larva" },
+          { isActive: false, id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', username:"havana"  },
+          { isActive: true, id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', username:"james"  }
         ]
       }
     }

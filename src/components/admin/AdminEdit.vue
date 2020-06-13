@@ -6,7 +6,7 @@
 <div class="edit-box" id="edit-box">
     <label>Chỉnh sửa giao dịch viên</label><br/>
     <form>
-    <input class="invisible-input" disabled id="id" name ="id"/>
+    <input disabled name='id' id='id' style="{display:'none'}" v-model="id" class="invisible-input"/>
     <input placeholder="Họ tên"  id="name" name ="name"/>
     <input placeholder="Email"  id="email" name ="email"/>
     <input placeholder="Số điện thoại"  id="phone" name ="phone"/>
@@ -32,6 +32,7 @@ export default {
     name: 'AdminEdit',
     data(){
     return{
+      id:'',
       dob:'',
       editable:false,
       errorMessage:''
