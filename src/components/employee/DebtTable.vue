@@ -8,7 +8,11 @@
 
 <script>
 export default {
+  props:['data'],
     name: "DebtTable",
+    mounted() {
+      this.loadData(this.$props.data);
+    },
     data(){
       return{
         fields: [
@@ -32,9 +36,15 @@ export default {
             label: 'Ngân hàng',
             sortable: true,
           },
+          
           {
             key: 'amount',
             label: 'Số tiền',
+            sortable: false,
+          },
+          {
+            key: 'note',
+            label: 'Nội dung',
             sortable: false,
           },
           {
@@ -50,6 +60,12 @@ export default {
           { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
+    },
+    methods:{
+      loadData(data){
+        //var self = this
+        console.log(data)
+      },
     }
 }
 </script>

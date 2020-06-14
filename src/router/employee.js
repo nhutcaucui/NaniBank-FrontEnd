@@ -31,18 +31,21 @@ export default[
           name: 'History',
           children:[{
             path: 'Send',
-            name: 'Send',
+            name: 'EmployeeSend',
             component: SendTable,
+            props:true
           },
           {
             path: 'Receive',
-            name: 'Receive',
+            name: 'EmployeeReceive',
             component: ReceiveTable,
+            props:true
           },
           {
             path: 'Debt',
-            name: 'Debt',
+            name: 'EmployeeDebt',
             component: DebtTable,
+            props:true
           }],
           component: EmployeeHistory,
         }],

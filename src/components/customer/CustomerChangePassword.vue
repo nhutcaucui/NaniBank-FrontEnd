@@ -1,25 +1,103 @@
 <template>
     <div class='customer-change-pass'>
         <div class="container-box" id="change-pass-container">
-            <label>Nạp tiền vào tài khoản</label>
-            <form>
-            <input placeholder="Mật khẩu cũ" type="password"  id="oldpass" name ="oldpass"/>
-            <input placeholder="Mật khẩu mới" type="password"  id="newpass" name ="newpass"/>
-            <input placeholder="Xác nhận mật khẩu mới" type="password"  id="cfnewpass" name ="cfnewpass"/>
+            <label>Đổi mật khẩu</label>
+            <form v-on:submit.prevent="onSubmit">
+            <input placeholder="Mật khẩu cũ" type="password"  id="oldpass" name ="oldpass" v-model="oldPass"/>
+            <input placeholder="Mật khẩu mới" type="password"  id="newpass" name ="newpass" v-model="newPass"/>
+            <input placeholder="Xác nhận mật khẩu mới" type="password"  id="cfnewpass" name ="cfnewpass" v-model="cfPass"/>
             <button class="submit-button" id="submit-change-pass">Đổi mật khẩu</button>
             </form>
         </div>
 
-        <b-popover target="change-pass-container" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+        <b-popover :show.sync="showPop" target="change-pass-container" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label>{{errorMessage}}</label>
+      </b-popover>
+      <b-popover :show.sync="showPopPositive" target="change-pass-container" triggers="manual" placement="bottom" container="error-popover">
+            <template v-slot:title>Thành công</template>
+            <label>Đổi mật khẩu thành công</label>
       </b-popover>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name:'CustomerChangePassword',
+    data(){
+        return{
+            oldPass:'',
+            newPass:'',
+            cfPass: '',
+            errorMessage:'',
+            showPop:false,
+            showPopPositive:false,
+        }
+    },
+    methods:{
+        onSubmit(){
+            var isError = false;
+            if(this.oldPass == ''){
+                this.errorMessage='Xin nhập mật khẩu cũ'
+                isError = true;
+            }else if(this.newPass == ''){
+                this.errorMessage='Xin nhập mật khẩu mới'
+                isError = true;
+            }else if(this.newPass != this.cfPass){
+                this.errorMessage='Xác nhận mật khẩu không khớp'
+                isError = true;
+            }
+
+            if(isError){
+                this.showPopover();
+            }else{
+                var self = this;
+                axios.post('http://35.240.195.17/users/admin/create',{
+                    token: self.$store.token,
+          oldPass: self.oldPass,
+          newPass: self.newPass,
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              self.oldPass= ''
+              self.newPass= ''
+              self.cfPass= ''
+              self.showPopoverPositive();
+          }else{
+            //todo
+            self.errorMessage='Mật khẩu cũ không chính xác';
+            self.showPopover();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+            }
+        },
+        hidePopover(){
+      this.showPop = false;
+      console.log("hide")
+    },
+    showPopover(){
+      this.showPop = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverPositive(){
+      this.showPopPositive = false;
+      console.log("hide")
+    },
+    showPopoverPositive(){
+      this.showPopPositive = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopoverPositive(), 3000);
+    }
+    }
 }
 </script>
 

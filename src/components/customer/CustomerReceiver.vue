@@ -1,34 +1,146 @@
 <template>
     <div class='customer-receiver'>
-<ReceiverTable/>
+<ReceiverTable @rowClick="rowClick" ref="receiverTable"/>
     <div class="add-box" id = "receiver-box">
     <label>Thêm người nhận</label><br/>
-    <form>
-    <input placeholder="Số tài khoản"  id="id" name ="id"/>
-    <input placeholder="Tên gợi nhớ"  id="name" name ="name"/>
+    <form @submit.prevent="onSubmit">
+    <input placeholder="Số tài khoản"  id="id" name ="id" v-model="id"/>
+    <input placeholder="Tên gợi nhớ"  id="name" name ="name" v-model="name"/>
     <br/>
-    <button class="submit-button" id="submit-add">Thêm</button>
+    <button class="submit-cancel" id="submit-cancel" v-if="isEdit" @click="onCancel">Hủy</button>
+    <button class="submit-button" id="submit-add">{{current}}</button>
     </form>
 </div>
 
-    <b-popover target="receiver-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover :show.sync="showPop" target="receiver-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label>{{errorMessage}}</label>
+      </b-popover>
+
+      <b-popover :show.sync="showPopAdd" target="receiver-box" triggers="manual" placement="bottom" container="error-popover">
+            <template v-slot:title>Thành công</template>
+            <label>Đã thêm người nhận</label>
+      </b-popover>
+      <b-popover :show.sync="showPopEdit" target="receiver-box" triggers="manual" placement="bottom" container="error-popover">
+            <template v-slot:title>Thành công</template>
+            <label>Đã cập nhật người nhận</label>
       </b-popover>
       <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 import ReceiverTable from'./ReceiverTable'
 export default {
     name:'CustomerReceiver',
+    data(){
+        return{
+            id:'',
+            name:'',
+            showPop:false,
+            showPopAdd:false,
+            showPopEdit:false,
+            errorMessage:'',
+            isEdit:false,
+            current:'Thêm',
+            index: -1,
+        }
+    },
     components:{
         ReceiverTable
+    },
+    methods:{
+        onSubmit(){
+            var self = this;
+            if(this.isEdit){
+                
+                axios.post('http://35.240.195.17/users/admin/create',{
+                    token: self.$store.token,
+          oldPass: self.oldPass,
+          newPass: self.newPass,
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              this.$refs.receiverTable.editRow(self.index, self.id, self.name)
+              self.id= ''
+              self.name= ''
+              self.index= -1
+              self.isEdit=false; 
+              self.showPopoverPositive();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+                
+            }else{
+                axios.post('http://35.240.195.17/users/admin/create',{
+                    token: self.$store.token,
+          oldPass: self.oldPass,
+          newPass: self.newPass,
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            this.$refs.receiverTable.addRow(self.id, self.name)  
+              self.id= ''
+              self.name= ''
+              self.index= -1
+              self.isEdit=false;   
+              self.showPopoverPositive();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+ 
+            }
+        },
+        rowClick(record,index){
+        var self = this;
+        self.isEdit=true;
+        self.current="Cập nhật"
+        self.id = record.id;
+        self.name = record.name;
+        self.index = index
+      },
+      onCancel(){
+          var self= this;
+          self.isEdit=false;
+          self.current="Thêm"
+        self.id = '';
+        self.name = '';
+        self.index = ''
+      },
+      hidePopoverPositive(){
+      this.showPopPositive = false;
+      console.log("hide")
+    },
+    showPopoverPositive(){
+      this.showPopPositive = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopoverPositive(), 3000);
+    }
     }
 }
 </script>
 
 <style>
+.submit-cancel{
+    background: transparent;
+    border: transparent;
+    width: 50%;
+    color: #523C89;
+    font-weight: bold;
+}
+</style>
 
+<style scoped>
+.submit-button{
+    width: 50%;
+}
 </style>

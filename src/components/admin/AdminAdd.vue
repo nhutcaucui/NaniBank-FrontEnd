@@ -20,9 +20,13 @@
     </form>
 </div>
 
-    <b-popover :show.sync="showPop" ref="popover" target="add-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover :show.sync="showPop" target="add-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
             <label>{{errorMessage}}</label>
+      </b-popover>
+      <b-popover :show.sync="showPopPositive" target="add-box" triggers="manual" placement="bottom" container="error-popover">
+            <template v-slot:title>Thành công</template>
+            <label>Đã Thêm giao dịch viên</label>
       </b-popover>
       <div id="error-popover"></div>
     </div>
@@ -31,10 +35,6 @@
 <script>
 import moment from 'moment'
 import axios from 'axios';
-axios.interceptors.request.use(request => {
-  console.log('Starting Request', request)
-  return request
-})
 import EmployeeTable from './EmployeeTable';
  import 'vue2-datepicker/index.css';
 export default {
@@ -48,7 +48,8 @@ export default {
       cfpassword:'',
       editable:false,
       errorMessage:'',
-      showPop:false
+      showPop:false,
+      showPopPositive:false
     }
   },
     name: 'AdminAdd',
@@ -117,6 +118,7 @@ export default {
               self.username= ''
               self.password= '',
               self.cfpassword= ''
+              self.showPopoverPositive();
           }
           //self.$refs.employeeTableAdd.addRow(self.name, self.email, self.phone, self.username)
         }).catch(e =>{
@@ -134,6 +136,16 @@ export default {
       console.log("show")
       var self = this
       setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverPositive(){
+      this.showPopPositive = false;
+      console.log("hide")
+    },
+    showPopoverPositive(){
+      this.showPopPositive = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopoverPositive(), 3000);
     }
   }
 }

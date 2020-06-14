@@ -2,21 +2,32 @@
 <div class="transaction-table-container">
           <div style="height:600px; overflow:auto;" class="scrolling-table">
             <b-table striped hover :items="items" :fields="fields" id="debt-table-sent">
-              <template v-slot:cell(action)="">
-        <b-button size="sm" class="mr-1" variant="danger">
+              <template v-slot:cell(action)="row">
+        <b-button size="sm" class="mr-1" variant="danger" v-if="row.item.status=='Chưa thanh toán'" v-b-modal="'reason-modal'" @click="setSelectedIndex(row.index)">
           <b-icon-trash/>
         </b-button>
       </template>
             </b-table>
           </div>
+
+          <b-modal id="reason-modal" title="Hủy nợ" @ok="cancelRow()">
+      <textarea style="width: 100%" placeholder="Lí do" v-model="reason"/>
+  </b-modal>
 </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name: "DebtTableSent",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
+        reason:'',
+        selectedIndex:-1,
         fields: [
           {
             key: 'stt',
@@ -59,6 +70,32 @@ export default {
           {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
           {  stt: 4, id:135451585, name: '1/1/19sada90',  amount:"3,000,000", status:"Đã thanh toán"  }
         ]
+      }
+    },
+    methods:{
+      addRow(id, name, amount, note){
+          var self = this;
+          self.items.push({stt: self.items.length +1 , id: id, name: name, amount: amount, status:"Chưa thanh toán", note: note})
+      },
+      setSelectedIndex(index){
+        this.selectedIndex=index;
+      },
+      cancelRow(){
+        this.items[this.selectedIndex].status='Hủy bỏ'
+      },
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

@@ -35,17 +35,17 @@ export default[
             name: 'History',
             children:[{
               path: 'Send',
-              name: 'Send',
+              name: 'CustomerSend',
               component: SendTable,
             },
             {
               path: 'Receive',
-              name: 'Receive',
+              name: 'CustomerReceive',
               component: ReceiveTable,
             },
             {
               path: 'Debt',
-              name: 'Debt',
+              name: 'CustomerDebt',
               component: DebtTable,
             }],
             component: CustomerHistory,

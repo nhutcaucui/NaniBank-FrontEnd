@@ -9,8 +9,13 @@
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name: "SavingTable",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
         fields: [
@@ -32,6 +37,22 @@ export default {
           { id: 25984844994, balance:"2,000"  },
           { id: 25983664884, balance:"3,000,000"  }
         ]
+      }
+    },
+    methods:{
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

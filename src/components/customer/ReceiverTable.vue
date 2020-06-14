@@ -1,9 +1,9 @@
 <template>
 <div class="receiver-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="saving">
-              <template v-slot:cell(action)="">
-        <b-button size="sm" class="mr-1" variant="danger">
+            <b-table ref='table' striped hover :items="items" :fields="fields" id="saving" @row-clicked="rowClick">
+              <template v-slot:cell(action)="row">
+        <b-button size="sm" class="mr-1" variant="danger" @click="deleteRow(row.index)">
           <b-icon-trash/>
         </b-button>
       </template>
@@ -41,6 +41,21 @@ export default {
           { id: 25984844994, name:"nè"  },
           { id: 25983664884, name:"3,000,000"  }
         ]
+      }
+    },
+    methods:{
+      deleteRow(index){
+        this.items.splice(index,1);
+      },
+      rowClick(record, index){
+        this.$emit('rowClick', record, index)
+      },
+      addRow(id, name){
+        this.items.push({id: id, name:name});
+      },
+      editRow(index, id, name){
+        this.items[index] = {id:id,name: name}
+        this.$refs.table.refresh();
       }
     }
 }

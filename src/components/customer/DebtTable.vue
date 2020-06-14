@@ -13,8 +13,13 @@
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name: "DebtTable",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
         fields: [
@@ -43,11 +48,17 @@ export default {
             label: 'Số tiền',
             sortable: false,
           },
+           {
+            key: 'note',
+            label: 'Nội dung',
+            sortable: false,
+          },
           {
             key: 'status',
             label: 'Trạng thái',
             sortable: false,
           },
+          
           {
             key:'action',
             label:''
@@ -59,6 +70,22 @@ export default {
           { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
           { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
+      }
+    },
+    methods:{
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

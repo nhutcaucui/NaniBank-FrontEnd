@@ -8,7 +8,11 @@
 
 <script>
 export default {
+  props:['data'],
     name: "ReceiveTable",
+    mounted() {
+      this.loadData(this.$props.data);
+    },
     data(){
       return{
         fields: [
@@ -45,6 +49,12 @@ export default {
           { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
         ]
       }
+    },
+    methods:{
+      loadData(data){
+        //var self = this
+        console.log(data)
+      },
     }
 }
 </script>

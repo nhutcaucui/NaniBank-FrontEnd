@@ -9,8 +9,13 @@
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name: "Debit",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
         fields: [
@@ -29,6 +34,22 @@ export default {
         items: [
           {id: 16964582252, balance:"1,200,222" },
         ]
+      }
+    },
+    methods:{
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

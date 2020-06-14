@@ -28,16 +28,37 @@ export default {
         loadTable: function(){
             console.log('help   ')
             if(this.selected === '1'){
-                this.$router.push("/Customer/History")
-                this.$router.push("/Customer/History/Send")
+                if(self.$route.path != '/Customer/History/Send'){
+                    self.$router.push({name:"CustomerSend"})
+                    }else{
+                        self.$router.push("/Customer/History").then(() =>
+                            {
+                                self.$router.push({name:"CustomerSend"
+                                })})
+                        
+                    }
             }
             else if(this.selected === '2'){
-                this.$router.push("/Customer/History")
-                this.$router.push("/Customer/History/Receive")
+                if(self.$route.path != '/Customer/History/Receive'){
+                    self.$router.push({name:"CustomerReceive"})
+                    }else{
+                        self.$router.push("/Customer/History").then(() =>
+                            {
+                                self.$router.push({name:"CustomerReceive"
+                                })})
+                        
+                    }
             }
             else if(this.selected === '3'){
-                this.$router.push("/Customer/History")
-                this.$router.push("/Customer/History/Debt")
+                if(self.$route.path != '/Customer/History/Debt'){
+                    self.$router.push({name:"CustomerDebt"})
+                    }else{
+                        self.$router.push("/Customer/History").then(() =>
+                            {
+                                self.$router.push({name:"CustomerDebt"
+                                })})
+                        
+                    }
             }
         },
         onSubmit(){

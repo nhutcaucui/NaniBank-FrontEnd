@@ -58,11 +58,11 @@ beforeDestroy () {
     if (currentScrollPosition < 0) {
       return
     }
-    if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 60) {
+    if (Math.abs(currentScrollPosition - this.lastScrollPos) < 60) {
     return
   }
-  this.showMenu = currentScrollPosition < this.lastScrollPosition
-  this.lastScrollPosition = currentScrollPosition
+  this.showMenu = currentScrollPosition < this.lastScrollPos
+  this.lastScrollPos = currentScrollPosition
   }
 }
 }

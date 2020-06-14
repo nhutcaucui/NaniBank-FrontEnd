@@ -14,9 +14,13 @@
     </form>
     </div>
 
-    <b-popover :show.sync="showPop" ref="popover" target="edit-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover :show.sync="showPop" target="edit-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
             <label >{{errorMessage}}</label>
+      </b-popover>
+      <b-popover :show.sync="showPopPositive" target="edit-box" triggers="manual" placement="bottom" container="error-popover">
+            <template v-slot:title>Thành công</template>
+            <label>Đã Thêm giao dịch viên</label>
       </b-popover>
       <div id="error-popover"></div>
     </div>
@@ -37,6 +41,7 @@ export default {
       editable:false,
       errorMessage:'',
       showPop:false,
+      showPopPositive:false,
       index: -1,
     }
   },
@@ -94,6 +99,7 @@ export default {
             self.name= ''
               self.email= ''
               self.phone= ''
+              self.showPopoverPositive();
           }
           //self.$refs.employeeTableEdit.editRow(self.id, self.name, self.email, self.phone, self.index)
         }).catch(e =>{
@@ -112,6 +118,16 @@ export default {
       console.log("show")
       var self = this
       setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverPositive(){
+      this.showPopPositive = false;
+      console.log("hide")
+    },
+    showPopoverPositive(){
+      this.showPopPositive = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopoverPositive(), 3000);
     }
     }
 </script>

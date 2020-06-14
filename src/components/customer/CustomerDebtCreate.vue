@@ -1,9 +1,9 @@
 <template>
     <div class='customer-debt-create'>
-        <DebtTableSent/>
+        <DebtTableSent ref='debtTable'/>
 <div class="add-box" id = "debt-create-box">
     <label>Nhắc nợ</label><br/>
-    <form>
+    <form v-on:submit.prevent="onSubmit">
     <div class="autosuggest-container">
       <vue-autosuggest
         v-model="query"
@@ -20,25 +20,31 @@
         </div>
       </vue-autosuggest>
     </div>
-    <input placeholder="Họ tên"  id="name" name ="name" disabled/>
-    <input placeholder="Email"  id="email" name ="email" disabled/>
-    <input placeholder="Số điện thoại"  id="phone" name ="phone" disabled/>
-    <input placeholder="Số tiền nợ"  id="amount" name ="amount"/>
-    <input placeholder="Nội dung nợ"  id="note" name ="note"/>
+    <input placeholder="Họ tên"  id="name" name ="name" disabled v-model="name"/>
+    <input placeholder="Email"  id="email" name ="email" disabled v-model="email"/>
+    <input placeholder="Số điện thoại"  id="phone" name ="phone" disabled v-model="phone"/>
+    <input placeholder="Số tiền nợ"  id="amount" name ="amount" v-model="amount"/>
+    <input placeholder="Nội dung nợ"  id="note" name ="note" v-model="note"/>
     <br/>
     <button class="submit-button" id="submit-add">Gửi nhắc nợ</button>
     </form>
 </div>
 
-    <b-popover target="debt-create-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover :show.sync="showPop" target="debt-create-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label >{{errorMessage}}</label>
+      </b-popover>
+      <b-popover :show.sync="showPopPositive" target="debt-create-box" triggers="manual" placement="bottom" container="error-popover" >
+            <template v-slot:title>Thành công</template>
+            <label >Đã tạo nhắc nợ</label>
       </b-popover>
       <div id="error-popover"></div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment'
 import { VueAutosuggest } from 'vue-autosuggest';
 import DebtTableSent from './DebtTableSent'
 export default {
@@ -46,6 +52,9 @@ export default {
     components:{
         VueAutosuggest,
         DebtTableSent
+    },
+    mounted(){
+      this.loadReceiver();
     },
     data() {
     return {
@@ -60,7 +69,18 @@ export default {
             { id: 4, name: "Aragorn", race: "Human"}
           ]
         }
-      ]
+      ],
+      typingTimer: 0,
+      doneTypingInterval:3000,
+      showPop:false,
+      showPopPositive:false,
+      errorMessage:'',
+      name:'',
+      email:'',
+      phone: '',
+      note:'',
+      amount:'',
+      idValid: false,
     };
   },
   computed: {
@@ -68,22 +88,88 @@ export default {
       return [
         { 
           data: this.suggestions[0].data.filter(option => {
-            return option.name.toLowerCase().indexOf(this.query.toLowerCase()) > -1;
+            return option.name.toLowerCase()
+            .indexOf(this.query.toLowerCase()) > -1;
           })
         }
       ];
     }
   },
   methods: {
+    loadReceiver(){
+        //var self = this;
+                axios.get('http://35.240.195.17/users/admin/create',{
+                    token: this.$store.token,
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            //asign
+            
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+    },
+    onSubmit(){
+      var isError = false;
+      if(!this.idValid){
+          this.errorMessage='Xin nhập số tài khoản'
+          isError = true;
+      }else if(this.amount == ''){
+          this.errorMessage='Xin nhập số tiền'
+           isError = true;
+      }else if(!/^\d+$/.test(this.amount)){
+        this.errorMessage = 'Số tiền không hợp lệ'
+        isError = true;
+      }else if(this.note == ''){
+          this.errorMessage='Xin nhập nội dung nợ'
+           isError = true;
+      }
+
+      if(isError){
+        this.showPopover();
+      }else{
+        var self = this;
+                axios.post('http://35.240.195.17/users/admin/create',{
+                    token: this.$store.token,
+          id: self.query,
+          amount:self.amount,
+          note:self.not
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            this.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note)
+            self.idValid = false;
+            self.query = "";
+            self.name='';
+            self.email='';
+            self.phone='';
+            self.amount='';
+            self.note = ''; 
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+      }
+    },
     clickHandler() {
 
       // event fired when clicking on the input
     },
     onSelected(item) {
       this.selected = item.item;
+      this.query=item.item.id;
+      this.doneTyping();
     },
     onInputChange(text) {
-      // event fired when the input changes
+      clearTimeout(this.typingTimer);
+      if (text!= '') {
+        this.typingTimer = setTimeout(this.doneTyping, this.doneTypingInterval);
+    }
       console.log(text)
     },
     /**
@@ -94,6 +180,47 @@ export default {
     },
     focusMe(e) {
       console.log(e) // FocusEvent
+    },
+    doneTyping(){
+      var self = this;
+                axios.get('http://35.240.195.17/users/admin/create',{
+                    token: this.$store.token,
+          id: self.query,
+        }, {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            console.log("found 1")
+            self.idValid = true
+          }else{
+            self.idValid = false
+            self.errorMessage='Không tìm thấy người dùng';
+            self.showPopover();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+    },
+    hidePopover(){
+      this.showPop = false;
+      console.log("hide")
+    },
+    showPopover(){
+      this.showPop = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverPositive(){
+      this.showPopPositive = false;
+      console.log("hide")
+    },
+    showPopoverPositive(){
+      this.showPopPositive = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopoverPositive(), 3000);
     }
   }
 }

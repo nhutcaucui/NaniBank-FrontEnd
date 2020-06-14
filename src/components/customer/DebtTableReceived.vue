@@ -1,22 +1,33 @@
 <template>
 <div class="transaction-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="debt-table-received">
-              <template v-slot:cell(action)="">
-        <b-button size="sm" class="mr-1" variant="danger">
+            <b-table striped hover :items="items" :fields="fields" id="debt-table-received" @row-clicked="rowClick">
+              <template v-slot:cell(action)="row">
+        <b-button size="sm" class="mr-1" variant="danger" v-if="row.item.status=='Chưa thanh toán'" @click ="setSelectedIndex(row.index)" v-b-modal="'reason-modal'">
           <b-icon-trash/>
         </b-button>
       </template>
             </b-table>
           </div>
+
+          <b-modal id="reason-modal" title="Hủy nợ" @ok="cancelRow()">
+      <textarea style="width: 100%" placeholder="Lí do" v-model="reason"/>
+  </b-modal>
 </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name: "DebtTableReceived",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
+        reason:'',
+        selectedIndex:-1,
         fields: [
           {
             key: 'stt',
@@ -59,6 +70,36 @@ export default {
           {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
           {  stt: 4, id:135451585, name: '1/1/19sada90', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
+      }
+    },
+    methods:{
+      setSelectedIndex(index){
+        this.selectedIndex=index;
+      },
+      cancelRow(){
+        this.items[this.selectedIndex].status='Hủy bỏ'
+      },
+      rowClick(record, index){
+        if(record.status == "Chưa thanh toán"){
+          this.$emit('rowClick', record, index)
+        }
+      },
+      dealRow(index){
+        this.items[index].status='Đã thanh toán'
+      },
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

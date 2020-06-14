@@ -8,7 +8,11 @@
 
 <script>
 export default {
+  props:['data'],
     name: "SendTable",
+    mounted() {
+      this.loadData(this.$props.data);
+    },
     data(){
       return{
         fields: [
@@ -45,6 +49,12 @@ export default {
           { isActive: true, stt: 4, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
         ]
       }
+    },
+    methods:{
+      loadData(data){
+        //var self = this
+        console.log(data)
+      },
     }
 }
 </script>
@@ -52,7 +62,6 @@ export default {
 <style>
 .transaction-table-container{
   display: inline-block;
-  margin-right: 0;
     width: 700px;
 }
 #send-table {

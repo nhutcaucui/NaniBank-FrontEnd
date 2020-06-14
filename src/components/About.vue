@@ -25,7 +25,7 @@ export default {
   padding-top: 140px;
   background: #EBEBEB;
   justify-content: center;
-  height: 100%;
+ 
   flex-wrap: wrap;
 }
 .container-about{

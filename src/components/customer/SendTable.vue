@@ -7,8 +7,13 @@
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name: "SendTable",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
         fields: [
@@ -44,6 +49,22 @@ export default {
           { isActive: false, stt: 3, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
           { isActive: true, stt: 4, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
         ]
+      }
+    },
+    methods:{
+      loadData(){
+        var self = this
+        axios.get('http://35.240.195.17/users/employee', {headers:{
+          timestamp: moment().unix(),
+        }}).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }
