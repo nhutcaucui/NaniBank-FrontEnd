@@ -5,11 +5,18 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    count: 0
+    host: "http://35.240.195.17/",
+    userType: -1,
+    accessToken:""
   },
   mutations: {
-    increment (state) {
-      state.count++
-    }
+    setUser (state, payload) {
+      state.userType = payload.type;
+      state.accessToken = payload.token;
+    },
+    clearUser (state) {
+      state.userType = -1;
+      state.accessToken = "";
+    },
   }
 })

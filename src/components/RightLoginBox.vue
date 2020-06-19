@@ -39,6 +39,10 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+axios.interceptors.request.use(request => {
+  console.log('Starting Request', request)
+  return request
+})
 import VueRecaptcha from 'vue-recaptcha';
 export default {
     name:'RightLoginBox',
@@ -48,9 +52,9 @@ export default {
     data(){
         return{
             verified: false,
-            username: ',',
+            username: '',
             password:'',
-            shopPop: false,
+            showPop: false,
             errorMessage:''
         }
     },
@@ -60,22 +64,60 @@ export default {
         },
         onSubmit(){
             var self = this
+            
             if(self.username == '' || self.password == ''){
                 self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
                 self.showPopover();
-            }else{
-                axios.get('http://35.240.195.17/users/login',{
+            }//else if(!self.verified){
+            //     self.errorMessage = 'Xin xác nhận captcha'
+            //     self.showPopover();
+            // }
+            else{
+                const data = {
                     username: self.username,
                     password: self.password
-                }, {headers:{
-                timestamp: moment().unix(),
-                }}).then(response =>{
+                }
+                const config = {
+                    headers:{
+                        timestamp: moment().format("X"),
+                    }
+                }
+                
+                axios.post(self.$store.state.host+'users/admin/login',data, config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
-                    //todo,todo
+                    self.$store.commit('setUser',{
+                        type: 9,
+                        token: response.data.Token
+                    })
+                    self.$router.push('/Admin')
                 }else{
+                    axios.post(self.$store.state.host+'users/employee/login',data, config).then(response1 =>{
+                        if(response1.data.Status){
+                            self.$store.commit('setUser',{
+                        type: 6,
+                        token: response.data.Token
+                    })
+                            self.$router.push('/Employee')
+                        }else{
+                            axios.post(self.$store.state.host+'users/customer/login',data, config).then(response2 =>{
+                                if(response2.data.Status){
+                                    self.$store.commit('setUser',{
+                        type: 1,
+                        token: response.data.Token
+                    })
+                             self.$router.push('/Customer')
+                        }else{
                     self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
                     self.showPopover();
+                        }
+                            }).catch(e =>{
+                console.log(e);
+                })
+                        }
+                    }).catch(e =>{
+                console.log(e);
+                })
                 }
                 }).catch(e =>{
                 console.log(e);

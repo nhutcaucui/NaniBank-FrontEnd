@@ -9,6 +9,12 @@ import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import './plugins/bootstrap'
 
 import store from './store/store';
+import axios from 'axios';
+
+axios.defaults.headers.common['Accept-Version']= '1';
+axios.defaults.headers.common['Accept']= 'application/json';
+axios.defaults.headers.common['Access-Control-Allow-Origin']= '*';
+axios.defaults.headers.common['Content-Type']= 'application/json; charset=utf-8';
 
 Vue.use(VueSidebarMenu)
 
@@ -17,5 +23,5 @@ Vue.config.productionTip = false;
 new Vue({
   render: h => h(App),
   router,
-  store: store
+  store
 }).$mount('#app')
