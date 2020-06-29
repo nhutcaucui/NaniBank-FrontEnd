@@ -83,47 +83,54 @@ export default {
                     }
                 }
                 
-                axios.post(self.$store.state.host+'users/admin/login',data, config).then(response =>{
+                axios.post(self.$store.state.host+'users/login',data, config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                     self.$store.commit('setUser',{
-                        type: 9,
+                        type: response.data.type,
                         token: response.data.Token
                     })
-                    self.$router.push('/Admin')
-                }else{
-                    axios.post(self.$store.state.host+'users/employee/login',data, config).then(response1 =>{
-                        console.log(response1);
-                        if(response1.data.Status){
-                            self.$store.commit('setUser',{
-                        type: 6,
-                        token: response1.data.Token
-                    })
-                            self.$router.push('/Employee')
-                        }else{
-                            axios.post(self.$store.state.host+'users/customer/login',data, config).then(response2 =>{
-                                console.log(response2);
-                                if(response2.data.Status){
-                                    self.$store.commit('setUser',{
-                        type: 1,
-                        token: response2.data.Token
-                    })
-                    self.$store.commit("setId",{
-                        id: response2.data.Customer.id
-                    })
-                             self.$router.push('/Customer')
-                        }else{
-                    self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
-                    self.showPopover();
-                        }
-                            }).catch(e =>{
-                console.log(e);
-                })
-                        }
-                    }).catch(e =>{
-                console.log(e);
-                })
-                }
+                    if(response.data.type == 6){
+                        self.$router.push('/Admin')
+                    }else if(response.data.type == 9){
+                        self.$router.push('/Employee')
+                    }
+                    else if(response.data.type == 1){
+                        self.$router.push('/Customer')
+                    }
+                }//else{
+                //     axios.post(self.$store.state.host+'users/employee/login',data, config).then(response1 =>{
+                //         console.log(response1);
+                //         if(response1.data.Status){
+                //             self.$store.commit('setUser',{
+                //         type: 6,
+                //         token: response1.data.Token
+                //     })
+                //             self.$router.push('/Employee')
+                //         }else{
+                //             axios.post(self.$store.state.host+'users/customer/login',data, config).then(response2 =>{
+                //                 console.log(response2);
+                //                 if(response2.data.Status){
+                //                     self.$store.commit('setUser',{
+                //         type: 1,
+                //         token: response2.data.Token
+                //     })
+                //     self.$store.commit("setId",{
+                //         id: response2.data.Customer.id
+                //     })
+                //              self.$router.push('/Customer')
+                //         }else{
+                //     self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
+                //     self.showPopover();
+                //         }
+                //             }).catch(e =>{
+                // console.log(e);
+                // })
+                //         }
+                //     }).catch(e =>{
+                // console.log(e);
+                // })
+                // }
                 }).catch(e =>{
                 console.log(e);
                 })
