@@ -1,8 +1,6 @@
 import Admin from '@/components/admin/Admin'
 import AdminDashboard from '@/components/admin/AdminDashboard.vue'
 import AdminAdd from '@/components/admin/AdminAdd'
-import AdminEdit from '@/components/admin/AdminEdit'
-import AdminDelete from '@/components/admin/AdminDelete'
 import TransactionHistory from '@/components/admin/TransactionHistory'
 
 export default[
@@ -18,16 +16,6 @@ export default[
           path: 'Add',
           name: 'Add',
           component: AdminAdd,
-        },
-        {
-          path: 'Edit',
-          name: 'Edit',
-          component: AdminEdit,
-        },
-        {
-          path: 'Delete',
-          name: 'Delete',
-          component: AdminDelete,
         },
         {
           path: 'History',

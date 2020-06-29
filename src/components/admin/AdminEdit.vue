@@ -6,9 +6,18 @@
 <div class="edit-box" id="edit-box">
     <label>Chỉnh sửa giao dịch viên</label><br/>
     <form v-on:submit.prevent="onSubmit">
+      <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/user.png"/></div>
     <input placeholder="Họ tên"  id="name" name ="name" v-model="name"/>
+      </div>
+      <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/blackmail.png"/></div>
     <input placeholder="Email"  id="email" name ="email" v-model="email"/>
+      </div>
+      <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/blackphone.png"/></div>
     <input placeholder="Số điện thoại"  id="phone" name ="phone" v-model="phone"/>
+    </div>
     <br/>
     <button class="submit-button" id="submit-edit">Cập nhật</button>
     </form>
@@ -85,7 +94,7 @@ export default {
         if(isError){
           this.showPopover();
         }else{
-          axios.post('http://35.240.195.17/users/admin/edit',{
+          axios.post(self.$store.state.host+'users/admin/edit',{
           id: self.id,
           name: self.name,
           email: self.email,
@@ -196,5 +205,11 @@ export default {
 .submit-button:hover{
     background: #7B5EA8;
     border: 1px solid #7B5EA8;
+}
+</style>
+
+<style scoped>
+.img-holder{
+  margin-top: 15px;
 }
 </style>

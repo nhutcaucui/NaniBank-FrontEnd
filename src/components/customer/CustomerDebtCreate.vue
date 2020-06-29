@@ -88,8 +88,9 @@ export default {
       return [
         { 
           data: this.suggestions[0].data.filter(option => {
+            var self = this;
             return option.name.toLowerCase()
-            .indexOf(this.query.toLowerCase()) > -1;
+            .indexOf(self.query.toString().toLowerCase()) > -1;
           })
         }
       ];
@@ -132,24 +133,28 @@ export default {
         this.showPopover();
       }else{
         var self = this;
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
-          amount:self.amount,
-          note:self.not
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        let data = {
+              id:self.query,      
+          amount: self.amount,
+          message:self.note
+        }
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            this.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note)
-            self.idValid = false;
-            self.query = "";
             self.name='';
             self.email='';
             self.phone='';
+            self.note='';
             self.amount='';
-            self.note = ''; 
+            self.query="";
+            self.showPopoverPositive(); 
+          }else{
+            self.errorMessage = ''
+            self.showPopover();
           }
         }).catch(e =>{
           console.log(e);
@@ -161,8 +166,9 @@ export default {
       // event fired when clicking on the input
     },
     onSelected(item) {
+      clearTimeout(this.typingTimer);
       this.selected = item.item;
-      this.query=item.item.id;
+      this.query=item.item.id.toString();
       this.doneTyping();
     },
     onInputChange(text) {
@@ -176,7 +182,7 @@ export default {
      * This is what the <input/> value is set to when you are selecting a suggestion.
      */
     getSuggestionValue(suggestion) {
-      return suggestion.item.id;
+      return suggestion.item.id.toString();
     },
     focusMe(e) {
       console.log(e) // FocusEvent

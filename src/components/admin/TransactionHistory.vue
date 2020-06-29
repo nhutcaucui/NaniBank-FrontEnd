@@ -13,10 +13,13 @@
         <br>
         <input type="radio" id="bank" name="type" value="2" v-model="picked">
         <label for="bank">Theo ngân hàng</label><br>
+        <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/museum.png"/></div>
         <select name="bank" id="bank-select" class="text-input" v-model="bank">
-  <option value="NaniBank">NaniBank</option>
-  <option value="KiantoBank">KiantoBank</option>
+  <option value="1">NaniBank</option>
+  <option value="2">KiantoBank</option>
 </select>
+        </div>
     <br/>
     <button class="submit-button" id="submit-filter">Lọc</button>
     </form>
@@ -46,7 +49,7 @@ export default {
     picked: 0,
     from: '',
     to:'',
-    bank:'',
+    bank:'1',
     showPop:false,
     errorMessage:''
   }
@@ -156,6 +159,10 @@ text-align:center !important;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
 
+.mx-datepicker input:nth-child(1){
+  margin-top: 10px;
+}
+
 .text-input:focus, .vdp-datepicker input:focus{
   outline: none;
   border: 1px solid #704DDC;
@@ -198,5 +205,21 @@ text-align:center !important;
   position: unset;
   display: unset;
   width: 100%;
+}
+</style>
+
+<style scoped>
+.img-holder{
+  margin-top: 10px;
+}
+.filter-box{
+  height: unset;
+  padding-bottom: 15px;
+}
+#bank{
+  margin-top: 30px;
+}
+#bank-select{
+  margin-top: 10px;
 }
 </style>

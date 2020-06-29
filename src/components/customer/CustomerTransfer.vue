@@ -49,7 +49,7 @@
       </b-popover>
       <b-popover target="container-box-left" triggers="manual" placement="left" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label>{{errorMessage}}</label>
       </b-popover>
 
       <div class="container-box" id ="container-box">
@@ -104,6 +104,14 @@
             <template v-slot:title>Thành công</template>
             <label>Đã chuyển khoản</label>
       </b-popover>
+
+      <b-modal id="in-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPin()">
+      <textarea style="width: 100%" placeholder="OTP" v-model="OTPin"/>
+  </b-modal>
+
+  <b-modal id="out-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPout()">
+      <textarea style="width: 100%" placeholder="OTP" v-model="OTPout"/>
+  </b-modal>
     </div>
 </template>
 
@@ -137,6 +145,8 @@ export default {
       outFee:-1,
       outAmount:'',
       outNote:'',
+      OTPin:'',
+      OTPout:'',
       inSuggestions: [
         {
           data: [
@@ -174,7 +184,7 @@ export default {
       return [
         { 
           data: this.inSuggestions[0].data.filter(option => {
-            return option.name.toLowerCase().indexOf(this.inQuery.toLowerCase()) > -1;
+            return option.name.toLowerCase().indexOf(this.inQuery.toString().toLowerCase()) > -1;
           })
         }
       ];
@@ -183,7 +193,7 @@ export default {
       return [
         { 
           data: this.outSuggestions[0].data.filter(option => {
-            return option.name.toLowerCase().indexOf(this.outQuery.toLowerCase()) > -1;
+            return option.name.toLowerCase().indexOf(this.outQuery.toString().toLowerCase()) > -1;
           })
         }
       ];
@@ -192,39 +202,48 @@ export default {
   methods: {
     onSubmitIn(){
         var isError = false;
-        if(this.inAccount === -1){
-          this.errorMessage='Xin chọn tài khoản nguồn'
-          isError = true;
-        }
-      else if(!this.idValidIn){
-          this.errorMessage='Xin nhập số tài khoản đúng'
-          isError = true;
-      }else if(this.inAmount == ''){
-          this.errorMessage='Xin nhập số tiền'
-           isError = true;
-      }else if(!/^\d+$/.test(this.inAmount)){
-        this.errorMessage = 'Số tiền không hợp lệ'
-        isError = true;
-      }else if(this.inNote == ''){
-          this.errorMessage='Xin nhập nội dung chuyển'
-           isError = true;
-      }else if(this.inFee === -1){
-          this.errorMessage='Xin chọn cách thanh toán'
-          isError = true;
-      }
+      //   if(this.inAccount === -1){
+      //     this.errorMessage='Xin chọn tài khoản nguồn'
+      //     isError = true;
+      //   }
+      // else if(!this.idValidIn){
+      //     this.errorMessage='Xin nhập số tài khoản đúng'
+      //     isError = true;
+      // }else if(this.inAmount == ''){
+      //     this.errorMessage='Xin nhập số tiền'
+      //      isError = true;
+      // }else if(!/^\d+$/.test(this.inAmount)){
+      //   this.errorMessage = 'Số tiền không hợp lệ'
+      //   isError = true;
+      // }else if(this.inNote == ''){
+      //     this.errorMessage='Xin nhập nội dung chuyển'
+      //      isError = true;
+      // }else if(this.inFee === -1){
+      //     this.errorMessage='Xin chọn cách thanh toán'
+      //     isError = true;
+      // }
 
       if(isError){
-        this.showPopover();
+        this.showPopoverIn();
       }else{
-        var self = this;
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
+        this.$bvModal.show("in-otp-modal")
+      }
+    },
+    checkOTPin(){
+      var self = this;
+        let data = {
+                    
+                    from: self.$store.state.id,
+          to: self.query,
           amount:self.amount,
-          note:self.not
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+          message:self.note
+        }
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+          
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.idValidIn = false;
@@ -235,11 +254,13 @@ export default {
             self.inAmount='';
             self.inNote = '';
             self.showPopoverPositiveIn(); 
+          }else{
+            self.errorMessage = 'OTP sai'
+            self.showPopoverIn();
           }
         }).catch(e =>{
           console.log(e);
         })
-      }
     },
     onSubmitOut(){
       var isError = false;
@@ -268,41 +289,52 @@ export default {
       }
 
       if(isError){
-        this.showPopover();
+        this.showPopoverOut();
       }else{
-        var self = this;
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
+        this.$bvModal.show("out-otp-modal")
+      }
+    },
+    checkOTPout(){
+      var self = this;
+        let data = {
+                    
+                    from: self.$store.state.id,
+          to: self.query,
           amount:self.amount,
-          note:self.not
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+          message:self.note
+        }
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.idValidOut = false;
-            self.outQuery = "";
-            self.outName='';
-            self.outEmail='';
-            self.outPhone='';
-            self.outAmount='';
-            self.outNote = '';
-            self.showPopoverPositiveOut(); 
+            self.idValidIn = false;
+            self.inQuery = "";
+            self.inName='';
+            self.inEmail='';
+            self.inPhone='';
+            self.inAmount='';
+            self.inNote = '';
+            self.showPopoverPositiveIn(); 
+          }else{
+            self.errorMessage = 'OTP sai'
+            self.showPopoverIn();
           }
         }).catch(e =>{
           console.log(e);
         })
-      }
     },
     clickHandlerIn() {
 
       // event fired when clicking on the input
     },
     onSelectedIn(item) {
+      clearTimeout(this.typingTimerIn);
       this.inSelected = item.item;
-      this.inQuery=item.item.id;
-      this.doneTyping();
+      this.inQuery=item.item.id.toString();
+      this.doneTypingIn();
     },
     onInputChangeIn(text) {
       clearTimeout(this.typingTimerIn);
@@ -316,7 +348,7 @@ export default {
      * This is what the <input/> value is set to when you are selecting a suggestion.
      */
     getSuggestionValueIn(suggestion) {
-      return suggestion.item.id;
+      return suggestion.item.id.toString();
     },
     focusMeIn(e) {
       console.log(e) // FocusEvent
@@ -326,8 +358,9 @@ export default {
       // event fired when clickOutg on the Output
     },
     onSelectedOut(item) {
+      clearTimeout(this.typingTimerIn);
       this.outSelected = item.item;
-      this.outQuery=item.item.id;
+      this.outQuery=item.item.id.toString();
       this.doneTypingOut();
     },
     onInputChangeOut(text) {
@@ -341,19 +374,22 @@ export default {
      * This is what the <Output/> value is set to when you are selectOutg a suggestion.
      */
     getSuggestionValueOut(suggestion) {
-      return suggestion.item.id;
+      return suggestion.item.id.toString();
     },
     focusMeOut(e) {
       console.log(e) // FocusEvent
     },
     doneTypingIn(){
-      var self = this;
-                axios.get('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+      var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                id: self.$store.state.id,
+                },
+                }
+
+                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             console.log("found 1")
@@ -366,16 +402,19 @@ export default {
         }).catch(e =>{
           console.log(e);
         })
-    }
-  },
+    },
+
   doneTypingOut(){
-      var self = this;
-                axios.get('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+      var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                id: self.$store.state.id,
+                },
+                }
+
+                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             console.log("found 1")
@@ -429,6 +468,7 @@ export default {
       var self = this
       setTimeout(() => self.hidePopoverPositiveOut(), 3000);
     }
+    },
 }
 </script>
 

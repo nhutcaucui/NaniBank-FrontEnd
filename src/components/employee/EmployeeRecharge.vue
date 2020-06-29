@@ -3,8 +3,14 @@
         <div class="container-box" id="recharge-container">
             <label>Nạp tiền vào tài khoản</label>
             <form v-on:submit.prevent="onSubmit">
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/user.png"/></div>
             <input placeholder="Mã hoặc tên tài khoản"  id="usernamecode" name ="usernamecode" v-model="id"/>
+              </div>
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/money.png"/></div>
             <input placeholder="Số tiền"  id="amount" name ="amount" v-model="amount"/>
+              </div>
             <button class="submit-button" id="submit-add">Nạp</button>
             </form>
         </div>
@@ -52,19 +58,23 @@ export default {
             this.showPopover();
         }else{
             var self = this;
-        axios.post('http://35.240.195.17/users/admin/create',{
+            let data={
           id: self.id,
           amount: self.amount,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        }
+        let config={headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+        }}
+        axios.post(self.$store.state.host+'transaction/charge',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
               self.id= ''
               self.amount= ''
               self.showPopoverPositive();
           }else{
-            //todo
+            self.errorMessage = 'Tài khoản không tồn tại'
+            self.showPopover();
           }
         }).catch(e =>{
           console.log(e);
@@ -95,6 +105,12 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.img-holder{
+  margin-top: 15px;
+  width: 40px;
+}
+.container-box{
+  width: 350px;
+}
 </style>

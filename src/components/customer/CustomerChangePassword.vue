@@ -54,21 +54,24 @@ export default {
                 this.showPopover();
             }else{
                 var self = this;
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: self.$store.token,
+
+                let data = {
+                    
           oldPass: self.oldPass,
           newPass: self.newPass,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        }
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
-              self.oldPass= ''
+            self.oldPass= ''
               self.newPass= ''
               self.cfPass= ''
-              self.showPopoverPositive();
+            self.showPopoverPositive(); 
           }else{
-            //todo
             self.errorMessage='Mật khẩu cũ không chính xác';
             self.showPopover();
           }

@@ -68,10 +68,10 @@ export default {
             if(self.username == '' || self.password == ''){
                 self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
                 self.showPopover();
-            }//else if(!self.verified){
-            //     self.errorMessage = 'Xin xác nhận captcha'
-            //     self.showPopover();
-            // }
+            }else if(!self.verified){
+                self.errorMessage = 'Xin xác nhận captcha'
+                self.showPopover();
+            }
             else{
                 const data = {
                     username: self.username,
@@ -93,18 +93,23 @@ export default {
                     self.$router.push('/Admin')
                 }else{
                     axios.post(self.$store.state.host+'users/employee/login',data, config).then(response1 =>{
+                        console.log(response1);
                         if(response1.data.Status){
                             self.$store.commit('setUser',{
                         type: 6,
-                        token: response.data.Token
+                        token: response1.data.Token
                     })
                             self.$router.push('/Employee')
                         }else{
                             axios.post(self.$store.state.host+'users/customer/login',data, config).then(response2 =>{
+                                console.log(response2);
                                 if(response2.data.Status){
                                     self.$store.commit('setUser',{
                         type: 1,
-                        token: response.data.Token
+                        token: response2.data.Token
+                    })
+                    self.$store.commit("setId",{
+                        id: response2.data.Customer.id
                     })
                              self.$router.push('/Customer')
                         }else{

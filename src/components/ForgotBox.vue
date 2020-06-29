@@ -8,8 +8,10 @@
                 <form v-on:submit.prevent="onSubmitOTP">
                <div class="form-group">
                    <div class="inner-form-group">
-                       <input class="login-input" placeholder="Email" name = "email" v-model="email"/>
-				</div>
+                       <div class="img-holder" id="test"><img src="../assets/user.png"/></div>
+                       <input class="login-input" placeholder="Tên tài khoản" name = "username" v-model="username"/>
+                       
+                </div>
 
                 <div class="form-group">
                    <div class="inner-form-group">
@@ -20,18 +22,27 @@
                </div>
                 </form>
                 <form v-on:submit.prevent="onSubmit">
+                    <!--<div class="form-group">
+                   <div class="inner-form-group">
+                       <div class="img-holder" id="test"><img src="../assets/blackmail.png"/></div>
+                       <input v-model="email" class="login-input" placeholder="Email" name ="email"/>
+				</div>
+               </div>	-->
                <div class="form-group">
                    <div class="inner-form-group">
+                       <div class="img-holder" id="test"><img src="../assets/receivekey.png"/></div>
                        <input v-model="OTP" class="login-input" type="password" placeholder="OTP" name ="otp"/>
 				</div>
                </div>	
                <div class="form-group">
                    <div class="inner-form-group">
+                       <div class="img-holder" id="test"><img src="../assets/password.png"/></div>
                        <input v-model="newPass" class="login-input" type="password" placeholder="Mật khẩu mới" name="newpass"/>
 				</div>
                </div>
                <div class="form-group">
                    <div class="inner-form-group">
+                       <div class="img-holder" id="test"><img src="../assets/lock.png"/></div>
                        <input v-model="cfNewPass" class="login-input" type="password" placeholder="Xác nhận mật khẩu mới" name="cfnewpass"/>
 				</div>
                </div>
@@ -48,7 +59,7 @@
             <label>{{errorMessage}}</label>
       </b-popover>
       <b-popover :show.sync="showPopSent" target="forgot-box" triggers="manual" placement="bottom" container="error-popover"> 
-            <template v-slot:title>Đã gửi OTP đến email</template>
+            <template v-slot:title>{{successMessage}}</template>
       </b-popover>
       <div id="error-popover"></div>
     </div>
@@ -62,31 +73,36 @@ export default {
     data(){
         return{
             email:'',
+            username:'',
             OTP:'',
             newPass:'',
             cfNewPass:'',
             showPop:false,
             showPopSent:false,
-            errorMessage:''
+            errorMessage:'',
+            successMessage:"Đã gửi OTP đến email"
         }
     },
     methods:{
         onSubmitSent(){
-            if(this.email == ''){
-                this.errorMessage= "Xin nhập emal"
+            if(this.username == ''){
+                this.errorMessage= "Xin nhập tên tài khoản"
                 this.showPopover()
             }else{
                 var self = this;
-                axios.get('http://35.240.195.17/users/sendotp',{
-                    email: self.email
-                }, {headers:{
-                timestamp: moment().unix(),
-                }}).then(response =>{
+                let config= {params:{
+                    username: self.username
+                },headers:{
+                timestamp: moment().format("X"),
+                }}
+
+                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
-                    //todo,todo
+                    self.successMessage="Đã gửi OTP đến email"
+                    self.showPopoverSent();
                 }else{
-                    self.errorMessage = 'Email không tồn tại'
+                    self.errorMessage = 'Tài khoản không tồn tại'
                     self.showPopover();
                 }
                 }).catch(e =>{
@@ -106,15 +122,23 @@ export default {
                 this.showPopover()
             }else{
                 var self = this;
-                axios.get('http://35.240.195.17/users/sendotp',{
-                    OTP: self.OTP,
-                    pass: self.newPass
-                }, {headers:{
-                timestamp: moment().unix(),
-                }}).then(response =>{
+                 let data = {
+                    username: self.username,
+                    new_password: self.password
+                }
+                let config = {
+                    headers:{
+                        timestamp: moment().format("X"),
+                        otp: self.OTP,
+                        key: self.OTP
+                    }
+                }
+                axios.post(self.$store.state.host+'users/password/reset',data, config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
-                    //todo,todo
+                    self.successMessage="Đã đặt lại mật khẩu"
+                    self.showPopoverSent();
+                    setTimeout(() => self.$router.push("Login"), 3000);
                 }else{
                     self.errorMessage = 'OTP không chính xác'
                     self.showPopover();

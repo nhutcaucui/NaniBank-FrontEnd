@@ -4,7 +4,7 @@
   <div style="height:400px; overflow:auto;" class="scrolling-table">
       <b-table ref="table" striped hover :items="items" :fields="fields" id="employee" @row-clicked="rowClick">
         <template v-slot:cell(action)="row">
-        <b-button size="sm" class="mr-1" variant="danger" v-on:click="deleteRow(row.index)">
+        <b-button size="sm" class="mr-1" variant="danger" v-on:click="deleteRow(row.index, row.record)">
           <b-icon-trash/>
         </b-button>
       </template>
@@ -25,9 +25,10 @@ export default {
     methods:{
       loadData(){
         var self = this
-        axios.get('http://35.240.195.17/users/employee', {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        let config ={headers:{
+          timestamp: moment().format("X"),
+        }}
+        axios.get(self.$store.state.host+'users/employee', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
@@ -37,23 +38,31 @@ export default {
           console.log(e);
         })
       },
-      addRow(name, email, phone, username){
+      addRow(id, username){
           var self = this;
-          self.items.push({id: self.items.length +1 , ho_ten: name, email: email, sdt: phone, username:username})
+          self.items.push({id: id, username: username})
+        
       },
       rowClick(record, index){
         this.$emit('rowClick', record, index)
       },
-      editRow(id, name, email, phone, index){
-        var self = this;
-        var oldItem = self.items[index];
-        var item = {id: id, ho_ten:name, email: email, sdt:phone, username: oldItem.username}
-        self.items[index] = item;
-        this.$refs.table.refresh();
-      },
-      deleteRow(index){
+      deleteRow(index, record){
         if(confirm("Xóa giao dịch viên?")){
-          this.items.splice(index, 1);
+          let config ={headers:{
+          timestamp: moment().format("X"),
+        }}
+        let data={
+          id:record.id,
+        }
+        axios.post(self.$store.state.host+'users/employee', data, config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items.splice(index, 1);
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+          
         }
       }
     },
@@ -65,20 +74,6 @@ export default {
             key: 'id',
             label: 'Id',
             sortable: true
-          },
-          {
-            key: 'ho_ten',
-            label: 'Họ và tên',
-            sortable: true
-          },
-          {
-            key: 'email',
-            sortable: false,
-          },
-          {
-            key: 'sdt',
-            label: 'SĐT',
-            sortable: false,
           },
           {
             key: 'username',
@@ -98,11 +93,6 @@ export default {
         ]
       }
     },
-watch:{
-  item(newItems){
-      this.items = newItems
-  }
-}
 }
 </script>
 
@@ -160,11 +150,11 @@ watch:{
 }
 
 #employee th:nth-child(3){
-  width: 20%;
+  width: 4%;
 }
 
 #employee td:nth-child(3){
-  width: 20%;
+  width: 4%;
 }
 
 #employee th:nth-child(4){

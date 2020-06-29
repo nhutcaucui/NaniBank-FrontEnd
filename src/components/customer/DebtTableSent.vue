@@ -85,9 +85,16 @@ export default {
       },
       loadData(){
         var self = this
-        axios.get('http://35.240.195.17/users/employee', {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                customer_id: self.$store.state.id,
+                //filter: "sender"
+                },
+                }
+
+                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

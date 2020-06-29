@@ -30,15 +30,7 @@ export default {
                     },
                     {
                         href: '/Admin/Add',
-                        title: 'Thêm giao dịch viên',
-                        icon: {
-                            element: 'span',
-                            class: 'sb-icon add-icon',
-                        }
-                    },
-                    {
-                        href: '/Admin/Edit',
-                        title: 'Chỉnh sửa giao dịch viên',
+                        title: 'Quản lí dịch viên',
                         icon: {
                             element: 'span',
                             class: 'sb-icon edit-icon',

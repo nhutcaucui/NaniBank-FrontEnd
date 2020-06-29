@@ -13,8 +13,13 @@
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name: "ReceiverTable",
+    mounted(){
+      this.loadTable();
+    },
     data(){
       return{
         fields: [
@@ -56,6 +61,27 @@ export default {
       editRow(index, id, name){
         this.items[index] = {id:id,name: name}
         this.$refs.table.refresh();
+      },
+      loadTable(){
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                customer_id: self.$store.state.id,
+                filter: "sender"
+                },
+                }
+
+                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            //asign items
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
       }
     }
 }

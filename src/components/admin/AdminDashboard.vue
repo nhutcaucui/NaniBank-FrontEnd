@@ -2,12 +2,8 @@
     <div class="dashboard">
 <div class="dashboard-container">
             <router-link to="Admin/Add" class="dashboard-item">
-                <span class="item-icon sb-icon add-icon"></span><br/>
-                Thêm giao dịch viên
-            </router-link>
-            <router-link to="Admin/Edit" class="dashboard-item">
                 <span class="item-icon sb-icon edit-icon"></span><br/>
-                Cập nhật giao dịch viên
+                Quản lí giao dịch viên
             </router-link>
             <router-link to="Admin/History" class="dashboard-item">
                 <span class="item-icon sb-icon history-icon"></span><br/>

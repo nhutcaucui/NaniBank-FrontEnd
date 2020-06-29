@@ -6,12 +6,19 @@
 <div class="add-box" id = "add-box">
     <label>Thêm giao dịch viên</label><br/>
     <form v-on:submit.prevent="onSubmit">
-    <input placeholder="Họ tên"  id="name" name ="name" v-model="name"/>
-    <input placeholder="Email"  id="email" name ="email" v-model="email"/>
-    <input placeholder="Số điện thoại"  id="phone" name ="phone" v-model="phone"/>
+
+    <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/username.png"/></div>
     <input placeholder="Tài khoản"  id="username" name ="username" v-model="username"/>
+    </div>
+    <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/password.png"/></div>
     <input placeholder="Mật khẩu" type="password"  id="password" name ="password" v-model="password"/>
+    </div>
+    <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/lock.png"/></div>
     <input placeholder="Xác nhận mật khẩu" type="password"  id="cfpassword" name ="cfpassword" v-model="cfpassword"/>
+    </div>
     <br/>
     <div class="btn-container">
     <button class="submit-button" id="submit-add">Tạo</button>
@@ -40,9 +47,6 @@ import EmployeeTable from './EmployeeTable';
 export default {
   data(){
     return{
-      name: '',
-      email: '',
-      phone:'',
       username:'',
       password:'',
       cfpassword:'',
@@ -65,16 +69,7 @@ export default {
     onSubmit(){
       
       var isError = false;
-      if(this.name == ''){
-        this.errorMessage = 'Xin nhập tên giao dịch viên'
-        isError = true;
-      }else if(this.email == ''){
-        this.errorMessage = 'Xin nhập email giao dịch viên'
-        isError = true;
-      }else if(this.phone == ''){
-        this.errorMessage = 'Xin nhập SDT giao dịch viên'
-        isError = true;
-      }else if(this.username == ''){
+       if(this.username == ''){
         this.errorMessage = 'Xin nhập tài khoản giao dịch viên'
         isError = true;
       }else if(this.password == ''){
@@ -87,12 +82,6 @@ export default {
       }else if(this.cfpassword == ''){
         this.errorMessage = 'Xin nhập xác nhận mật khẩu giao dịch viên'
         isError = true;
-      }else if(!/^\d+$/.test(this.phone)){
-        this.errorMessage = 'Số điện thoại không hợp lệ'
-        isError = true;
-      }else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)){  // eslint-disable-line
-        this.errorMessage = 'Email không hợp lệ'
-        isError = true;
       }else if(this.cfpassword != this.password){
         this.errorMessage = 'Mật khẩu không khớp'
         isError = true;
@@ -102,25 +91,32 @@ export default {
         this.showPopover();
       }else{
         var self = this;
-        axios.post('http://35.240.195.17/users/admin/create',{
-          username: self.username,
-          password:self.password,
 
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        const data = {
+          name: self.name,
+          email: self.email,
+          phone: self.phone,
+          username: self.username,
+          password: self.password
+        }
+        const config = {
+            headers:{
+               timestamp: moment().format("X"),
+              }
+         }
+        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.$refs.employeeTableAdd.addRow(self.name, self.email, self.phone, self.username)
-              self.name= ''
-              self.email= ''
-              self.phone= ''
+            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
               self.username= ''
               self.password= '',
               self.cfpassword= ''
               self.showPopoverPositive();
           }
-          //self.$refs.employeeTableAdd.addRow(self.name, self.email, self.phone, self.username)
+          else{
+            self.errorMessage = 'Có biến ở server'
+            self.showPopover();
+          }
         }).catch(e =>{
           console.log(e);
         })
@@ -237,5 +233,9 @@ export default {
 .add-box{
   height: unset !important;
   padding-bottom: 15px;
+}
+
+.img-holder{
+  margin-top: 15px;
 }
 </style>

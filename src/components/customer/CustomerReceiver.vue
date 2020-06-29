@@ -56,47 +56,57 @@ export default {
             var self = this;
             if(this.isEdit){
                 
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: self.$store.token,
-          oldPass: self.oldPass,
-          newPass: self.newPass,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+                const data = {
+          name: self.name,
+          id: self.id,
+        }
+        const config = {
+            headers:{
+               timestamp: moment().format("X"),
+              }
+         }
+        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
-              this.$refs.receiverTable.editRow(self.index, self.id, self.name)
-              self.id= ''
-              self.name= ''
-              self.index= -1
-              self.isEdit=false; 
+            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
+              self.username= ''
+              self.password= '',
+              self.cfpassword= ''
               self.showPopoverPositive();
           }
-        }).catch(e =>{
-          console.log(e);
-        })
-                
-            }else{
-                axios.post('http://35.240.195.17/users/admin/create',{
-                    token: self.$store.token,
-          oldPass: self.oldPass,
-          newPass: self.newPass,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            this.$refs.receiverTable.addRow(self.id, self.name)  
-              self.id= ''
-              self.name= ''
-              self.index= -1
-              self.isEdit=false;   
-              self.showPopoverPositive();
+          else{
+            self.errorMessage = 'Có biến ở server'
+            self.showPopover();
           }
         }).catch(e =>{
           console.log(e);
         })
  
+            }else{
+              const data = {
+          name: self.name,
+        }
+        const config = {
+            headers:{
+               timestamp: moment().format("X"),
+              }
+         }
+        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
+              self.username= ''
+              self.password= '',
+              self.cfpassword= ''
+              self.showPopoverPositive();
+          }
+          else{
+            self.errorMessage = 'Có biến ở server'
+            self.showPopover();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
             }
         },
         rowClick(record,index){

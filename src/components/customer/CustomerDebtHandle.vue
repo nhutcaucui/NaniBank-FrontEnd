@@ -54,14 +54,28 @@ export default {
                 this.showPopover();
             }
             else{
-            var self = this;
-        axios.post('http://35.240.195.17/users/employee', {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+            let data = {
+                    
+                    id: self.id,
+          name: self.name,
+          amount:self.amount,
+          message:self.note
+        }
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
-              this.$refs.debtTable.dealRow(this.index);
-              self.showPopoverPositive()
+            self.id = "";
+            self.name='';
+            self.amount='';
+            self.note='';
+            self.showPopoverPositive(); 
+          }else{
+            self.errorMessage = ''
+            self.showPopover();
           }
         }).catch(e =>{
           console.log(e);

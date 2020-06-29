@@ -3,11 +3,23 @@
         <div class="container-box" id ="container-box">
             <label>Tạo tài khoản cho khách</label>
             <form v-on:submit.prevent="onSubmit">
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/user.png"/></div>
             <input placeholder="Họ tên"  id="name" name ="name" v-model="name"/>
+              </div>
+            <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/blackmail.png"/></div>
             <input placeholder="Email"  id="email" name ="email" v-model="email"/>
+            </div>
+            <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/blackphone.png"/></div>
             <input placeholder="Số điện thoại"  id="phone" name ="phone" v-model="phone"/>
+            </div>
+            <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/username.png"/></div>
             <input placeholder="Tên tài khoản"  id="username" name ="username" v-model="username"/>
-            <button class="submit-button" id="submit-add">Thêm</button>
+            </div>
+            <button class="submit-button" id="submit-add">Tạo</button>
             </form>
         </div>
 
@@ -64,15 +76,17 @@ export default {
         this.showPopover();
       }else{
         var self = this;
-        axios.post('http://35.240.195.17/users/admin/create',{
+        let data ={
           username: self.username,
           password: self.username,
           name: self.name,
           phone: self.phone,
           email: self.email,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        }
+        let config={headers:{
+          timestamp: moment().format("X"),
+        }}
+        axios.post(self.$store.state.host+'users/customer/', data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
               self.name= ''
@@ -81,7 +95,8 @@ export default {
               self.username= ''
               self.showPopoverPositive();
           }else{
-            //todo
+             self.errorMessage = 'Tài khoản đã tồn tại'
+             self.showPopover();
           }
         }).catch(e =>{
           console.log(e);
@@ -154,5 +169,15 @@ export default {
     color: #523C89;
     font-weight: bold;
     font-size: 20px;
+}
+</style>
+
+<style scoped>
+.img-holder{
+  margin-top: 15px;
+  width: 40px;
+}
+.container-box{
+  width: 350px;
 }
 </style>
