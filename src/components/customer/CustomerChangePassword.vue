@@ -3,9 +3,18 @@
         <div class="container-box" id="change-pass-container">
             <label>Đổi mật khẩu</label>
             <form v-on:submit.prevent="onSubmit">
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/unlock.png"/></div>
             <input placeholder="Mật khẩu cũ" type="password"  id="oldpass" name ="oldpass" v-model="oldPass"/>
+              </div>
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/password.png"/></div>
             <input placeholder="Mật khẩu mới" type="password"  id="newpass" name ="newpass" v-model="newPass"/>
+              </div>
+              <div class="inner-form-group">
+    <div class="img-holder" id="test"><img src="../../assets/lock.png"/></div>
             <input placeholder="Xác nhận mật khẩu mới" type="password"  id="cfnewpass" name ="cfnewpass" v-model="cfPass"/>
+              </div>
             <button class="submit-button" id="submit-change-pass">Đổi mật khẩu</button>
             </form>
         </div>
@@ -57,14 +66,17 @@ export default {
 
                 let data = {
                     
-          oldPass: self.oldPass,
-          newPass: self.newPass,
+          old_password: self.oldPass,
+          new_password: self.newPass,
+          username: self.$store.state.username
         }
+
+    
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+                axios.post(self.$store.state.host+'users/password/change',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.oldPass= ''
@@ -109,5 +121,15 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+</style>
+
+<style scoped>
+.img-holder{
+  margin-top: 15px;
+  width: 40px;
+}
+.container-box{
+  width: 350px;
 }
 </style>

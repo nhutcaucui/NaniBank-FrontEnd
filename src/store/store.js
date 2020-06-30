@@ -9,18 +9,21 @@ export default new Vuex.Store({
     userType: -1,
     accessToken:"",
     id: '',
+    username: ''
   },
   mutations: {
     setUser (state, payload) {
       state.userType = payload.type;
       state.accessToken = payload.token;
+      state.username = payload.username;
     },
     setId(state, payload){
       state.id = payload.id;
     },
     clearUser (state) {
       state.userType = -1;
-      state.accessToken = "";
+      state.accessToken = '';
+      state.username ='';
     },
   }
 })

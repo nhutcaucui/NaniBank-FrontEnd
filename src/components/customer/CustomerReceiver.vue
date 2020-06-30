@@ -57,8 +57,9 @@ export default {
             if(this.isEdit){
                 
                 const data = {
-          name: self.name,
-          id: self.id,
+          customer_id: self.$store.state.id,
+                receiver: self.id,
+                remind_name: self.name
         }
         const config = {
             headers:{
@@ -68,10 +69,9 @@ export default {
         axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
-              self.username= ''
-              self.password= '',
-              self.cfpassword= ''
+            self.$refs.receiverTable.editRow(self.index, self.id ,self.name)
+              self.id= '';
+              self.name= '';
               self.showPopoverPositive();
           }
           else{
@@ -84,24 +84,26 @@ export default {
  
             }else{
               const data = {
-          name: self.name,
+                customer_id: self.$store.state.id,
+                receiver: self.id,
+                remind_name: self.name
         }
         const config = {
             headers:{
                timestamp: moment().format("X"),
+               'access-token': self.$store.state.accessToken
               }
          }
-        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
+        axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
-              self.username= ''
-              self.password= '',
-              self.cfpassword= ''
+            self.$refs.receiverTable.addRow(self.id ,self.name)
+              self.id= '';
+              self.name= '';
               self.showPopoverPositive();
           }
           else{
-            self.errorMessage = 'Có biến ở server'
+            self.errorMessage = 'Người nhận đã tồn tại'
             self.showPopover();
           }
         }).catch(e =>{
@@ -125,6 +127,16 @@ export default {
         self.name = '';
         self.index = ''
       },
+      hidePopover(){
+      this.showPop = false;
+      console.log("hide")
+    },
+    showPopover(){
+      this.showPop = true;
+      console.log("show")
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    },
       hidePopoverPositive(){
       this.showPopPositive = false;
       console.log("hide")

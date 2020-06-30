@@ -8,6 +8,7 @@ import ForgotBox from '@/components/ForgotBox'
 import AdminRoutes from './admin'
 import EmployeeRoutes from './employee'
 import CustomerRoutes from './customer'
+import store from '../store/store'
 
 Vue.use(Router)
 
@@ -20,11 +21,39 @@ export default new Router({
   routes:[{
     path: '/',
     name: 'Trang chủ',
+    beforeEnter: (to,from,next)=>{ //eslint-disable-line
+      console.log(store.state.userType)
+      if(store.state.userType != -1){
+        if(store.state.userType == 1){
+          next('/Customer');
+        }else if(store.state.userType == 6){
+          next('/Admin');
+        }else if(store.state.userType == 9){
+          next('/Employee');
+        }
+      }else{
+      next();
+      }
+    },
     component: Home
   },
   {
       path: '/About',
       name: 'Thông tin',
+      beforeEnter: (to,from,next)=>{ //eslint-disable-line
+        console.log(store.state.userType)
+        if(store.state.userType != -1){
+          if(store.state.userType == 1){
+            next('/Customer');
+          }else if(store.state.userType == 6){
+            next('/Admin');
+          }else if(store.state.userType == 9){
+            next('/Employee');
+          }
+        }else{
+        next();
+        }
+      },
       component: About
   },
   {
@@ -33,11 +62,39 @@ export default new Router({
     children: [{
       path: '/',
       name: 'Login',
+      beforeEnter: (to,from,next)=>{ //eslint-disable-line
+        console.log(store.state.userType)
+        if(store.state.userType != -1){
+          if(store.state.userType == 1){
+            next('/Customer');
+          }else if(store.state.userType == 6){
+            next('/Admin');
+          }else if(store.state.userType == 9){
+            next('/Employee');
+          }
+        }else{
+        next();
+        }
+      },
       component: RightLoginBox,
     },
     {
       path: 'ForgotPass',
       name: 'Forgot',
+      beforeEnter: (to,from,next)=>{ //eslint-disable-line
+        console.log(store.state.userType)
+        if(store.state.userType != -1){
+          if(store.state.userType == 1){
+            next('/Customer');
+          }else if(store.state.userType == 6){
+            next('/Admin');
+          }else if(store.state.userType == 9){
+            next('/Employee');
+          }
+        }else{
+        next();
+        }
+      },
       component: ForgotBox,
     }],
     component: Login

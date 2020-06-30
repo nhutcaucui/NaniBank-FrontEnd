@@ -87,17 +87,30 @@ export default {
                 console.log(response);
                 if(response.data.Status){
                     self.$store.commit('setUser',{
-                        type: response.data.type,
-                        token: response.data.Token
+                        type: response.data.Type,
+                        token: response.data.Token,
+                        username: self.username
                     })
-                    if(response.data.type == 6){
+                    console.log(self.$store.state.username);
+                    console.log(self.username)
+                    if(response.data.Type == 6){
+                        self.$store.commit('setId',{
+                            id: response.data.Admin.id
+                        })
                         self.$router.push('/Admin')
-                    }else if(response.data.type == 9){
+                    }else if(response.data.Type == 9){
+                        self.$store.commit('setId',{
+                            id: response.data.Employee.id
+                        })
                         self.$router.push('/Employee')
                     }
-                    else if(response.data.type == 1){
+                    else if(response.data.Type == 1){
+                        self.$store.commit('setId',{
+                            id: response.data.Customer.id
+                        })
                         self.$router.push('/Customer')
                     }
+                    console.log(self.$store.state.username, self.$store.state.id, self.$store.state.userType)
                 }//else{
                 //     axios.post(self.$store.state.host+'users/employee/login',data, config).then(response1 =>{
                 //         console.log(response1);
@@ -119,10 +132,10 @@ export default {
                 //         id: response2.data.Customer.id
                 //     })
                 //              self.$router.push('/Customer')
-                //         }else{
-                //     self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
-                //     self.showPopover();
-                //         }
+                        else{
+                    self.errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác'
+                    self.showPopover();
+                        }
                 //             }).catch(e =>{
                 // console.log(e);
                 // })

@@ -5,7 +5,7 @@
         
         <div class="login-form">
             <div class="content-input">
-                <form v-on:submit.prevent="onSubmitOTP">
+                <form v-on:submit.prevent="onSubmitSent">
                <div class="form-group">
                    <div class="inner-form-group">
                        <div class="img-holder" id="test"><img src="../assets/user.png"/></div>
@@ -54,7 +54,7 @@
                 </form>
         </div>
         </div>
-        <b-popover :show.sync="showPop" target="forgot-box" triggers="manual" placement="bottom" container="error-popover">
+        <b-popover :show.sync="showPop" target="forgot-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
             <label>{{errorMessage}}</label>
       </b-popover>
@@ -77,6 +77,7 @@ export default {
             OTP:'',
             newPass:'',
             cfNewPass:'',
+            key:'',
             showPop:false,
             showPopSent:false,
             errorMessage:'',
@@ -101,6 +102,7 @@ export default {
                 if(response.data.Status){
                     self.successMessage="Đã gửi OTP đến email"
                     self.showPopoverSent();
+                    self.key = response.data.Key;
                 }else{
                     self.errorMessage = 'Tài khoản không tồn tại'
                     self.showPopover();
@@ -124,13 +126,13 @@ export default {
                 var self = this;
                  let data = {
                     username: self.username,
-                    new_password: self.password
+                    new_password: self.newPass
                 }
                 let config = {
                     headers:{
                         timestamp: moment().format("X"),
                         otp: self.OTP,
-                        key: self.OTP
+                        key: self.key
                     }
                 }
                 axios.post(self.$store.state.host+'users/password/reset',data, config).then(response =>{
@@ -166,7 +168,7 @@ export default {
       this.showPopSent = true;
       console.log("show")
       var self = this
-      setTimeout(() => self.hidePopover(), 3000);
+      setTimeout(() => self.hidePopoverSent(), 3000);
     }
     }
 }

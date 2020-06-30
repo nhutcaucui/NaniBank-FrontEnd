@@ -41,16 +41,35 @@ export default {
           
         ],
         items: [
-          {id: 16964582252, name:"Ờ" },
-          { id: 25451544584, name:"tao" },
-          { id: 25984844994, name:"nè"  },
-          { id: 25983664884, name:"3,000,000"  }
+          // {id: 16964582252, name:"Ờ" },
+          // { id: 25451544584, name:"tao" },
+          // { id: 25984844994, name:"nè"  },
+          // { id: 25983664884, name:"3,000,000"  }
         ]
       }
     },
     methods:{
       deleteRow(index){
-        this.items.splice(index,1);
+        if(confirm("Xóa người nhận?")){
+          var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                
+              data :{
+                customer_id: self.$store.state.id,
+                receiver: self.items[index].id
+              }
+        }
+
+                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                    console.log(response)
+                    if(response.data.Status){
+                       this.items.splice(index,1);
+                    }
+                })
+
+        }
       },
       rowClick(record, index){
         this.$emit('rowClick', record, index)
@@ -69,7 +88,6 @@ export default {
                     'access-token': self.$store.state.accessToken},
                 params: {
                 customer_id: self.$store.state.id,
-                filter: "sender"
                 },
                 }
 
@@ -77,7 +95,9 @@ export default {
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            for (var i =0; i < response.data.Receiver.length ; i++){
+                self.items.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+            }
           }
         }).catch(e =>{
           console.log(e);

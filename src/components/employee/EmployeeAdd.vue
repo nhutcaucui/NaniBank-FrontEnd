@@ -67,7 +67,7 @@ export default {
       }else if(!/^\d+$/.test(this.phone)){
         this.errorMessage = 'Số điện thoại không hợp lệ'
         isError = true;
-      }else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)){  // eslint-disable-line
+      }else if(!/^[a-z][a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/.test(this.email)){  // eslint-disable-line
         this.errorMessage = 'Email không hợp lệ'
         isError = true;
       }

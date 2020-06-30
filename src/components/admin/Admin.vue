@@ -12,7 +12,14 @@ export default {
     methods: {
     onItemClick(event, item) {
         if(item.name==='logout'){
-            console.log("Hey, listen");
+            console.log(this.$store.state.userType);
+            this.$store.commit('clearUser')
+            // this.$store.commit('setUser',{
+            //             type: -1,
+            //             token: '',
+            //             username: ''
+            //         })
+            console.log(this.$store.state.userType, this.$store.state.accessToken, this.$store.state.username);
         this.$router.push("/")
     }
     }
