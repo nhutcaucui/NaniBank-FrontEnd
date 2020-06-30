@@ -9,6 +9,7 @@ import AdminRoutes from './admin'
 import EmployeeRoutes from './employee'
 import CustomerRoutes from './customer'
 import store from '../store/store'
+import PageNotFound from '@/components/404'
 
 Vue.use(Router)
 
@@ -101,5 +102,6 @@ export default new Router({
   },
     ...AdminRoutes,
   ...EmployeeRoutes,
-...CustomerRoutes]
+...CustomerRoutes,
+{ path: "*", component: PageNotFound }]
 })
