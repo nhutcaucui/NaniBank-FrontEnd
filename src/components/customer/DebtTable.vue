@@ -84,7 +84,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                axios.get(self.$store.state.host+'debt/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

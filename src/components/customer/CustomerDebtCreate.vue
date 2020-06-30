@@ -63,10 +63,10 @@ export default {
       suggestions: [
         {
           data: [
-            { id: 1, name: "Frodo", race: "Hobbit" },
-            { id: 2, name: "Samwise", race: "Hobbit"},
-            { id: 3, name: "Gandalf", race: "Maia"},
-            { id: 4, name: "Aragorn", race: "Human"}
+            // { id: 1, name: "Frodo", race: "Hobbit" },
+            // { id: 2, name: "Samwise", race: "Hobbit"},
+            // { id: 3, name: "Gandalf", race: "Maia"},
+            // { id: 4, name: "Aragorn", race: "Human"}
           ]
         }
       ],
@@ -98,16 +98,22 @@ export default {
   },
   methods: {
     loadReceiver(){
-        //var self = this;
-                axios.get('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                customer_id: self.$store.state.id,
+                },
+                }
+
+                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            //asign
-            
+            self.suggestions[0].data = []
+            for (var i =0; i < response.data.Receiver.length ; i++){
+                self.suggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+            }
           }
         }).catch(e =>{
           console.log(e);
@@ -134,9 +140,10 @@ export default {
       }else{
         var self = this;
         let data = {
-              id:self.query,      
+              creditor:self.$store.state.id,      
+              debtor: self.query,
           amount: self.amount,
-          message:self.note
+          name:self.note
         }
         let config = {headers:{
           timestamp: moment().format("X"),

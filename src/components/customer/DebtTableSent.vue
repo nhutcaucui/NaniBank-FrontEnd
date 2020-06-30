@@ -57,7 +57,7 @@ export default {
           {
             key: 'status',
             label: 'Trạng thái',
-            sortable: false,
+            sortable: true,
           },
           {
             key:'action',
@@ -82,6 +82,24 @@ export default {
       },
       cancelRow(){
         this.items[this.selectedIndex].status='Hủy bỏ'
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken
+                    },
+                
+              data :{
+                id: self.items[self.selectedIndex].debtId,
+                delete_message: self.reason
+              }
+        }
+
+                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                    console.log(response)
+                    if(response.data.Status){
+                       //this.items.splice(index,1);
+                    }
+                })
       },
       loadData(){
         var self = this
@@ -94,7 +112,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                axios.get(self.$store.state.host+'debt/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

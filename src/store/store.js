@@ -9,13 +9,20 @@ export default new Vuex.Store({
     userType: -1,
     accessToken:"",
     id: '',
-    username: ''
+    username: '',
+    refreshToken:''
   },
   mutations: {
     setUser (state, payload) {
       state.userType = payload.type;
       state.accessToken = payload.token;
       state.username = payload.username;
+    },
+    setRefresh(state, payload){
+      state.refreshToken = payload.refreshToken;
+    },
+    setToken(state, payload){
+      state.accessToken = payload.token;
     },
     setId(state, payload){
       state.id = payload.id;

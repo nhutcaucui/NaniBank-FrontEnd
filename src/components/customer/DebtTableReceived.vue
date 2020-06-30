@@ -57,7 +57,7 @@ export default {
           {
             key: 'status',
             label: 'Trạng thái',
-            sortable: false,
+            sortable: true,
           },
           {
             key:'action',
@@ -65,19 +65,38 @@ export default {
           }
         ],
         items: [
-          { stt: 1, id:13545684415, name: '1/adasd/1990', amount:"1,200,222", status:"Đã thanh toán" , note:"hey" },
-          {  stt: 2, id:1352684415, name: '1/1/asd', amount:"5,000", status:"Chưa thanh toán", note:"gib money" },
-          {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
-          {  stt: 4, id:135451585, name: '1/1/19sada90', amount:"3,000,000", status:"Đã thanh toán"  }
+          // { stt: 1, id:13545684415, name: '1/adasd/1990', amount:"1,200,222", status:"Đã thanh toán" , note:"hey" },
+          // {  stt: 2, id:1352684415, name: '1/1/asd', amount:"5,000", status:"Chưa thanh toán", note:"gib money" },
+          // {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
+          // {  stt: 4, id:135451585, name: '1/1/19sada90', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
     },
     methods:{
       setSelectedIndex(index){
         this.selectedIndex=index;
+        
       },
       cancelRow(){
         this.items[this.selectedIndex].status='Hủy bỏ'
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken
+                    },
+                
+              data :{
+                id: self.items[self.selectedIndex].debtId,
+                delete_message: self.reason
+              }
+        }
+
+                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                    console.log(response)
+                    if(response.data.Status){
+                       //this.items.splice(index,1);
+                    }
+                })
       },
       rowClick(record, index){
         if(record.status == "Chưa thanh toán"){
@@ -98,7 +117,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                axios.get(self.$store.state.host+'debt/pay', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

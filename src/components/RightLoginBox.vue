@@ -39,10 +39,6 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-axios.interceptors.request.use(request => {
-  console.log('Starting Request', request)
-  return request
-})
 import VueRecaptcha from 'vue-recaptcha';
 export default {
     name:'RightLoginBox',

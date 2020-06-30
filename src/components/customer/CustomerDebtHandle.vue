@@ -22,7 +22,12 @@
             <label>Đã thanh toán nợ</label>
       </b-popover>
       <div id="error-popover"></div>
+
+      <b-modal id="otp-modal" title="Kiểm tra Email để nhận OTP" @ok="onOTPCheck()">
+      <textarea style="width: 100%" placeholder="OTP" v-model="OTP"/>
+  </b-modal>
     </div>
+    
 
 </template>
 
@@ -41,6 +46,8 @@ export default {
             name:'',
             amount:'',
             note:'',
+            OTP:'',
+            key:'',
             index: -1,
             showPop: false,
             showPopPositive:false,
@@ -54,18 +61,43 @@ export default {
                 this.showPopover();
             }
             else{
-            let data = {
+                      var self = this;
+                let config= {params:{
+                    username: self.$store.state.username
+                },headers:{
+                timestamp: moment().format("X"),
+                }}
+
+                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                  self.key = response.data.Key
+              this.$bvModal.show("otp-modal");
+                }else{
+                    self.errorMessage = 'Có lỗi khi gửi OTP'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+        
+            }
+        },
+        onOTPCheck(){
+let data = {
                     
                     id: self.id,
-          name: self.name,
-          amount:self.amount,
-          message:self.note
+          // name: self.name,
+          // amount:self.amount,
+          // message:self.note
         }
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
+          OTP: self.OTP,
+          key: self.key
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+                axios.post(self.$store.state.host+'debt/pay',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.id = "";
@@ -80,7 +112,6 @@ export default {
         }).catch(e =>{
           console.log(e);
         })
-            }
         },
       rowClick(record,index){
         var self = this;

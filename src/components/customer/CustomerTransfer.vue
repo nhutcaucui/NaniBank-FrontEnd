@@ -124,6 +124,9 @@ export default {
     components:{
         VueAutosuggest
     },
+    mounted(){
+      this.loadReceiver();
+    },
     data() {
     return {
       bank: -1,
@@ -147,6 +150,8 @@ export default {
       outNote:'',
       OTPin:'',
       OTPout:'',
+      keyIn:'',
+      keyOut:'',
       inSuggestions: [
         {
           data: [
@@ -200,33 +205,78 @@ export default {
     }
   },
   methods: {
+      loadReceiver(){
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                customer_id: self.$store.state.id,
+                },
+                }
+
+                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.inSuggestions[0].data = []
+            self.outSuggestions[0].data = []
+            for (var i =0; i < response.data.Receiver.length ; i++){
+                self.inSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+                self.outSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+            }
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+    },
     onSubmitIn(){
         var isError = false;
-      //   if(this.inAccount === -1){
-      //     this.errorMessage='Xin chọn tài khoản nguồn'
-      //     isError = true;
-      //   }
-      // else if(!this.idValidIn){
-      //     this.errorMessage='Xin nhập số tài khoản đúng'
-      //     isError = true;
-      // }else if(this.inAmount == ''){
-      //     this.errorMessage='Xin nhập số tiền'
-      //      isError = true;
-      // }else if(!/^\d+$/.test(this.inAmount)){
-      //   this.errorMessage = 'Số tiền không hợp lệ'
-      //   isError = true;
-      // }else if(this.inNote == ''){
-      //     this.errorMessage='Xin nhập nội dung chuyển'
-      //      isError = true;
-      // }else if(this.inFee === -1){
-      //     this.errorMessage='Xin chọn cách thanh toán'
-      //     isError = true;
-      // }
+        if(this.inAccount === -1){
+          this.errorMessage='Xin chọn tài khoản nguồn'
+          isError = true;
+        }
+      else if(!this.idValidIn){
+          this.errorMessage='Xin nhập số tài khoản đúng'
+          isError = true;
+      }else if(this.inAmount == ''){
+          this.errorMessage='Xin nhập số tiền'
+           isError = true;
+      }else if(!/^\d+$/.test(this.inAmount)){
+        this.errorMessage = 'Số tiền không hợp lệ'
+        isError = true;
+      }else if(this.inAmount < 10000){
+        this.errorMessage = 'Số tiền quá ít'
+        isError = true;
+      }else if(this.inNote == ''){
+          this.errorMessage='Xin nhập nội dung chuyển'
+           isError = true;
+      }else if(this.inFee === -1){
+          this.errorMessage='Xin chọn cách thanh toán'
+          isError = true;
+      }
 
       if(isError){
         this.showPopoverIn();
       }else{
-        this.$bvModal.show("in-otp-modal")
+        var self = this;
+                let config= {params:{
+                    username: self.$store.state.username
+                },headers:{
+                timestamp: moment().format("X"),
+                }}
+
+                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                  self.keyIn = response.data.Key;
+                            this.$bvModal.show("in-otp-modal")
+                }else{
+                    self.errorMessage = 'Có lỗi khi gửi OTP'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
       }
     },
     checkOTPin(){
@@ -241,7 +291,8 @@ export default {
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
-          
+          OTP: self.inOTP,
+          key: self.keyIn
         }}
                 axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
@@ -280,6 +331,9 @@ export default {
       }else if(!/^\d+$/.test(this.outAmount)){
         this.errorMessage = 'Số tiền không hợp lệ'
         isError = true;
+      }else if(this.outAmount < 10000){
+        this.errorMessage = 'Số tiền quá ít'
+        isError = true;
       }else if(this.outNote == ''){
           this.errorMessage='Xin nhập nội dung chuyển'
            isError = true;
@@ -291,7 +345,26 @@ export default {
       if(isError){
         this.showPopoverOut();
       }else{
-        this.$bvModal.show("out-otp-modal")
+        var self = this;
+                let config= {params:{
+                    username: self.$store.state.username
+                },headers:{
+                timestamp: moment().format("X"),
+                }}
+
+                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                  self.keyOut = response.data.Key;
+                     this.$bvModal.show("out-otp-modal")
+                }else{
+                    self.errorMessage = 'Có lỗi khi gửi OTP'
+                    self.showPopover();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+
       }
     },
     checkOTPout(){
@@ -306,6 +379,8 @@ export default {
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
+          OTP: self.outOTP,
+          key: self.keyOut
         }}
                 axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
