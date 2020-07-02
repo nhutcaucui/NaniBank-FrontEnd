@@ -1,5 +1,5 @@
 <template>
-    <div class='customer-transfer'>
+      <div class='customer-transfer'>
 <div class="container-box" id ="container-box-left">
             <label>Chuyển khoản nội bộ</label>
             <form @submit.prevent="onSubmitIn">

@@ -104,6 +104,9 @@ export default {
                         self.$store.commit('setId',{
                             id: response.data.Customer.id
                         })
+                        self.$store.commit('setRefresh',{
+                            refreshToken: response.data.RefreshToken
+                        })
                         self.$router.push('/Customer')
                     }
                     console.log(self.$store.state.username, self.$store.state.id, self.$store.state.userType)

@@ -181,4 +181,7 @@ export default {
 .submit-button{
     width: 50%;
 }
+.add-box{
+  padding: 10px;
+}
 </style>

@@ -22,7 +22,8 @@ axios.interceptors.request.use(request => {
 })
 axios.interceptors.response.use(response => {
   console.log('Starting Response', response)
-  if(response.data.Message  === "jwt expired"){
+  if(response.data.Message  === "jwt expired" || 
+  response.data.Message === "jwt malformed" || response.data.Message ==="jwt must be provided"){
     let data ={
       access_token: store.state.accessToken,
       refresh_token: store.state.refreshToken
@@ -30,6 +31,8 @@ axios.interceptors.response.use(response => {
     let config ={
       headers:{
         timestamp: moment().format("X"),
+        'access-token': store.state.accessToken,
+      refresh_token: store.state.refreshToken
       }
     }
     axios.post(store.state.host+"users/customer/refresh", data, config).then(response1 =>{

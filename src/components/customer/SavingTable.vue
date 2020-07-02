@@ -51,11 +51,13 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'saving/', config).then(response =>{
+                axios.get(self.$store.state.host+'saving/s', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
 
+          }else{
+            self.items = []
           }
         }).catch(e =>{
           console.log(e);

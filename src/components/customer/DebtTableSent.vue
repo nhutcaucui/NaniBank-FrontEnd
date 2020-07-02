@@ -19,6 +19,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import formater from 'format-currency'
 export default {
     name: "DebtTableSent",
     mounted(){
@@ -47,6 +48,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formater: (value, key, item) => { //eslint-disable-line
+              return formater(item.amount);
+            },
             sortable: false,
           },
           {
@@ -65,10 +69,10 @@ export default {
           }
         ],
         items: [
-          { stt: 1, id:13545684415, name: '1/adasd/1990', amount:"1,200,222", status:"Đã thanh toán" , note:"hey" },
-          {  stt: 2, id:1352684415, name: '1/1/asd', amount:"5,000", status:"Chưa thanh toán", note:"gib money" },
-          {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
-          {  stt: 4, id:135451585, name: '1/1/19sada90',  amount:"3,000,000", status:"Đã thanh toán"  }
+          // { stt: 1, id:13545684415, name: '1/adasd/1990', amount:"1,200,222", status:"Đã thanh toán" , note:"hey" },
+          // {  stt: 2, id:1352684415, name: '1/1/asd', amount:"5,000", status:"Chưa thanh toán", note:"gib money" },
+          // {  stt: 3, id:13545684415, name: '1/1/sdada', amount:"2,000", status:"Hủy bỏ" , note: "send cash" },
+          // {  stt: 4, id:135451585, name: '1/1/19sada90',  amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
     },
@@ -116,7 +120,31 @@ export default {
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            console.log(response.data)
+            for (var i =0; i < response.data.Debt.length ; i++){
+              console.log
+                let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debt[i].debtor,
+                },
+            }
+            const amount = response.data.Debt[i].amount;
+            const note = response.data.Debt[i].name;
+            
+            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+
+                    self.items.push({stt: self.items.length +1 , 
+                    id: response2.data.Info.debit.id, 
+                    name: response2.data.Info.info.name, 
+                    amount: amount, 
+                    status:"Chưa thanh toán", note: note})
+                }
+  })
+                
+            }
           }
         }).catch(e =>{
           console.log(e);

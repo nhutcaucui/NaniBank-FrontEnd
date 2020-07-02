@@ -80,6 +80,7 @@ export default {
       phone: '',
       note:'',
       amount:'',
+      debtor:0,
       idValid: false,
     };
   },
@@ -121,6 +122,7 @@ export default {
     },
     onSubmit(){
       var isError = false;
+      console.log(this.idValid);
       if(!this.idValid){
           this.errorMessage='Xin nhập số tài khoản'
           isError = true;
@@ -141,24 +143,28 @@ export default {
         var self = this;
         let data = {
               creditor:self.$store.state.id,      
-              debtor: self.query,
+              debtor: self.debtor,
           amount: self.amount,
-          name:self.note
+          name:self.note,
+          issue_date: 2051222400
         }
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+                axios.post(self.$store.state.host+'debt/',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
+             self.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note);
             self.name='';
             self.email='';
             self.phone='';
             self.note='';
             self.amount='';
             self.query="";
+            self.idValid = false;
             self.showPopoverPositive(); 
+             
           }else{
             self.errorMessage = ''
             self.showPopover();
@@ -196,16 +202,41 @@ export default {
     },
     doneTyping(){
       var self = this;
-                axios.get('http://35.240.195.17/users/admin/create',{
-                    token: this.$store.token,
-          id: self.query,
-        }, {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                debit_id: self.query,
+                },
+                }
+
+                axios.get(self.$store.state.host+"debit/", config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            console.log("found 1")
-            self.idValid = true
+            let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debit.owner,
+                },
+            }
+            
+                
+            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+                    self.idValid = true;
+                    console.log(self.idValid);
+                    self.debtor = response2.data.Info.info.customer_id;
+                    console.log(self.debtor)
+                    self.name=response2.data.Info.info.name;
+                    self.email=response2.data.Info.info.email;
+                    self.phone=response2.data.Info.info.phone;
+                }else{
+                  self.idValid = false
+            self.errorMessage='Không tìm thấy người dùng';
+            self.showPopover();
+                }
+  })
           }else{
             self.idValid = false
             self.errorMessage='Không tìm thấy người dùng';

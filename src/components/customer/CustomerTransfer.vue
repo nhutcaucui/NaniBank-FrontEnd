@@ -122,7 +122,7 @@
 // import axios from 'axios'
 // import moment from 'moment'
 // import { VueAutosuggest } from 'vue-autosuggest';
-import CustomerTransferInside from'./CustomerTransferInside'
+import CustomerTransferInside from'./temp/CustomerTransferInside'
 import CustomerTransferOutside from'./CustomerTransferOutside'
 export default {
     name:'CustomerTransfer',
