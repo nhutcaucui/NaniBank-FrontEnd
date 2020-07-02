@@ -1,17 +1,21 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate';
+//import Cookies from 'js-cookie';
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: {
-    host: "http://35.240.195.17/",
+    //host: "http://52.187.69.243/",
+    host: "http://localhost:3000/",
     userType: -1,
     accessToken:"",
     id: '',
     username: '',
     refreshToken:''
   },
+  plugins: [createPersistedState()],
   mutations: {
     setUser (state, payload) {
       state.userType = payload.type;
@@ -32,5 +36,7 @@ export default new Vuex.Store({
       state.accessToken = '';
       state.username ='';
     },
-  }
+  },
 })
+
+export default store;

@@ -11,6 +11,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import formater from 'format-currency'
 export default {
     name: "Debit",
     mounted(){
@@ -43,15 +44,15 @@ export default {
                 headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
                 params: {
-                id: self.$store.state.id,
+                owner: self.$store.state.id,
                 },
                 }
 
-                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+                axios.get(self.$store.state.host+'debit/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            self.items.push({id: response.data.Debit.id, balance: formater(response.data.Debit.balance)})
           }
         }).catch(e =>{
           console.log(e);

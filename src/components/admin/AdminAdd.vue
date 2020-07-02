@@ -107,7 +107,7 @@ export default {
         axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.$refs.employeeTableAdd.addRow(response.data.Employee.id ,self.username)
+            self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)
               self.username= ''
               self.password= '',
               self.cfpassword= ''

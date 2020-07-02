@@ -83,6 +83,13 @@ export default {
         })
  
             }else{
+              if(self.id == ''){
+                self.errorMessage = 'Xin nhập tài khoản người nhận'
+            self.showPopover();
+              }else if(self.name == ''){
+                self.errorMessage = 'Xin nhập tên gợi nhớ'
+            self.showPopover();
+              }else{
               const data = {
                 customer_id: self.$store.state.id,
                 receiver: self.id,
@@ -109,6 +116,7 @@ export default {
         }).catch(e =>{
           console.log(e);
         })
+              }
             }
         },
         rowClick(record,index){
@@ -125,7 +133,15 @@ export default {
           self.current="Thêm"
         self.id = '';
         self.name = '';
-        self.index = ''
+        self.index = '';
+      },
+      onDelete(){
+          var self= this;
+          self.isEdit=false;
+          self.current="Thêm"
+        self.id = '';
+        self.name = '';
+        self.index = '';
       },
       hidePopover(){
       this.showPop = false;

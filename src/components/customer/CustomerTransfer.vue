@@ -1,11 +1,12 @@
 <template>
     <div class='customer-transfer'>
-<div class="container-box" id ="container-box-left">
+<!-- <div class="container-box" id ="container-box-left">
             <label>Chuyển khoản nội bộ</label>
             <form @submit.prevent="onSubmitIn">
             <select placeholder="Tài khoản nguồn"  id="source" name ="source" class="text-input" v-model="inAccount">
-                <option value="-1">- Chọn tài khoản thanh toán -</option>
-                <option value="12456789">123456789</option>
+                <option v-for="option in options" v-bind:value="option.value" v-bind:key="option"> 
+    {{ option.text }}
+  </option>
             </select>
             
             <div class="autosuggest-container">
@@ -51,13 +52,17 @@
             <template v-slot:title>Lỗi</template>
             <label>{{errorMessage}}</label>
       </b-popover>
+            <b-modal id="in-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPin()">
+      <textarea style="width: 100%" placeholder="OTP" v-model="OTPin"/>
+  </b-modal>
 
       <div class="container-box" id ="container-box">
             <label>Chuyển khoản liên ngân hàng</label>
             <form @submit.prevent="onSubmitOut">
             <select placeholder="Tài khoản nguồn"  id="source" name ="source" class="text-input" v-model="outAccount">
-                <option value="-1">- Chọn tài khoản thanh toán -</option>
-                <option value="12456789">123456789</option>
+                <option v-for="option in options" v-bind:value="option.value" v-bind:key="option">
+    {{ option.text }}
+  </option>
             </select>
             <select placeholder="Chọn ngân hàng"  id="source" name ="source" class="text-input" v-model="bank">
                 <option value="-1">- Chọn ngân hàng -</option>
@@ -105,445 +110,470 @@
             <label>Đã chuyển khoản</label>
       </b-popover>
 
-      <b-modal id="in-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPin()">
-      <textarea style="width: 100%" placeholder="OTP" v-model="OTPin"/>
-  </b-modal>
-
   <b-modal id="out-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPout()">
       <textarea style="width: 100%" placeholder="OTP" v-model="OTPout"/>
-  </b-modal>
+  </b-modal> -->
+      <CustomerTransferInside/>
+      <CustomerTransferOutside/>
     </div>
 </template>
 
 <script>
-import axios from 'axios'
-import moment from 'moment'
-import { VueAutosuggest } from 'vue-autosuggest';
+// import axios from 'axios'
+// import moment from 'moment'
+// import { VueAutosuggest } from 'vue-autosuggest';
+import CustomerTransferInside from'./CustomerTransferInside'
+import CustomerTransferOutside from'./CustomerTransferOutside'
 export default {
     name:'CustomerTransfer',
     components:{
-        VueAutosuggest
+        //VueAutosuggest,
+        CustomerTransferInside,
+        CustomerTransferOutside
     },
-    mounted(){
-      this.loadReceiver();
-    },
-    data() {
-    return {
-      bank: -1,
-      inQuery: "",
-      inSelected: "",
-      inAccount:-1,
-      inName:'',
-      inPhone:'',
-      inEmail:'',
-      inFee:-1,
-      inAmount:'',
-      inNote:'',
-      outQuery: "",
-      outSelected: "",
-      outAccount:-1,
-      outName:'',
-      outPhone:'',
-      outEmail:'',
-      outFee:-1,
-      outAmount:'',
-      outNote:'',
-      OTPin:'',
-      OTPout:'',
-      keyIn:'',
-      keyOut:'',
-      inSuggestions: [
-        {
-          data: [
-            { id: 1, name: "Frodo", race: "Hobbit" },
-            { id: 2, name: "Samwise", race: "Hobbit"},
-            { id: 3, name: "Gandalf", race: "Maia"},
-            { id: 4, name: "Aragorn", race: "Human"}
-          ]
-        }
-      ],
-      outSuggestions: [
-        {
-          data: [
-            { id: 1, name: "Frodo", race: "Hobbit" },
-            { id: 2, name: "Samwise", race: "Hobbit"},
-            { id: 3, name: "Gandalf", race: "Maia"},
-            { id: 4, name: "Aragorn", race: "Human"}
-          ]
-        }
-      ],
-      showInPop:false,
-      showInPopPos:false,
-      showOutPop:false,
-      showOutPopPos:false,
-      errorMessage:'',
-      typingTimerIn:'',
-      typingTimerOut:'',
-      doneTypingInterval: 3000,
-      idValidIn:false,
-      idValidOut:false
-    };
-  },
-  computed: {
-    filteredOptionsIn() {
-      return [
-        { 
-          data: this.inSuggestions[0].data.filter(option => {
-            return option.name.toLowerCase().indexOf(this.inQuery.toString().toLowerCase()) > -1;
-          })
-        }
-      ];
-    },
-    filteredOptionsOut() {
-      return [
-        { 
-          data: this.outSuggestions[0].data.filter(option => {
-            return option.name.toLowerCase().indexOf(this.outQuery.toString().toLowerCase()) > -1;
-          })
-        }
-      ];
-    }
-  },
-  methods: {
-      loadReceiver(){
-        var self = this
-        let config = {
-                headers: {timestamp: moment().format("X"),
-                    'access-token': self.$store.state.accessToken},
-                params: {
-                customer_id: self.$store.state.id,
-                },
-                }
+    // mounted(){
+    //   this.loadReceiver();
+    //   this.loadDebit();
+    // },
+  //   data() {
+  //   return {
+  //     bank: -1,
+  //     inQuery: "",
+  //     inSelected: "",
+  //     inAccount:-1,
+  //     inName:'',
+  //     inPhone:'',
+  //     inEmail:'',
+  //     inFee:-1,
+  //     inAmount:'',
+  //     inNote:'',
+  //     outQuery: "",
+  //     outSelected: "",
+  //     outAccount:-1,
+  //     outName:'',
+  //     outPhone:'',
+  //     outEmail:'',
+  //     outFee:-1,
+  //     outAmount:'',
+  //     outNote:'',
+  //     OTPin:'',
+  //     OTPout:'',
+  //     keyIn:'',
+  //     keyOut:'',
+  //     inSuggestions: [
+  //       {
+  //         data: [
+  //           { id: 1, name: "Frodo", race: "Hobbit" },
+  //           { id: 2, name: "Samwise", race: "Hobbit"},
+  //           { id: 3, name: "Gandalf", race: "Maia"},
+  //           { id: 4, name: "Aragorn", race: "Human"}
+  //         ]
+  //       }
+  //     ],
+  //     outSuggestions: [
+  //       {
+  //         data: [
+  //           { id: 1, name: "Frodo", race: "Hobbit" },
+  //           { id: 2, name: "Samwise", race: "Hobbit"},
+  //           { id: 3, name: "Gandalf", race: "Maia"},
+  //           { id: 4, name: "Aragorn", race: "Human"}
+  //         ]
+  //       }
+  //     ],
+  //     showInPop:false,
+  //     showInPopPos:false,
+  //     showOutPop:false,
+  //     showOutPopPos:false,
+  //     errorMessage:'',
+  //     typingTimerIn:'',
+  //     typingTimerOut:'',
+  //     doneTypingInterval: 3000,
+  //     idValidIn:false,
+  //     idValidOut:false,
+  //     options:[],
+  //   };
+  // },
+  // computed: {
+  //   filteredOptionsIn() {
+  //     return [
+  //       { 
+  //         data: this.inSuggestions[0].data.filter(option => {
+  //           return option.name.toLowerCase().indexOf(this.inQuery.toString().toLowerCase()) > -1;
+  //         })
+  //       }
+  //     ];
+  //   },
+  //   filteredOptionsOut() {
+  //     return [
+  //       { 
+  //         data: this.outSuggestions[0].data.filter(option => {
+  //           return option.name.toLowerCase().indexOf(this.outQuery.toString().toLowerCase()) > -1;
+  //         })
+  //       }
+  //     ];
+  //   }
+  // },
+  // methods: {
+  //   loadDebit(){
+  //     var self = this
+  //       let config = {
+  //               headers: {timestamp: moment().format("X"),
+  //                   'access-token': self.$store.state.accessToken},
+  //               params: {
+  //               owner: self.$store.state.id,
+  //               },
+  //               }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.inSuggestions[0].data = []
-            self.outSuggestions[0].data = []
-            for (var i =0; i < response.data.Receiver.length ; i++){
-                self.inSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
-                self.outSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
-            }
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-    },
-    onSubmitIn(){
-        var isError = false;
-        if(this.inAccount === -1){
-          this.errorMessage='Xin chọn tài khoản nguồn'
-          isError = true;
-        }
-      else if(!this.idValidIn){
-          this.errorMessage='Xin nhập số tài khoản đúng'
-          isError = true;
-      }else if(this.inAmount == ''){
-          this.errorMessage='Xin nhập số tiền'
-           isError = true;
-      }else if(!/^\d+$/.test(this.inAmount)){
-        this.errorMessage = 'Số tiền không hợp lệ'
-        isError = true;
-      }else if(this.inAmount < 10000){
-        this.errorMessage = 'Số tiền quá ít'
-        isError = true;
-      }else if(this.inNote == ''){
-          this.errorMessage='Xin nhập nội dung chuyển'
-           isError = true;
-      }else if(this.inFee === -1){
-          this.errorMessage='Xin chọn cách thanh toán'
-          isError = true;
-      }
+  //               axios.get(self.$store.state.host+'debit/', config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           self.options = []
+  //           self.options.push({text: "- Chọn tài khoản thanh toán -", value:"-1"})
+  //           self.options.push({text: response.data.Debit.id, value: "1"})
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
+  //     loadReceiver(){
+  //       var self = this
+  //       let config = {
+  //               headers: {timestamp: moment().format("X"),
+  //                   'access-token': self.$store.state.accessToken},
+  //               params: {
+  //               customer_id: self.$store.state.id,
+  //               },
+  //               }
 
-      if(isError){
-        this.showPopoverIn();
-      }else{
-        var self = this;
-                let config= {params:{
-                    username: self.$store.state.username
-                },headers:{
-                timestamp: moment().format("X"),
-                }}
+  //               axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           self.inSuggestions[0].data = []
+  //           self.outSuggestions[0].data = []
+  //           for (var i =0; i < response.data.Receiver.length ; i++){
+  //               self.inSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+  //               self.outSuggestions[0].data.push({id:response.data.Receiver[i].receiver, name: response.data.Receiver[i].remind_name})
+  //           }
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
+  //   onSubmitIn(){
+  //       var isError = false;
+  //       if(this.inAccount === -1){
+  //         this.errorMessage='Xin chọn tài khoản nguồn'
+  //         isError = true;
+  //       }
+  //     else if(!this.idValidIn){
+  //         this.errorMessage='Xin nhập số tài khoản đúng'
+  //         isError = true;
+  //     }else if(this.inAmount == ''){
+  //         this.errorMessage='Xin nhập số tiền'
+  //          isError = true;
+  //     }else if(!/^\d+$/.test(this.inAmount)){
+  //       this.errorMessage = 'Số tiền không hợp lệ'
+  //       isError = true;
+  //     }else if(this.inAmount < 10000){
+  //       this.errorMessage = 'Số tiền quá ít'
+  //       isError = true;
+  //     }else if(this.inNote == ''){
+  //         this.errorMessage='Xin nhập nội dung chuyển'
+  //          isError = true;
+  //     }else if(this.inFee === -1){
+  //         this.errorMessage='Xin chọn cách thanh toán'
+  //         isError = true;
+  //     }
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
-                console.log(response);
-                if(response.data.Status){
-                  self.keyIn = response.data.Key;
-                            this.$bvModal.show("in-otp-modal")
-                }else{
-                    self.errorMessage = 'Có lỗi khi gửi OTP'
-                    self.showPopover();
-                }
-                }).catch(e =>{
-                console.log(e);
-                })
-      }
-    },
-    checkOTPin(){
-      var self = this;
-        let data = {
+  //     if(isError){
+  //       this.showPopoverIn();
+  //     }else{
+  //       var self = this;
+  //               let config= {params:{
+  //                   username: self.$store.state.username
+  //               },headers:{
+  //               timestamp: moment().format("X"),
+  //               }}
+
+  //               axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+  //               console.log(response);
+  //               if(response.data.Status){
+  //                 self.keyIn = response.data.Key;
+  //                           this.$bvModal.show("in-otp-modal")
+  //               }else{
+  //                   self.errorMessage = 'Có lỗi khi gửi OTP'
+  //                   self.showPopover();
+  //               }
+  //               }).catch(e =>{
+  //               console.log(e);
+  //               })
+  //     }
+  //   },
+  //   checkOTPin(){
+  //     var self = this;
+  //       let data = {
                     
-                    from: self.$store.state.id,
-          to: self.query,
-          amount:self.amount,
-          message:self.note
-        }
-        let config = {headers:{
-          timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
-          OTP: self.inOTP,
-          key: self.keyIn
-        }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.idValidIn = false;
-            self.inQuery = "";
-            self.inName='';
-            self.inEmail='';
-            self.inPhone='';
-            self.inAmount='';
-            self.inNote = '';
-            self.showPopoverPositiveIn(); 
-          }else{
-            self.errorMessage = 'OTP sai'
-            self.showPopoverIn();
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-    },
-    onSubmitOut(){
-      var isError = false;
-        if(this.outAccount === -1){
-          this.errorMessage='Xin chọn tài khoản nguồn'
-          isError = true;
-        }else if (this.bank == -1){
-          this.errorMessage='Xin chọn ngân hàng'
-          isError = true;
-        }
-      else if(!this.idValidOut){
-          this.errorMessage='Xin nhập số tài khoản đúng'
-          isError = true;
-      }else if(this.outAmount == ''){
-          this.errorMessage='Xin nhập số tiền'
-           isError = true;
-      }else if(!/^\d+$/.test(this.outAmount)){
-        this.errorMessage = 'Số tiền không hợp lệ'
-        isError = true;
-      }else if(this.outAmount < 10000){
-        this.errorMessage = 'Số tiền quá ít'
-        isError = true;
-      }else if(this.outNote == ''){
-          this.errorMessage='Xin nhập nội dung chuyển'
-           isError = true;
-      }else if(this.outFee === -1){
-          this.errorMessage='Xin chọn cách thanh toán'
-          isError = true;
-      }
+  //                   from: self.$store.state.id,
+  //         to: self.query,
+  //         amount:self.amount,
+  //         message:self.note
+  //       }
+  //       let config = {headers:{
+  //         timestamp: moment().format("X"),
+  //         'access-token': this.$store.state.accessToken,
+  //         OTP: self.inOTP,
+  //         key: self.keyIn
+  //       }}
+  //               axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           self.idValidIn = false;
+  //           self.inQuery = "";
+  //           self.inName='';
+  //           self.inEmail='';
+  //           self.inPhone='';
+  //           self.inAmount='';
+  //           self.inNote = '';
+  //           self.showPopoverPositiveIn(); 
+  //         }else{
+  //           self.errorMessage = 'OTP sai'
+  //           self.showPopoverIn();
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
+  //   onSubmitOut(){
+  //     var isError = false;
+  //       if(this.outAccount === -1){
+  //         this.errorMessage='Xin chọn tài khoản nguồn'
+  //         isError = true;
+  //       }else if (this.bank == -1){
+  //         this.errorMessage='Xin chọn ngân hàng'
+  //         isError = true;
+  //       }
+  //     else if(!this.idValidOut){
+  //         this.errorMessage='Xin nhập số tài khoản đúng'
+  //         isError = true;
+  //     }else if(this.outAmount == ''){
+  //         this.errorMessage='Xin nhập số tiền'
+  //          isError = true;
+  //     }else if(!/^\d+$/.test(this.outAmount)){
+  //       this.errorMessage = 'Số tiền không hợp lệ'
+  //       isError = true;
+  //     }else if(this.outAmount < 10000){
+  //       this.errorMessage = 'Số tiền quá ít'
+  //       isError = true;
+  //     }else if(this.outNote == ''){
+  //         this.errorMessage='Xin nhập nội dung chuyển'
+  //          isError = true;
+  //     }else if(this.outFee === -1){
+  //         this.errorMessage='Xin chọn cách thanh toán'
+  //         isError = true;
+  //     }
 
-      if(isError){
-        this.showPopoverOut();
-      }else{
-        var self = this;
-                let config= {params:{
-                    username: self.$store.state.username
-                },headers:{
-                timestamp: moment().format("X"),
-                }}
+  //     if(isError){
+  //       this.showPopoverOut();
+  //     }else{
+  //       var self = this;
+  //               let config= {params:{
+  //                   username: self.$store.state.username
+  //               },headers:{
+  //               timestamp: moment().format("X"),
+  //               }}
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
-                console.log(response);
-                if(response.data.Status){
-                  self.keyOut = response.data.Key;
-                     this.$bvModal.show("out-otp-modal")
-                }else{
-                    self.errorMessage = 'Có lỗi khi gửi OTP'
-                    self.showPopover();
-                }
-                }).catch(e =>{
-                console.log(e);
-                })
+  //               axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+  //               console.log(response);
+  //               if(response.data.Status){
+  //                 self.keyOut = response.data.Key;
+  //                    this.$bvModal.show("out-otp-modal")
+  //               }else{
+  //                   self.errorMessage = 'Có lỗi khi gửi OTP'
+  //                   self.showPopover();
+  //               }
+  //               }).catch(e =>{
+  //               console.log(e);
+  //               })
 
-      }
-    },
-    checkOTPout(){
-      var self = this;
-        let data = {
+  //     }
+  //   },
+  //   checkOTPout(){
+  //     var self = this;
+  //       let data = {
                     
-                    from: self.$store.state.id,
-          to: self.query,
-          amount:self.amount,
-          message:self.note
-        }
-        let config = {headers:{
-          timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
-          OTP: self.outOTP,
-          key: self.keyOut
-        }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.idValidIn = false;
-            self.inQuery = "";
-            self.inName='';
-            self.inEmail='';
-            self.inPhone='';
-            self.inAmount='';
-            self.inNote = '';
-            self.showPopoverPositiveIn(); 
-          }else{
-            self.errorMessage = 'OTP sai'
-            self.showPopoverIn();
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-    },
-    clickHandlerIn() {
+  //                   from: self.$store.state.id,
+  //         to: self.query,
+  //         amount:self.amount,
+  //         message:self.note
+  //       }
+  //       let config = {headers:{
+  //         timestamp: moment().format("X"),
+  //         'access-token': this.$store.state.accessToken,
+  //         OTP: self.outOTP,
+  //         key: self.keyOut
+  //       }}
+  //               axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           self.idValidIn = false;
+  //           self.inQuery = "";
+  //           self.inName='';
+  //           self.inEmail='';
+  //           self.inPhone='';
+  //           self.inAmount='';
+  //           self.inNote = '';
+  //           self.showPopoverPositiveIn(); 
+  //         }else{
+  //           self.errorMessage = 'OTP sai'
+  //           self.showPopoverIn();
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
+  //   clickHandlerIn() {
 
-      // event fired when clicking on the input
-    },
-    onSelectedIn(item) {
-      clearTimeout(this.typingTimerIn);
-      this.inSelected = item.item;
-      this.inQuery=item.item.id.toString();
-      this.doneTypingIn();
-    },
-    onInputChangeIn(text) {
-      clearTimeout(this.typingTimerIn);
-      if (text!= '') {
-        this.typingTimerIn = setTimeout(this.doneTypingIn, this.doneTypingInterval);
-    }
-      console.log(text)
-      console.log(text)
-    },
-    /**
-     * This is what the <input/> value is set to when you are selecting a suggestion.
-     */
-    getSuggestionValueIn(suggestion) {
-      return suggestion.item.id.toString();
-    },
-    focusMeIn(e) {
-      console.log(e) // FocusEvent
-    },
-    clickHandlerOut() {
+  //     // event fired when clicking on the input
+  //   },
+  //   onSelectedIn(item) {
+  //     clearTimeout(this.typingTimerIn);
+  //     this.inSelected = item.item;
+  //     this.inQuery=item.item.id.toString();
+  //     this.doneTypingIn();
+  //   },
+  //   onInputChangeIn(text) {
+  //     clearTimeout(this.typingTimerIn);
+  //     if (text!= '') {
+  //       this.typingTimerIn = setTimeout(this.doneTypingIn, this.doneTypingInterval);
+  //   }
+  //     console.log(text)
+  //     console.log(text)
+  //   },
+  //   /**
+  //    * This is what the <input/> value is set to when you are selecting a suggestion.
+  //    */
+  //   getSuggestionValueIn(suggestion) {
+  //     return suggestion.item.id.toString();
+  //   },
+  //   focusMeIn(e) {
+  //     console.log(e) // FocusEvent
+  //   },
+  //   clickHandlerOut() {
 
-      // event fired when clickOutg on the Output
-    },
-    onSelectedOut(item) {
-      clearTimeout(this.typingTimerIn);
-      this.outSelected = item.item;
-      this.outQuery=item.item.id.toString();
-      this.doneTypingOut();
-    },
-    onInputChangeOut(text) {
-      clearTimeout(this.typingTimerOut);
-      if (text!= '') {
-        this.typingTimerOut = setTimeout(this.doneTypingOut, this.doneTypingInterval);
-    }
-      console.log(text)
-    },
-    /**
-     * This is what the <Output/> value is set to when you are selectOutg a suggestion.
-     */
-    getSuggestionValueOut(suggestion) {
-      return suggestion.item.id.toString();
-    },
-    focusMeOut(e) {
-      console.log(e) // FocusEvent
-    },
-    doneTypingIn(){
-      var self = this
-        let config = {
-                headers: {timestamp: moment().format("X"),
-                    'access-token': self.$store.state.accessToken},
-                params: {
-                id: self.$store.state.id,
-                },
-                }
+  //     // event fired when clickOutg on the Output
+  //   },
+  //   onSelectedOut(item) {
+  //     clearTimeout(this.typingTimerIn);
+  //     this.outSelected = item.item;
+  //     this.outQuery=item.item.id.toString();
+  //     this.doneTypingOut();
+  //   },
+  //   onInputChangeOut(text) {
+  //     clearTimeout(this.typingTimerOut);
+  //     if (text!= '') {
+  //       this.typingTimerOut = setTimeout(this.doneTypingOut, this.doneTypingInterval);
+  //   }
+  //     console.log(text)
+  //   },
+  //   /**
+  //    * This is what the <Output/> value is set to when you are selectOutg a suggestion.
+  //    */
+  //   getSuggestionValueOut(suggestion) {
+  //     return suggestion.item.id.toString();
+  //   },
+  //   focusMeOut(e) {
+  //     console.log(e) // FocusEvent
+  //   },
+  //   doneTypingIn(){
+  //     var self = this
+  //       let config = {
+  //               headers: {timestamp: moment().format("X"),
+  //                   'access-token': self.$store.state.accessToken},
+  //               params: {
+  //               id: self.$store.state.id,
+  //               },
+  //               }
 
-                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            console.log("found 1")
-            self.idValidIn = true
-          }else{
-            self.idValidIn = false
-            self.errorMessage='Không tìm thấy người dùng';
-            self.showPopoverIn();
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-    },
+  //               axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           console.log("found 1")
+  //           self.idValidIn = true
+  //         }else{
+  //           self.idValidIn = false
+  //           self.errorMessage='Không tìm thấy người dùng';
+  //           self.showPopoverIn();
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
 
-  doneTypingOut(){
-      var self = this
-        let config = {
-                headers: {timestamp: moment().format("X"),
-                    'access-token': self.$store.state.accessToken},
-                params: {
-                id: self.$store.state.id,
-                },
-                }
+  // doneTypingOut(){
+  //     var self = this
+  //       let config = {
+  //               headers: {timestamp: moment().format("X"),
+  //                   'access-token': self.$store.state.accessToken},
+  //               params: {
+  //               id: self.$store.state.id,
+  //               },
+  //               }
 
-                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            console.log("found 1")
-            self.idValidOut = true
-          }else{
-            self.idValidOut = false
-            self.errorMessage='Không tìm thấy người dùng';
-            self.showPopoverOut();
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-    },
-    hidePopoverIn(){
-      this.showInPop = false;
-      console.log("hide")
-    },
-    showPopoverIn(){
-      this.showInPop = true;
-      console.log("show")
-      var self = this
-      setTimeout(() => self.hidePopoverIn(), 3000);
-    },
-    hidePopoverPositiveIn(){
-      this.showInPopPos = false;
-      console.log("hide")
-    },
-    showPopoverPositiveIn(){
-      this.showInPopPos = true;
-      console.log("show")
-      var self = this
-      setTimeout(() => self.hidePopoverPositiveIn(), 3000);
-    },
-    hidePopoverOut(){
-      this.showOutPop = false;
-      console.log("hide")
-    },
-    showPopoverOut(){
-      this.showOutPop = true;
-      console.log("show")
-      var self = this
-      setTimeout(() => self.hidePopoverOut(), 3000);
-    },
-    hidePopoverPositiveOut(){
-      this.showOutPopPos = false;
-      console.log("hide")
-    },
-    showPopoverPositiveOut(){
-      this.showOutPopPos = true;
-      console.log("show")
-      var self = this
-      setTimeout(() => self.hidePopoverPositiveOut(), 3000);
-    }
-    },
+  //               axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+  //         console.log(response);
+  //         if(response.data.Status){
+  //           console.log("found 1")
+  //           self.idValidOut = true
+  //         }else{
+  //           self.idValidOut = false
+  //           self.errorMessage='Không tìm thấy người dùng';
+  //           self.showPopoverOut();
+  //         }
+  //       }).catch(e =>{
+  //         console.log(e);
+  //       })
+  //   },
+  //   hidePopoverIn(){
+  //     this.showInPop = false;
+  //     console.log("hide")
+  //   },
+  //   showPopoverIn(){
+  //     this.showInPop = true;
+  //     console.log("show")
+  //     var self = this
+  //     setTimeout(() => self.hidePopoverIn(), 3000);
+  //   },
+  //   hidePopoverPositiveIn(){
+  //     this.showInPopPos = false;
+  //     console.log("hide")
+  //   },
+  //   showPopoverPositiveIn(){
+  //     this.showInPopPos = true;
+  //     console.log("show")
+  //     var self = this
+  //     setTimeout(() => self.hidePopoverPositiveIn(), 3000);
+  //   },
+  //   hidePopoverOut(){
+  //     this.showOutPop = false;
+  //     console.log("hide")
+  //   },
+  //   showPopoverOut(){
+  //     this.showOutPop = true;
+  //     console.log("show")
+  //     var self = this
+  //     setTimeout(() => self.hidePopoverOut(), 3000);
+  //   },
+  //   hidePopoverPositiveOut(){
+  //     this.showOutPopPos = false;
+  //     console.log("hide")
+  //   },
+  //   showPopoverPositiveOut(){
+  //     this.showOutPopPos = true;
+  //     console.log("show")
+  //     var self = this
+  //     setTimeout(() => self.hidePopoverPositiveOut(), 3000);
+  //   }
+  //   },
 }
 </script>
 
