@@ -1,6 +1,6 @@
 <template>
     <div class='customer-debt-handle'>
-<DebtTableReceived @rowClick="rowClick" ref="debtoTable"/>
+<DebtTableReceived @rowClick="rowClick" ref="debtTable"/>
 <div class="add-box" id="add-box">
     <label>Thanh toán nợ</label><br/>
     <form v-on:submit.prevent="onSubmit">
@@ -100,17 +100,19 @@ let data = {
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
-          OTP: self.OTP,
+          otp: self.OTP,
           key: self.key
         }}
 
                 axios.post(self.$store.state.host+'debt/pay',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
+            self.$refs.debtTable.dealRow(self.index);
             self.id = "";
             self.name='';
             self.amount='';
             self.note='';
+            self.index = -1;
             self.remaining = "Tài khoản còn: "+ formatter(response.data.Account.balance);
             self.showPopoverPositive(); 
           }else{

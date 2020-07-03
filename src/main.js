@@ -39,10 +39,10 @@ axios.interceptors.response.use(response => {
       console.log(response1)
       if(response1.data.Status){
         store.commit('setToken', {
-          token: response1.data.AccessToken
+          token: response1.data.Token
         });
-        response.config.headers['access-token'] = response1.data.AccessToken;
-        return axios.request(response.config);
+        response.config.headers['access-token'] = response1.data.Token;
+        return axios(response.config);
     }
     })
   }

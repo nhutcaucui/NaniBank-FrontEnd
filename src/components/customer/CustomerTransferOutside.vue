@@ -227,7 +227,7 @@ export default {
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
-          OTP: self.outOTP,
+          otp: self.outOTP,
           key: self.keyOut
         }}
                 axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{

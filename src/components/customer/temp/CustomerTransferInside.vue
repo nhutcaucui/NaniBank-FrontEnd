@@ -46,11 +46,9 @@
       </b-popover>
       <b-popover :show.sync="showInPopPos" target="container-box-left" triggers="manual" placement="left" container="error-popover">
             <template v-slot:title>Thành công</template>
-            <label>Đã chuyển khoản</label>
-      </b-popover>
-      <b-popover target="container-box-left" triggers="manual" placement="left" container="error-popover" variant="danger">
-            <template v-slot:title>Lỗi</template>
-            <label>{{errorMessage}}</label>
+            <label>Đã chuyển khoản</label><br/>
+            <label>Tài khoản còn: {{accountBalance}}</label><br/>
+            <label>{{fee}}</label>
       </b-popover>
             <b-modal id="in-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPin()">
       <textarea style="width: 100%" placeholder="OTP" v-model="OTPin"/>
@@ -61,6 +59,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import formatCurrency from 'format-currency'
 import { VueAutosuggest } from 'vue-autosuggest';
 export default {
     name:'CustomerTransferInside',
@@ -85,6 +84,8 @@ export default {
       OTPin:'',
       keyIn:'',
       transferId:0,
+      fee:'',
+      accountBalance:'',
       inSuggestions: [
         {
           data: [
@@ -130,7 +131,7 @@ export default {
           console.log(response);
           if(response.data.Status){
             self.options = []
-            self.options.push({text: "- Chọn tài khoản thanh toán -", value:"-1"})
+            self.options.push({text: "- Chọn tài khoản thanh toán -", value:-1})
             self.options.push({text: response.data.Debit.id, value: response.data.Debit.id})
           }
         }).catch(e =>{
@@ -195,6 +196,7 @@ export default {
                     customer_id: self.$store.state.id
                 },headers:{
                 timestamp: moment().format("X"),
+                'access-token': this.$store.state.accessToken,
                 }}
 
                 axios.get(self.$store.state.host+'otp/create',config).then(response =>{
@@ -204,31 +206,51 @@ export default {
                             this.$bvModal.show("in-otp-modal")
                 }else{
                     self.errorMessage = 'Có lỗi khi gửi OTP'
-                    self.showPopover();
+                    self.showPopoverIn();
                 }
                 }).catch(e =>{
                 console.log(e);
                 })
       }
     },
+
     checkOTPin(){
       var self = this;
-        let data = {
-                    
-                    from: self.$store.state.id,
-          to: self.query,
-          amount:self.amount,
-          message:self.note
-        }
+
+      if(self.inFee == 1){
+
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
-          OTP: self.inOTP,
+          otp: self.OTPin,
           key: self.keyIn
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+
+        let data ={
+          id: self.inAccount,
+          amount: 2000,
+        }
+
+          axios.post(self.$store.state.host+'transaction/draw',data, config).then(response =>{
           console.log(response);
-          if(response.data.Status){
+          self.fee = "Phí thanh toán: 2,000"
+
+          let data2 = {
+                    
+                    from: self.inAccount,
+          to: self.inQuery,
+          amount:self.inAmount,
+          message:self.inNote
+        }
+        let config2 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+          otp: self.OTPin,
+          key: self.keyIn
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
+          console.log(response2);
+          if(response2.data.Status){
             self.idValidIn = false;
             self.inQuery = "";
             self.inName='';
@@ -236,17 +258,85 @@ export default {
             self.inPhone='';
             self.inAmount='';
             self.inNote = '';
+            self.inAccount = -1;
+            self.accountBalance = formatCurrency(response2.data.Account.balance);
             self.showPopoverPositiveIn(); 
           }else{
+            if(response2.data.Message=="Balance is not enough")
+            {
+              self.errorMessage = 'Không đủ tiền'
+            self.showPopoverIn();
+            }else{
             self.errorMessage = 'OTP sai'
             self.showPopoverIn();
+            }
           }
         }).catch(e =>{
           console.log(e);
         })
-    },
-    clickHandlerIn() {
 
+          })
+      }else if (self.inFee == 2){
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+          otp: self.OTPin,
+          key: self.keyIn
+        }}
+
+        let data ={
+          id: self.inAccount,
+          amount: 2000,
+        }
+
+          axios.post(self.$store.state.host+'transaction/draw',data, config).then(response =>{
+          console.log(response);
+          self.fee = ""
+
+          let data2 = {
+                    
+          from: self.inAccount,
+          to: self.inQuery,
+          amount: (self.inAmount-2000),
+          message:self.inNote
+        }
+        let config2 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
+          otp: self.OTPin,
+          key: self.keyIn
+        }}
+                axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
+          console.log(response2);
+          if(response2.data.Status){
+            self.idValidIn = false;
+            self.inQuery = "";
+            self.inName='';
+            self.inEmail='';
+            self.inPhone='';
+            self.inAmount='';
+            self.inNote = '';
+            self.inAccount = -1;
+            self.accountBalance = formatCurrency(response2.data.Account.balance);
+            self.showPopoverPositiveIn(); 
+          }else{
+            if(response2.data.Message=="Balance is not enough")
+            {
+              self.errorMessage = 'Không đủ tiền'
+            self.showPopoverIn();
+            }else{
+            self.errorMessage = 'OTP sai'
+            self.showPopoverIn();
+            }
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+          })
+      }
+    },
+
+    clickHandlerIn() {
       // event fired when clicking on the input
     },
     onSelectedIn(item) {
@@ -304,13 +394,13 @@ export default {
                 }else{
                   self.idValid = false
             self.errorMessage='Không tìm thấy người dùng';
-            self.showPopover();
+            self.showPopoverIn();
                 }
   })
           }else{
             self.idValid = false
             self.errorMessage='Không tìm thấy người dùng';
-            self.showPopover();
+            self.showPopoverIn();
           }
         }).catch(e =>{
           console.log(e);
@@ -334,7 +424,7 @@ export default {
       this.showInPopPos = true;
       console.log("show")
       var self = this
-      setTimeout(() => self.hidePopoverPositiveIn(), 3000);
+      setTimeout(() => self.hidePopoverPositiveIn(), 10000);
     },
     },
 }
