@@ -126,6 +126,9 @@ export default {
       if(!this.idValid){
           this.errorMessage='Xin nhập số tài khoản'
           isError = true;
+      }else if (this.debtor == this.$store.state.id){
+        this.errorMessage='Không thể nhắc nợ chính mình'
+          isError = true;
       }else if(this.amount == ''){
           this.errorMessage='Xin nhập số tiền'
            isError = true;

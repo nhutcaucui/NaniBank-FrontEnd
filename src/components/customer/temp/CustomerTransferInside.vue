@@ -84,6 +84,7 @@ export default {
       inNote:'',
       OTPin:'',
       keyIn:'',
+      transferId:0,
       inSuggestions: [
         {
           data: [
@@ -191,12 +192,12 @@ export default {
       }else{
         var self = this;
                 let config= {params:{
-                    username: self.$store.state.username
+                    customer_id: self.$store.state.id
                 },headers:{
                 timestamp: moment().format("X"),
                 }}
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                axios.get(self.$store.state.host+'otp/create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.keyIn = response.data.Key;
@@ -272,24 +273,44 @@ export default {
       console.log(e) // FocusEvent
     },
     doneTypingIn(){
-      var self = this
+      var self = this;
         let config = {
                 headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
                 params: {
-                id: self.$store.state.id,
+                debit_id: self.inQuery,
                 },
                 }
 
-                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+                axios.get(self.$store.state.host+"debit/", config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            console.log("found 1")
-            self.idValidIn = true
-          }else{
-            self.idValidIn = false
+            let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debit.owner,
+                },
+            }
+            
+                
+            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+                    self.idValidIn = true;
+                    self.transferId = response2.data.Info.info.customer_id;
+                    self.inName=response2.data.Info.info.name;
+                    self.inEmail=response2.data.Info.info.email;
+                    self.inPhone=response2.data.Info.info.phone;
+                }else{
+                  self.idValid = false
             self.errorMessage='Không tìm thấy người dùng';
-            self.showPopoverIn();
+            self.showPopover();
+                }
+  })
+          }else{
+            self.idValid = false
+            self.errorMessage='Không tìm thấy người dùng';
+            self.showPopover();
           }
         }).catch(e =>{
           console.log(e);

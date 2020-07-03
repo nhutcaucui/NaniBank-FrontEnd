@@ -19,7 +19,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
-import formater from 'format-currency'
+import formaterCurrency from 'format-currency'
 export default {
     name: "DebtTableSent",
     mounted(){
@@ -48,8 +48,8 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
-            formater: (value, key, item) => { //eslint-disable-line
-              return formater(item.amount);
+            formatter: value => {
+              return formaterCurrency(value);
             },
             sortable: false,
           },
@@ -85,7 +85,6 @@ export default {
         this.selectedIndex=index;
       },
       cancelRow(){
-        this.items[this.selectedIndex].status='Hủy bỏ'
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -98,10 +97,11 @@ export default {
               }
         }
 
-                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                axios.delete(self.$store.state.host+'debt/', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
-                       //this.items.splice(index,1);
+                       this.items[this.selectedIndex].status='Hủy bỏ';
+                      self.reason = ""
                     }
                 })
       },
@@ -120,9 +120,9 @@ export default {
           console.log(response);
           if(response.data.Status){
             self.items = []
-            console.log(response.data)
             for (var i =0; i < response.data.Debt.length ; i++){
-              console.log
+              console.log(response.data.Debt[i].description)
+              if(response.data.Debt[i].creditor == self.$store.state.id && response.data.Debt[i].description != "Paid"){
                 let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
@@ -132,7 +132,11 @@ export default {
             }
             const amount = response.data.Debt[i].amount;
             const note = response.data.Debt[i].name;
+            const debtId = response.data.Debt[i].id;
             
+
+
+
             axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
 
@@ -140,9 +144,11 @@ export default {
                     id: response2.data.Info.debit.id, 
                     name: response2.data.Info.info.name, 
                     amount: amount, 
-                    status:"Chưa thanh toán", note: note})
+                    status:"Chưa thanh toán", note: note,
+                    debtId: debtId})
                 }
   })
+            }
                 
             }
           }

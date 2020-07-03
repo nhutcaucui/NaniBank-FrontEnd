@@ -19,6 +19,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import formaterCurrency from 'format-currency'
 export default {
     name: "DebtTableReceived",
     mounted(){
@@ -47,6 +48,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formatter: value => {
+              return formaterCurrency(value);
+            },
             sortable: false,
           },
           {
@@ -77,8 +81,15 @@ export default {
         this.selectedIndex=index;
         
       },
+      rowClick(record, index){
+        if(record.status == "Chưa thanh toán"){
+          this.$emit('rowClick', record, index)
+        }
+      },
+      dealRow(index){
+        this.items[index].status='Đã thanh toán'
+      },
       cancelRow(){
-        this.items[this.selectedIndex].status='Hủy bỏ'
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -91,20 +102,13 @@ export default {
               }
         }
 
-                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+                axios.delete(self.$store.state.host+'debt/', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
-                       //this.items.splice(index,1);
+                       this.items[this.selectedIndex].status='Hủy bỏ';
+                        self.reason = ""
                     }
                 })
-      },
-      rowClick(record, index){
-        if(record.status == "Chưa thanh toán"){
-          this.$emit('rowClick', record, index)
-        }
-      },
-      dealRow(index){
-        this.items[index].status='Đã thanh toán'
       },
       loadData(){
         var self = this
@@ -117,11 +121,38 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debt/pay', config).then(response =>{
+                axios.get(self.$store.state.host+'debt/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            for (var i =0; i < response.data.Debt.length ; i++){
+              console.log(response.data.Debt[i])
+            if(response.data.Debt[i].debtor == self.$store.state.id && response.data.Debt[i].description != "Paid"){
+                let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debt[i].creditor,
+                },
+            }
+            const amount = response.data.Debt[i].amount;
+            const note = response.data.Debt[i].name;
+            const debtId = response.data.Debt[i].id;
+            
+            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+
+                    self.items.push({stt: self.items.length +1 , 
+                    id: response2.data.Info.debit.id, 
+                    name: response2.data.Info.info.name, 
+                    amount: amount, 
+                    status:"Chưa thanh toán", note: note,
+                    debtId: debtId})
+                }
+  })
+            }
+                
+            }
           }
         }).catch(e =>{
           console.log(e);

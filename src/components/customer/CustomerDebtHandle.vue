@@ -20,6 +20,7 @@
       <b-popover :show.sync="showPopPositive" target="add-box" triggers="manual" placement="bottom" container="error-popover">
             <template v-slot:title>Thành công</template>
             <label>Đã thanh toán nợ</label>
+            <label>{{remaining}}</label>
       </b-popover>
       <div id="error-popover"></div>
 
@@ -35,6 +36,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import DebtTableReceived from './DebtTableReceived'
+import formatter from 'format-currency'
 export default {
     name:'CustomerDebtHandle',
     components:{
@@ -48,10 +50,12 @@ export default {
             note:'',
             OTP:'',
             key:'',
+            debtId:0,
             index: -1,
             showPop: false,
             showPopPositive:false,
-            errorMessage:''
+            errorMessage:'',
+            remaining:''
         }
     },
     methods:{
@@ -63,12 +67,13 @@ export default {
             else{
                       var self = this;
                 let config= {params:{
-                    username: self.$store.state.username
+                    customer_id: self.$store.state.id
                 },headers:{
                 timestamp: moment().format("X"),
+                'access-token': this.$store.state.accessToken,
                 }}
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                axios.get(self.$store.state.host+'otp/create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.key = response.data.Key
@@ -84,9 +89,10 @@ export default {
             }
         },
         onOTPCheck(){
+          var self = this;
 let data = {
                     
-                    id: self.id,
+                    id: self.debtId,
           // name: self.name,
           // amount:self.amount,
           // message:self.note
@@ -97,6 +103,7 @@ let data = {
           OTP: self.OTP,
           key: self.key
         }}
+
                 axios.post(self.$store.state.host+'debt/pay',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
@@ -104,9 +111,10 @@ let data = {
             self.name='';
             self.amount='';
             self.note='';
+            self.remaining = "Tài khoản còn: "+ formatter(response.data.Account.balance);
             self.showPopoverPositive(); 
           }else{
-            self.errorMessage = ''
+            self.errorMessage = 'OTP sai'
             self.showPopover();
           }
         }).catch(e =>{
@@ -119,7 +127,8 @@ let data = {
         self.name = record.name;
         self.amount = record.amount;
         self.note = record.note;
-        self.index = index
+        self.index = index;
+        self.debtId = record.debtId;
       },
       hidePopover(){
       this.showPop = false;
