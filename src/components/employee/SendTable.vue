@@ -43,10 +43,10 @@ export default {
           },
         ],
         items: [
-          { isActive: true, stt: 1, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
-          { isActive: false, stt: 2, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
-          { isActive: false, stt: 3, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
-          { isActive: true, stt: 4, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
+          // { isActive: true, stt: 1, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
+          // { isActive: false, stt: 2, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000" },
+          // { isActive: false, stt: 3, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000"  },
+          // { isActive: true, stt: 4, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000"  }
         ]
       }
     },

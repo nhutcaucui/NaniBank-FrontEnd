@@ -49,7 +49,7 @@ export default {
       }
     },
     methods:{
-      deleteRow(index){
+     async deleteRow(index){
         if(confirm("Xóa người nhận?")){
           var self = this
         let config = {
@@ -62,7 +62,7 @@ export default {
               }
         }
 
-                axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+               await axios.delete(self.$store.state.host+'users/customer/receiver', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
                        this.items.splice(index,1);
@@ -81,7 +81,7 @@ export default {
         this.items[index] = {id:id,name: name}
         this.$refs.table.refresh();
       },
-      loadTable(){
+     async loadTable(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -91,7 +91,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+               await axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

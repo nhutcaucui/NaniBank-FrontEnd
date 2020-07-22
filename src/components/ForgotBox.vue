@@ -85,7 +85,7 @@ export default {
         }
     },
     methods:{
-        onSubmitSent(){
+        async onSubmitSent(){
             if(this.username == ''){
                 this.errorMessage= "Xin nhập tên tài khoản"
                 this.showPopover()
@@ -97,7 +97,7 @@ export default {
                 timestamp: moment().format("X"),
                 }}
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+                await axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                     self.successMessage="Đã gửi OTP đến email"
@@ -112,7 +112,7 @@ export default {
                 })
             }
         },
-        onSubmit(){
+        async onSubmit(){
             if(this.OTP == ''){
                 this.errorMessage= "Xin nhập OTP"
                 this.showPopover()
@@ -135,7 +135,7 @@ export default {
                         key: self.key
                     }
                 }
-                axios.post(self.$store.state.host+'users/password/reset',data, config).then(response =>{
+                await axios.post(self.$store.state.host+'users/password/reset',data, config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                     self.successMessage="Đã đặt lại mật khẩu"

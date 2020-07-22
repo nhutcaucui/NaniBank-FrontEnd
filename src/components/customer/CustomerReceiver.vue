@@ -52,7 +52,7 @@ export default {
         ReceiverTable
     },
     methods:{
-        onSubmit(){
+       async onSubmit(){
             var self = this;
             if(this.isEdit){
                 
@@ -66,7 +66,7 @@ export default {
                timestamp: moment().format("X"),
               }
          }
-        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
+        await axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.$refs.receiverTable.editRow(self.index, self.id ,self.name)
@@ -101,7 +101,7 @@ export default {
                'access-token': self.$store.state.accessToken
               }
          }
-        axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
+       await axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.$refs.receiverTable.addRow(self.id ,self.name)

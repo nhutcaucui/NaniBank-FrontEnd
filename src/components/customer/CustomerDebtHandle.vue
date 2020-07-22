@@ -59,7 +59,7 @@ export default {
         }
     },
     methods:{
-        onSubmit(){
+        async onSubmit(){
             if(this.index == -1){
                 this.errorMessage = "Xin chọn nợ từ bảng"
                 this.showPopover();
@@ -73,7 +73,7 @@ export default {
                 'access-token': this.$store.state.accessToken,
                 }}
 
-                axios.get(self.$store.state.host+'otp/create',config).then(response =>{
+               await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.key = response.data.Key
@@ -88,7 +88,7 @@ export default {
         
             }
         },
-        onOTPCheck(){
+        async onOTPCheck(){
           var self = this;
 let data = {
                     
@@ -104,7 +104,7 @@ let data = {
           key: self.key
         }}
 
-                axios.post(self.$store.state.host+'debt/pay',data, config).then(response =>{
+               await axios.post(self.$store.state.host+'debt/pay',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.$refs.debtTable.dealRow(self.index);

@@ -118,7 +118,7 @@ export default {
     }
   },
   methods: {
-    loadDebit(){
+    async loadDebit(){
       var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -128,7 +128,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debit/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debit/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.options = []
@@ -139,7 +139,7 @@ export default {
           console.log(e);
         })
     },
-      loadReceiver(){
+     async loadReceiver(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -149,7 +149,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+               await axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.outSuggestions[0].data = []
@@ -161,7 +161,7 @@ export default {
           console.log(e);
         })
     },
-    onSubmitOut(){
+    async onSubmitOut(){
       var isError = false;
         if(this.outAccount === -1){
           this.errorMessage='Xin chọn tài khoản nguồn'
@@ -200,7 +200,7 @@ export default {
                 timestamp: moment().format("X"),
                 }}
 
-                axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+               await axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.keyOut = response.data.Key;
@@ -215,7 +215,7 @@ export default {
 
       }
     },
-    checkOTPout(){
+   async checkOTPout(){
       var self = this;
         let data = {
                     
@@ -230,7 +230,7 @@ export default {
           otp: self.outOTP,
           key: self.keyOut
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+               await axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.idValidIn = false;
@@ -276,7 +276,7 @@ export default {
       console.log(e) // FocusEvent
     },
 
-  doneTypingOut(){
+ async doneTypingOut(){
       var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -286,7 +286,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+               await axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             console.log("found 1")

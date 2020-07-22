@@ -14,9 +14,9 @@
     <button class="submit-button" id="submit-filter" v-on:click="loadTable()">Lọc</button>
     </form>
     </div>
-    <b-popover target="employee-history-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
+    <b-popover :show.sync="showPop" target="employee-history-box" triggers="manual" placement="bottom" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
-            <label v-bind="errorMessage"></label>
+            <label >{{errorMessage}}</label>
       </b-popover>
     </div>
 </template>
@@ -26,10 +26,12 @@ export default {
     name:'CustomerHistory',
     methods: {
         loadTable: function(){
+            var self = this;
             console.log('help   ')
             if(this.selected === '1'){
                 if(self.$route.path != '/Customer/History/Send'){
                     self.$router.push({name:"CustomerSend"})
+                    console.log(self.$route.path);
                     }else{
                         self.$router.push("/Customer/History").then(() =>
                             {
@@ -63,11 +65,24 @@ export default {
         },
         onSubmit(){
 
-        }
+        },
+
+        showPopover(){
+      this.showPop = true;
+      var self = this
+      setTimeout(() => self.hidePopover(), 3000);
+    },
+    hidePopoverSent(){
+      this.showPopSent = false;
+      console.log("hide")
+      
+    },
     },
     data(){
         return{
             selected : '1',
+            errorMessage:'',
+            showPop:false,
         }
     },
 }

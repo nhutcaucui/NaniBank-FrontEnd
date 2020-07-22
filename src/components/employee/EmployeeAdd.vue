@@ -50,7 +50,7 @@ export default {
     }
   },
   methods:{
-    onSubmit(){
+   async onSubmit(){
         var isError = false;
         if(this.name == ''){
         this.errorMessage = 'Xin nhập tên khách hàng'
@@ -86,7 +86,7 @@ export default {
         let config={headers:{
           timestamp: moment().format("X"),
         }}
-        axios.post(self.$store.state.host+'users/customer/', data, config).then(response =>{
+       await axios.post(self.$store.state.host+'users/customer/', data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
               self.name= ''

@@ -46,7 +46,7 @@ export default {
         }
     },
     methods:{
-        onSubmit(){
+        async onSubmit(){
             var isError = false;
             if(this.oldPass == ''){
                 this.errorMessage='Xin nhập mật khẩu cũ'
@@ -76,7 +76,7 @@ export default {
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
         }}
-                axios.post(self.$store.state.host+'users/password/change',data, config).then(response =>{
+           await axios.post(self.$store.state.host+'users/password/change',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.oldPass= ''

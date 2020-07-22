@@ -33,15 +33,15 @@ export default {
           
         ],
         items: [
-          {id: 16964582252, balance:"1,200,222" },
-          { id: 25451544584, balance:"5,000" },
-          { id: 25984844994, balance:"2,000"  },
-          { id: 25983664884, balance:"3,000,000"  }
+          // {id: 16964582252, balance:"1,200,222" },
+          // { id: 25451544584, balance:"5,000" },
+          // { id: 25984844994, balance:"2,000"  },
+          // { id: 25983664884, balance:"3,000,000"  }
         ]
       }
     },
     methods:{
-      loadData(){
+     async loadData(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -51,7 +51,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'saving/s', config).then(response =>{
+               await axios.get(self.$store.state.host+'saving/s', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

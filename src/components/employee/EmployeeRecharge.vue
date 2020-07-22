@@ -41,7 +41,7 @@ export default {
         }
     },
     methods:{
-        onSubmit(){
+       async onSubmit(){
             var isError = false;
             if(this.id == ''){
         this.errorMessage = 'Xin nhập tài khoản'
@@ -66,7 +66,7 @@ export default {
           timestamp: moment().format("X"),
           'access-token': self.$store.state.accessToken,
         }}
-        axios.post(self.$store.state.host+'transaction/charge',data, config).then(response =>{
+       await axios.post(self.$store.state.host+'transaction/charge',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
               self.id= ''

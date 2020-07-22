@@ -14,6 +14,9 @@ import axios from 'axios'
 import moment from 'moment'
 export default {
     name: "TransactionTable",
+    mounted(){
+      this.loadData();
+    },
     data(){
       return{
         total: '0',
@@ -25,17 +28,20 @@ export default {
           },
           {
             key: 'sender',
-            label: 'Người gửi',
+            label: 'Tài khoản gửi',
             sortable: false
           },
           {
             key: 'receiver',
-            label: 'Người nhận',
+            label: 'Tài khoản nhận',
             sortable: false,
           },
           {
             key: 'date',
             label: 'Ngày',
+            formatter: value => {
+              return moment.unix(value).format("DD/MM/YYYY");
+            },
             sortable: false,
           },
           {
@@ -49,66 +55,82 @@ export default {
             sortable: false,
           },
         ],
+        oriItems: [
+          // { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", id:15 },
+          // { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", id:20 },
+          // { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", id:20 },
+          // { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", id:20 }
+        ],
         items: [
-          { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", id:15 },
-          { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", id:20 },
-          { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", id:20 },
-          { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", id:20 }
+          // { isActive: true, stt: 1, sender: 'Dickerson', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", id:15 },
+          // { isActive: false, stt: 2, sender: 'Larsen', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", id:20 },
+          // { isActive: false, stt: 3, sender: 'Geneva', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", id:20 },
+          // { isActive: true, stt: 4, sender: 'Jami', receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", id:20 }
         ]
       }
     },
     methods:{
-      loadData(){
+      async loadData(){
         var self = this
-        axios.get('http://35.240.195.17/users/employee', {headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.items = []
-            //asign items
-          }
-        }).catch(e =>{
-          console.log(e);
-        })
-      },
-      filterByDate(startDate, endDate){
-        var self = this
-        axios.get('http://35.240.195.17/users/employee',{
-          start: startDate,
-          end: endDate,
 
-        },
-         {
-           headers:{
+        let config = {headers:{
           timestamp: moment().unix(),
-        }}).then(response =>{
+          'access-token': this.$store.state.accessToken,
+        },
+        }
+
+        await axios.get(self.$store.state.host + 'transaction/history/all', config).then(response =>{
           console.log(response);
           if(response.data.Status){
-            self.items = []
-            //asign items
+            self.items = [];
+            self.oriItems = [];
+            for (let  i = 0; i< response.data.Histories.length; i++){
+              if(response.data.Histories[i].type != 1 && response.data.Histories[i].type != 0){
+
+                let date = 1595427524;
+                if(response.data.Histories[i].time != null){
+                  date = response.data.Histories[i].time
+                }
+
+                self.oriItems.push({stt: response.data.Histories[i].id, 
+                sender: response.data.Histories[i].from_account,
+                receiver: response.data.Histories[i].to_account,
+                date: date,
+                bank: "NaniBank",
+                amount: response.data.Histories[i].amount
+                })
+
+                self.items.push({stt: response.data.Histories[i].id, 
+                sender: response.data.Histories[i].from_account,
+                receiver: response.data.Histories[i].to_account,
+                date: date,
+                bank: "NaniBank",
+                amount: response.data.Histories[i].amount
+                })
+              }
+            }
           }
         }).catch(e =>{
           console.log(e);
         })
       },
-      filterByBank(bank){
-        var self = this
-        axios.get('http://35.240.195.17/users/employee',{
-          bank: bank,
-        },
-         {
-           headers:{
-          timestamp: moment().unix(),
-        }}).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.items = []
-            //asign items
+      async filterByDate(startDate, endDate){
+        var self = this;
+        self.items = [];
+        for(let i = 0; i< self.oriItems.length; i++){
+          if (self.oriItems[i].date >= startDate && self.oriItems[i].date <= endDate){
+            self.item.push(self.oriItems[i]);
           }
-        }).catch(e =>{
-          console.log(e);
-        })
+        }
+      },
+      async filterByBank(bank){
+        var self = this;
+        self.items = [];
+        for(let i = 0; i< self.oriItems.length; i++){
+          if (self.oriItems[i].bank.toLowerCase() == bank.toLowerCase()){
+            self.item.push(self.oriItems[i]);
+          }
+        }
       }
     }
 }

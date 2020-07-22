@@ -66,7 +66,7 @@ export default {
       }
   },
   methods:{
-    onSubmit(){
+    async onSubmit(){
       
       var isError = false;
        if(this.username == ''){
@@ -104,7 +104,7 @@ export default {
                timestamp: moment().format("X"),
               }
          }
-        axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
+        await axios.post(self.$store.state.host+ 'users/employee/create',data,config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.$refs.employeeTableAdd.addRow(response.data.Admin.id ,self.username)

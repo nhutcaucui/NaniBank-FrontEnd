@@ -66,7 +66,7 @@ export default {
         self.phone = record.sdt;
         self.index = index
       },
-      onSubmit(){
+      async onSubmit(){
         var isError = false;
         var self = this;
         if(self.id == ''){
@@ -94,7 +94,7 @@ export default {
         if(isError){
           this.showPopover();
         }else{
-          axios.post(self.$store.state.host+'users/admin/edit',{
+        await  axios.post(self.$store.state.host+'users/admin/edit',{
           id: self.id,
           name: self.name,
           email: self.email,

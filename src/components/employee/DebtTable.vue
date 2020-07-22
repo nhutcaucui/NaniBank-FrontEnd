@@ -1,7 +1,7 @@
 <template>
 <div class="transaction-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="debt-table"></b-table>
+            <b-table ref='table' striped hover :items="items" :fields="fields" id="debt-table"></b-table>
           </div>
 </div>
 </template>
@@ -22,21 +22,10 @@ export default {
             sortable: true
           },
           {
-            key: 'sender',
+            key: 'name',
             label: 'Người gửi',
             sortable: false,
-          },
-          {
-            key: 'date',
-            label: 'Ngày',
-            sortable: false,
-          },
-          {
-            key: 'bank',
-            label: 'Ngân hàng',
-            sortable: true,
-          },
-          
+          },          
           {
             key: 'amount',
             label: 'Số tiền',
@@ -54,17 +43,24 @@ export default {
           },
         ],
         items: [
-          { isActive: true, stt: 1, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", status:"Đã thanh toán" },
-          { isActive: false, stt: 2, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", status:"Chưa thanh toán" },
-          { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
-          { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
+          // { isActive: true, stt: 1, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", status:"Đã thanh toán" },
+          // { isActive: false, stt: 2, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", status:"Chưa thanh toán" },
+          // { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
+          // { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
     },
     methods:{
       loadData(data){
-        //var self = this
+        var self = this
+        self.items =[];
         console.log(data)
+        for(var i =0 ;i< data.length; i++){
+          self.items.push(data[i])
+          
+        }
+        console.log(self.items);
+        self.$refs.table.refresh()
       },
     }
 }

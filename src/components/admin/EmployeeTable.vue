@@ -2,9 +2,9 @@
 <div class="employee-table-container">
 
   <div style="height:400px; overflow:auto;" class="scrolling-table">
-      <b-table ref="table" striped hover :items="items" :fields="fields" id="employee" @row-clicked="rowClick">
+      <b-table ref="table" striped hover :items="items" :fields="fields" id="employee">
         <template v-slot:cell(action)="row">
-        <b-button size="sm" class="mr-1" variant="danger" v-on:click="deleteRow(row.index, row.record)">
+        <b-button size="sm" class="mr-1" variant="danger" v-on:click="deleteRow(row.index)">
           <b-icon-trash/>
         </b-button>
       </template>
@@ -23,16 +23,19 @@ export default {
       this.loadData();
     },
     methods:{
-      loadData(){
+      async loadData(){
         var self = this
         let config ={headers:{
           timestamp: moment().format("X"),
+          'access-token': this.$store.state.accessToken,
         }}
-        axios.get(self.$store.state.host+'users/employee', config).then(response =>{
+        await axios.get(self.$store.state.host+'users/employee', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            for(let i =0; i< response.data.Employee.length; i++){
+              self.items.push({id: response.data.Employee[i].id, username: response.data.Employee[i].username})
+            }
           }
         }).catch(e =>{
           console.log(e);
@@ -43,18 +46,25 @@ export default {
           self.items.push({id: id, username: username})
         
       },
-      rowClick(record, index){
-        this.$emit('rowClick', record, index)
-      },
-      deleteRow(index, record){
+      // rowClick(record, index){
+      //   this.$emit('rowClick', record, index)
+      // },
+
+      async deleteRow(index){
         if(confirm("Xóa giao dịch viên?")){
-          let config ={headers:{
-          timestamp: moment().format("X"),
-        }}
-        let data={
-          id:record.id,
+        var self =this;
+
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken
+                    },
+                
+              data:{
+          username: self.items[index].username,
         }
-        axios.post(self.$store.state.host+'users/employee', data, config).then(response =>{
+        }
+
+        await axios.delete(self.$store.state.host+'users/employee', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items.splice(index, 1);
@@ -86,10 +96,10 @@ export default {
           }
         ],
         items: [
-          {id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', username:"dickcock" },
-          {id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', username:"larva" },
-          {id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', username:"havana"},
-          {id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', username:"james"}
+          // {id: 1, ho_ten: 'Dickerson', email:'gg@gg', sdt: '094335498', username:"dickcock" },
+          // {id: 2, ho_ten: 'Larsen', email:'gg@gg',sdt: '033545699', username:"larva" },
+          // {id: 3, ho_ten: 'Geneva', email:'gg@gg', sdt: '09746546', username:"havana"},
+          // {id: 4, ho_ten: 'Jami', email:'gg@gg',sdt: '152485458', username:"james"}
         ]
       }
     },

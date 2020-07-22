@@ -98,7 +98,7 @@ export default {
     }
   },
   methods: {
-    loadReceiver(){
+    async loadReceiver(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -108,7 +108,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+              await axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.suggestions[0].data = []
@@ -120,7 +120,7 @@ export default {
           console.log(e);
         })
     },
-    onSubmit(){
+    async onSubmit(){
       var isError = false;
       console.log(this.idValid);
       if(!this.idValid){
@@ -155,7 +155,7 @@ export default {
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
         }}
-                axios.post(self.$store.state.host+'debt/',data, config).then(response =>{
+          await axios.post(self.$store.state.host+'debt/',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
              self.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note);
@@ -203,7 +203,7 @@ export default {
     focusMe(e) {
       console.log(e) // FocusEvent
     },
-    doneTyping(){
+    async doneTyping(){
       var self = this;
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -213,7 +213,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+"debit/", config).then(response =>{
+                await axios.get(self.$store.state.host+"debit/", config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             let config2 = {
@@ -225,7 +225,7 @@ export default {
             }
             
                 
-            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+            await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
                     self.idValid = true;
                     console.log(self.idValid);

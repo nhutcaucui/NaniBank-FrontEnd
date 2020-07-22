@@ -35,7 +35,7 @@ import axios from 'axios';
 export default {
     name:'EmployeeHistory',
     methods: {
-        loadTable: function(){
+       async loadTable(){
             var self = this;
             var type = '';
             if(self.selected ===1){
@@ -53,7 +53,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host + 'transaction/history', config).then(response =>{
+               await axios.get(self.$store.state.host + 'transaction/history', config).then(response =>{
             console.log(response);
             if(response.data.Status){
                 var data = response.data;
@@ -88,18 +88,49 @@ export default {
             console.log(e);
             })
             }else{
-            let config = {
+        let config = {
                 headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
                 params: {
-                id: self.id,
+                customer_id: self.id,
+                //filter: "sender"
                 },
                 }
 
-                axios.get(self.$store.state.host + 'transaction/history', config).then(response =>{
-            console.log(response);
-            if(response.data.Status){
-                var data = response.data;
+            const items = [];
+
+               await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
+          console.log(response);
+          if(response.data.Status){
+            self.items = []
+            for (var i =0; i < response.data.Debt.length ; i++){
+               if(response.data.Debt[i].description == "Paid"){
+              let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debt[i].creditor,
+                },
+            }
+            const amount = response.data.Debt[i].amount;
+            const note = response.data.Debt[i].name;
+            const debtId = response.data.Debt[i].id;
+
+           await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+                    items.push({stt: self.items.length +1 , 
+                    id: response2.data.Info.debit.id, 
+                    name: response2.data.Info.info.name, 
+                    amount: amount, 
+                    status:"Chưa thanh toán", note: note,
+                    debtId: debtId})
+                }
+                })
+            }
+                
+            }
+
+            var data = items;
                     if(self.$route.path != '/Employee/History/Debt'){
                     self.$router.push({name:"EmployeeDebt", params:{data: data}})
                     }else{
@@ -109,14 +140,14 @@ export default {
                                 })})
                         
                     }
-            }else{
-                self.errorMessage = "Tài khoản không tồn tại"
-                self.showPopover();
-            }}).catch(e=>console.log(e))
 
-            }
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
             
-        },
+        }
+       },
         onSubmit(){
 
         },

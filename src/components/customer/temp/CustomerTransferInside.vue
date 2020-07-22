@@ -117,7 +117,7 @@ export default {
     },
   },
   methods: {
-    loadDebit(){
+   async loadDebit(){
       var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -127,7 +127,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debit/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debit/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.options = []
@@ -138,7 +138,7 @@ export default {
           console.log(e);
         })
     },
-      loadReceiver(){
+     async loadReceiver(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -148,7 +148,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
+               await axios.get(self.$store.state.host+'users/customer/receiver', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.inSuggestions[0].data = []
@@ -159,7 +159,7 @@ export default {
           console.log(e);
         })
     },
-    onSubmitIn(){
+    async onSubmitIn(){
         var isError = false;
         if(this.inAccount === -1){
           this.errorMessage='Xin chọn tài khoản nguồn'
@@ -199,7 +199,7 @@ export default {
                 'access-token': this.$store.state.accessToken,
                 }}
 
-                axios.get(self.$store.state.host+'otp/create',config).then(response =>{
+               await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.keyIn = response.data.Key;
@@ -214,7 +214,7 @@ export default {
       }
     },
 
-    checkOTPin(){
+   async checkOTPin(){
       var self = this;
 
       if(self.inFee == 1){
@@ -231,7 +231,7 @@ export default {
           amount: 2000,
         }
 
-          axios.post(self.$store.state.host+'transaction/draw',data, config).then(response =>{
+         await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async function(response){
           console.log(response);
           self.fee = "Phí thanh toán: 2,000"
 
@@ -248,7 +248,7 @@ export default {
           otp: self.OTPin,
           key: self.keyIn
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
+               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
           console.log(response2);
           if(response2.data.Status){
             self.idValidIn = false;
@@ -289,7 +289,7 @@ export default {
           amount: 2000,
         }
 
-          axios.post(self.$store.state.host+'transaction/draw',data, config).then(response =>{
+         await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async response =>{
           console.log(response);
           self.fee = ""
 
@@ -306,7 +306,7 @@ export default {
           otp: self.OTPin,
           key: self.keyIn
         }}
-                axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
+               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
           console.log(response2);
           if(response2.data.Status){
             self.idValidIn = false;
@@ -362,7 +362,7 @@ export default {
     focusMeIn(e) {
       console.log(e) // FocusEvent
     },
-    doneTypingIn(){
+   async doneTypingIn(){
       var self = this;
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -372,7 +372,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+"debit/", config).then(response =>{
+               await axios.get(self.$store.state.host+"debit/", config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             let config2 = {
@@ -384,7 +384,7 @@ export default {
             }
             
                 
-            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+           await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
                     self.idValidIn = true;
                     self.transferId = response2.data.Info.info.customer_id;

@@ -29,20 +29,15 @@ export default {
             sortable: true
           },
           {
-            key: 'sender',
+            key: 'name',
             label: 'Người gửi',
             sortable: false,
           },
-          {
-            key: 'date',
-            label: 'Ngày',
-            sortable: false,
-          },
-          {
-            key: 'bank',
-            label: 'Ngân hàng',
-            sortable: true,
-          },
+          // {
+          //   key: 'date',
+          //   label: 'Ngày',
+          //   sortable: false,
+          // },
           {
             key: 'amount',
             label: 'Số tiền',
@@ -58,37 +53,58 @@ export default {
             label: 'Trạng thái',
             sortable: false,
           },
-          
-          {
-            key:'action',
-            label:''
-          }
         ],
         items: [
-          { isActive: true, stt: 1, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", status:"Đã thanh toán" },
-          { isActive: false, stt: 2, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", status:"Chưa thanh toán" },
-          { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
-          { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
+          // { isActive: true, stt: 1, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222", status:"Đã thanh toán" },
+          // { isActive: false, stt: 2, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"5,000", status:"Chưa thanh toán" },
+          // { isActive: false, stt: 3, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"2,000", status:"Đã thanh toán"  },
+          // { isActive: true, stt: 4, sender:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"3,000,000", status:"Đã thanh toán"  }
         ]
       }
     },
     methods:{
-      loadData(){
+     async loadData(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
                 params: {
                 customer_id: self.$store.state.id,
-                filter: "sender"
+                //filter: "sender"
                 },
                 }
 
-                axios.get(self.$store.state.host+'debt/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
-            //asign items
+            for (var i =0; i < response.data.Debt.length ; i++){
+               if(response.data.Debt[i].description == "Paid"){
+              let config2 = {
+              headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                    customer_id: response.data.Debt[i].creditor,
+                },
+            }
+            const amount = response.data.Debt[i].amount;
+            const note = response.data.Debt[i].name;
+            const debtId = response.data.Debt[i].id;
+            
+           await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+                if(response2.data.Status){
+
+                    self.items.push({stt: self.items.length +1 , 
+                    id: response2.data.Info.debit.id, 
+                    name: response2.data.Info.info.name, 
+                    amount: amount, 
+                    status:"Đã thanh toán", note: note,
+                    debtId: debtId})
+                }
+  })
+            }
+                
+            }
           }
         }).catch(e =>{
           console.log(e);

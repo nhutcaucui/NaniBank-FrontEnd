@@ -84,7 +84,7 @@ export default {
       setSelectedIndex(index){
         this.selectedIndex=index;
       },
-      cancelRow(){
+      async cancelRow(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -97,7 +97,7 @@ export default {
               }
         }
 
-                axios.delete(self.$store.state.host+'debt/', config).then(response =>{
+               await axios.delete(self.$store.state.host+'debt/', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
                        this.items[this.selectedIndex].status='Hủy bỏ';
@@ -105,7 +105,7 @@ export default {
                     }
                 })
       },
-      loadData(){
+      async loadData(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -116,7 +116,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debt/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
@@ -137,7 +137,7 @@ export default {
 
 
 
-            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+           await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
 
                     self.items.push({stt: self.items.length +1 , 

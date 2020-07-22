@@ -58,7 +58,7 @@ export default {
         onVerify(){
             this.verified = true;
         },
-        onSubmit(){
+        async onSubmit(){
             var self = this
             
             if(self.username == '' || self.password == ''){
@@ -79,7 +79,7 @@ export default {
                     }
                 }
                 
-                axios.post(self.$store.state.host+'users/login',data, config).then(response =>{
+                await axios.post(self.$store.state.host+'users/login',data, config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                     self.$store.commit('setUser',{

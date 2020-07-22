@@ -33,12 +33,12 @@ export default {
           
         ],
         items: [
-          {id: 16964582252, balance:"1,200,222" },
+          // {id: 16964582252, balance:"1,200,222" },
         ]
       }
     },
     methods:{
-      loadData(){
+      async loadData(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -48,7 +48,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debit/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debit/', config).then(response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []

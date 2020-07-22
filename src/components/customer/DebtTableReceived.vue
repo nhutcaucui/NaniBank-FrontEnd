@@ -1,7 +1,7 @@
 <template>
 <div class="transaction-table-container">
           <div style="height:400px; overflow:auto;" class="scrolling-table">
-            <b-table striped hover :items="items" :fields="fields" id="debt-table-received" @row-clicked="rowClick">
+            <b-table ref='table' striped hover :items="items" :fields="fields" id="debt-table-received" @row-clicked="rowClick">
               <template v-slot:cell(action)="row">
         <b-button size="sm" class="mr-1" variant="danger" v-if="row.item.status=='Chưa thanh toán'" @click ="setSelectedIndex(row.index)" v-b-modal="'reason-modal'">
           <b-icon-trash/>
@@ -89,7 +89,7 @@ export default {
       dealRow(index){
         this.items[index].status='Đã thanh toán'
       },
-      cancelRow(){
+     async cancelRow(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -102,7 +102,7 @@ export default {
               }
         }
 
-                axios.delete(self.$store.state.host+'debt/', config).then(response =>{
+               await axios.delete(self.$store.state.host+'debt/', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
                        this.items[this.selectedIndex].status='Hủy bỏ';
@@ -110,7 +110,7 @@ export default {
                     }
                 })
       },
-      loadData(){
+     async loadData(){
         var self = this
         let config = {
                 headers: {timestamp: moment().format("X"),
@@ -121,7 +121,7 @@ export default {
                 },
                 }
 
-                axios.get(self.$store.state.host+'debt/', config).then(response =>{
+               await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             self.items = []
@@ -139,7 +139,7 @@ export default {
             const note = response.data.Debt[i].name;
             const debtId = response.data.Debt[i].id;
             
-            axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+           await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
 
                     self.items.push({stt: self.items.length +1 , 
