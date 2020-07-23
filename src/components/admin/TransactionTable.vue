@@ -12,6 +12,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import formaterCurrency from 'format-currency'
 export default {
     name: "TransactionTable",
     mounted(){
@@ -52,6 +53,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formatter: value => {
+              return formaterCurrency(value);
+            },
             sortable: false,
           },
         ],
@@ -79,7 +83,7 @@ export default {
         },
         }
 
-        await axios.get(self.$store.state.host + 'transaction/history/all', config).then(response =>{
+        await axios.get(self.$store.state.host + 'transaction/history/all', config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             self.items = [];
@@ -109,6 +113,62 @@ export default {
                 })
               }
             }
+                await axios.get(self.$store.state.host + 'partner/history/all', config).then( async response2 =>{
+          console.log(response2);
+          if(response2.data.Status){
+            let bankId = [];
+            await axios.get(self.$store.state.host + 'partner/all', config).then( async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+              for(let i=0; i < response3.data.Partners.length;i++){
+                bankId.push({id: response3.data.Partners[i].id, name: response3.data.Partners[i].name});
+              }
+          }
+            })
+                
+          for (let  i = 0; i< response2.data.Histories.length; i++){
+              if(response2.data.Histories[i].type != 1 && response2.data.Histories[i].type != 0){
+
+                let date = 1595427524;
+                if(response2.data.Histories[i].time != null){
+                  date = response2.data.Histories[i].time
+                }
+
+                let bankName = ""
+
+                for(let j =0; j< bankId.length;i++){
+                if(response2.data.Histories[i].partner_id == bankId[j].id){
+                  bankName = bankId[j].name;
+                }
+                }
+                self.oriItems.push({stt: response2.data.Histories[i].id, 
+                sender: response2.data.Histories[i].from_account,
+                receiver: response2.data.Histories[i].to_account,
+                date: date,
+                bank: bankName,
+                amount: response2.data.Histories[i].amount
+                })
+
+                self.items.push({stt: response2.data.Histories[i].id, 
+                sender: response2.data.Histories[i].from_account,
+                receiver: response2.data.Histories[i].to_account,
+                date: date,
+                bank: bankName,
+                amount: response2.data.Histories[i].amount
+                })
+              }
+            }
+
+            var calTotal = 0;
+            for(let i = 0 ; i< self.items.length; i++){
+              calTotal += self.items[i].amount;
+            }
+            
+            self.total = formaterCurrency(calTotal);
+          }
+                }
+                )
+              
           }
         }).catch(e =>{
           console.log(e);
@@ -119,18 +179,32 @@ export default {
         self.items = [];
         for(let i = 0; i< self.oriItems.length; i++){
           if (self.oriItems[i].date >= startDate && self.oriItems[i].date <= endDate){
-            self.item.push(self.oriItems[i]);
+            self.items.push(self.oriItems[i]);
           }
         }
+
+        var calTotal = 0;
+            for(let i = 0 ; i< self.items.length; i++){
+              calTotal += self.items[i].amount;
+            }
+            
+            self.total = formaterCurrency(calTotal);
       },
       async filterByBank(bank){
         var self = this;
         self.items = [];
         for(let i = 0; i< self.oriItems.length; i++){
           if (self.oriItems[i].bank.toLowerCase() == bank.toLowerCase()){
-            self.item.push(self.oriItems[i]);
+            self.items.push(self.oriItems[i]);
           }
         }
+
+        var calTotal = 0;
+            for(let i = 0 ; i< self.items.length; i++){
+              calTotal += self.items[i].amount;
+            }
+            
+            self.total = formaterCurrency(calTotal);
       }
     }
 }

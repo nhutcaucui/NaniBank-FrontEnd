@@ -15,9 +15,10 @@
         <label for="bank">Theo ngân hàng</label><br>
         <div class="inner-form-group">
     <div class="img-holder" id="test"><img src="../../assets/museum.png"/></div>
-        <select name="bank" id="bank-select" class="text-input" v-model="bank">
-  <option value="1">NaniBank</option>
-  <option value="2">KiantoBank</option>
+        <select name="bank" id="bank-select" class="text-input" v-model="bank" >
+          <option v-for="option in options" v-bind:value="option.value" v-bind:key="option.value">
+  {{option.text}}
+          </option>
 </select>
         </div>
     <br/>
@@ -37,6 +38,7 @@
 import moment from 'moment';
 import TransactionTable from './TransactionTable';
 import DatePicker from 'vue2-datepicker';
+import axios from 'axios';
   import 'vue2-datepicker/index.css';
 export default {
     name: 'TransactionHistory',
@@ -49,19 +51,42 @@ export default {
     picked: 0,
     from: '',
     to:'',
-    bank:'1',
+    bank:'NaniBank',
+    options: [
+      { text: 'NaniBank', value: 'NaniBank' },
+    ],
     showPop:false,
     errorMessage:''
   }
 },
+mounted(){
+  this.loadPartner()
+},
     methods: {
+       async loadPartner(){
+        var self = this
+
+        let config = {headers:{
+          timestamp: moment().unix(),
+          'access-token': this.$store.state.accessToken,
+        },
+        }
+        await axios.get(self.$store.state.host + 'partner/all', config).then( async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+              for(let i=0; i < response3.data.Partners.length;i++){
+                self.options.push({text: response3.data.Partners[i].name, value: response3.data.Partners[i].name});
+              }
+          }
+            })
+      },
       onSubmit(){
         var self = this;
         var isError = false;
           if(self.picked == 0){
             self.errorMessage = "Xin chọn phương thức lọc"
             isError = true;
-          }else if(self.from == '' || self.to == ''){
+          }else if((self.from == '' || self.to == '') && self.picked == 1){
             self.errorMessage = "Xin chọn ngày"
             isError = true;
           }
@@ -70,7 +95,9 @@ export default {
             self.showPopover();
           }else{
             if(self.picked == 1){
-                self.$refs.adminTransactionTable.filterByDate(self.from,self.to);
+              console.log(moment(self.from, 'DD/MM/YYYY').unix())
+              
+                self.$refs.adminTransactionTable.filterByDate(moment(self.from, 'DD/MM/YYYY').unix(),moment(self.to, 'DD/MM/YYYY').unix());
             }else if(self.picked == 2){
               self.$refs.adminTransactionTable.filterByBank(self.bank);
             }

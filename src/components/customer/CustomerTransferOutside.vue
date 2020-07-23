@@ -9,9 +9,9 @@
   </option>
             </select>
             <select placeholder="Chọn ngân hàng"  id="source" name ="source" class="text-input" v-model="bank">
-                <option value="-1">- Chọn ngân hàng -</option>
-                <option value="1">KiantoBank</option>
-                <option value="2">idkyet</option>
+              <option v-for="boption in bankOptions" v-bind:value="boption.value" v-bind:key="boption.value">
+  {{boption.text}}
+          </option>
             </select>
             
             <div class="autosuggest-container">
@@ -72,9 +72,13 @@ export default {
     mounted(){
       this.loadReceiver();
       this.loadDebit();
+      this.loadPartner();
     },
     data() {
     return {
+      bankOptions:[
+        {value: -1, text:"- Chọn ngân hàng -"}
+      ],
       bank: -1,
       outQuery: "",
       outSelected: "",
@@ -118,6 +122,25 @@ export default {
     }
   },
   methods: {
+
+    async loadPartner(){
+        var self = this
+
+        let config = {headers:{
+          timestamp: moment().unix(),
+          'access-token': this.$store.state.accessToken,
+        },
+        }
+        await axios.get(self.$store.state.host + 'partner/all', config).then( async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+              for(let i=0; i < response3.data.Partners.length;i++){
+                self.bankOptions.push({text: response3.data.Partners[i].name, value: response3.data.Partners[i].id});
+              }
+          }
+            })
+      },
+
     async loadDebit(){
       var self = this
         let config = {
