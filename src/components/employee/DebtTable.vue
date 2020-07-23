@@ -57,7 +57,6 @@ export default {
         console.log(data)
         for(var i =0 ;i< data.length; i++){
           self.items.push(data[i])
-          
         }
         console.log(self.items);
         self.$refs.table.refresh()

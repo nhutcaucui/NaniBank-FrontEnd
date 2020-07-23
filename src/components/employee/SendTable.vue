@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+import formaterCurrency from 'format-currency'
 export default {
   props:['data'],
     name: "SendTable",
@@ -23,12 +25,15 @@ export default {
           },
           {
             key: 'receiver',
-            label: 'Người nhận',
+            label: 'Tài khoản nhận',
             sortable: false,
           },
           {
             key: 'date',
             label: 'Ngày',
+            formatter: value => {
+              return moment.unix(value).format("DD/MM/YYYY");
+            },
             sortable: false,
           },
           {
@@ -39,6 +44,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formatter: value => {
+              return formaterCurrency(value);
+            },
             sortable: false,
           },
         ],
@@ -52,7 +60,25 @@ export default {
     },
     methods:{
       loadData(data){
-        //var self = this
+        var self = this;
+        for(let i = 0; i< data.length; i++){
+          if(data[i].type != 1 && data[i].type != 0){
+            let date = 1595427524;
+                if(data[i].time != null){
+                  date = data[i].time
+                }
+              
+              let bank = "NaniBank";
+              if(data[i].partner_id != null){
+              for(let j=0;j<self.$props.bank.length;i++){
+                  if(data[i].partner_id == self.$props.bank[j].id){
+                    bank = self.$props.bank[j].name
+                  }
+                }
+              }
+            self.items.push({stt: data[i].id, receiver: data[i].to_account, date: date, bank: bank, amount: data[i].amount})
+          }
+        }
         console.log(data)
       },
     }
