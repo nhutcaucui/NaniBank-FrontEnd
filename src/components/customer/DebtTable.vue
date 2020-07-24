@@ -15,6 +15,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import formaterCurrency from 'format-currency';
 export default {
     name: "DebtTable",
     mounted(){
@@ -41,6 +42,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formatter: value => {
+              return formaterCurrency(value);
+            },
             sortable: false,
           },
            {
@@ -70,7 +74,6 @@ export default {
                     'access-token': self.$store.state.accessToken},
                 params: {
                 customer_id: self.$store.state.id,
-                //filter: "sender"
                 },
                 }
 

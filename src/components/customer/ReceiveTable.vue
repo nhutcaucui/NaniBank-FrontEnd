@@ -9,7 +9,9 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import formaterCurrency from 'format-currency';
 export default {
+  props:['bank'],
     name: "ReceiveTable",
     mounted(){
       this.loadData();
@@ -24,7 +26,7 @@ export default {
           },
           {
             key: 'sender',
-            label: 'Người gửi',
+            label: 'Tài khoản gửi',
             sortable: false,
           },
           {
@@ -40,6 +42,9 @@ export default {
           {
             key: 'amount',
             label: 'Số tiền',
+            formatter: value => {
+              return formaterCurrency(value);
+            },
             sortable: false,
           },
         ],
@@ -58,17 +63,43 @@ export default {
                 headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
                 params: {
-                id: self.$store.state.id,
-                filter: "receiver"
+                id: self.$store.state.username,
+                filter: "sender",
                 },
                 }
 
-               await axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.items = []
-            //asign items
+               await axios.get(self.$store.state.host + 'transaction/history/username', config).then(async response =>{
+            console.log(response);
+            if(response.data.Status){
+                var data = response.data.Histories;
+                await axios.get(self.$store.state.host + 'partner/history/username', config).then(async response2 =>{
+            console.log(response2);
+            if(response2.data.Status){
+
+                Array.prototype.push.apply(data,response2.data.Histories)
+                
+                for(let i = 0; i< data.length; i++){
+          if(data[i].type != 1 && data[i].type != 0){
+            let date = 1595427524;
+                if(data[i].time != null){
+                  date = data[i].time
+                }
+              
+              let bank = "NaniBank";
+              if(data[i].partner_id != null){
+              for(let j=0;j<self.$props.bank.length;i++){
+                  if(data[i].partner_id == self.$props.bank[j].id){
+                    bank = self.$props.bank[j].name
+                  }
+                }
+              }
+            self.items.push({stt: data[i].id, sender: data[i].from_account, date: date, bank: bank, amount: data[i].amount})
           }
+        }
+        console.log(data)
+            }})
+                
+            }
         }).catch(e =>{
           console.log(e);
         }) 

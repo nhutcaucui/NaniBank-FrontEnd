@@ -22,9 +22,31 @@
 </template>
 
 <script>
+import axios from 'axios';
+import moment from 'moment';
 export default {
     name:'CustomerHistory',
+    mounted(){
+        this.loadPartner
+    },
     methods: {
+        async loadPartner(){
+        var self = this
+
+        let config = {headers:{
+          timestamp: moment().unix(),
+          'access-token': this.$store.state.accessToken,
+        },
+        }
+        await axios.get(self.$store.state.host + 'partner/all', config).then( async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+              for(let i=0; i < response3.data.Partners.length;i++){
+                self.partner.push({id: response3.data.Partners[i].id, name: response3.data.Partners[i].name});
+              }
+          }
+            })
+      },
         loadTable: function(){
             var self = this;
             console.log('help   ')
@@ -35,7 +57,7 @@ export default {
                     }else{
                         self.$router.push("/Customer/History").then(() =>
                             {
-                                self.$router.push({name:"CustomerSend"
+                                self.$router.push({name:"CustomerSend", params:{bank: self.partner}
                                 })})
                         
                     }
@@ -46,7 +68,7 @@ export default {
                     }else{
                         self.$router.push("/Customer/History").then(() =>
                             {
-                                self.$router.push({name:"CustomerReceive"
+                                self.$router.push({name:"CustomerReceive", params:{bank: self.partner}
                                 })})
                         
                     }
@@ -83,6 +105,7 @@ export default {
             selected : '1',
             errorMessage:'',
             showPop:false,
+            partner:[],
         }
     },
 }
