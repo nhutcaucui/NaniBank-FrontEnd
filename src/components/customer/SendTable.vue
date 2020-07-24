@@ -47,6 +47,11 @@ export default {
             },
             sortable: false,
           },
+          {
+            key: 'note',
+            label: 'Nội dung',
+            sortable: false,
+          }
         ],
         items: [
           // { isActive: true, stt: 1, receiver:'gg@gg', date: '1/1/1990', bank: 'nani', amount:"1,200,222" },
@@ -93,7 +98,7 @@ export default {
                   }
                 }
               }
-            self.items.push({stt: data[i].id, receiver: data[i].to_account, date: date, bank: bank, amount: data[i].amount})
+            self.items.push({stt: data[i].id, receiver: data[i].to_account, date: date, bank: bank, amount: data[i].amount, note: data[i].message})
           }
         }
         console.log(data)
