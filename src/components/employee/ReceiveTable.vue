@@ -62,7 +62,7 @@ export default {
       loadData(data){
         var self = this;
         for(let i = 0; i< data.length; i++){
-          if(data[i].type != 1 && data[i].type != 0){
+          if(data[i].type != 1){
             let date = 1595427524;
                 if(data[i].time != null){
                   date = data[i].time

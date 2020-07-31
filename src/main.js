@@ -20,10 +20,44 @@ axios.interceptors.request.use(request => {
   console.log('Starting Request', request)
   return request
 })
+
+// for multiple requests
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  })
+  
+  failedQueue = [];
+}
+
 axios.interceptors.response.use(async function(response) {
   console.log('Starting Response', response)
-  if(response.data.Message  === "jwt expired" || 
-  response.data.Message === "jwt malformed" || response.data.Message ==="jwt must be provided"){
+
+  const originalRequest = response.config;
+
+  if(response.data.Message  === "jwt expired"){
+
+    if (isRefreshing) {
+      return new Promise(function(resolve, reject) {
+        failedQueue.push({resolve, reject})
+      }).then(token => {
+        originalRequest.headers['access-token'] = token;
+        return axios(originalRequest);
+      }).catch(err => {
+        return Promise.reject(err);
+      })
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
     let data ={
       access_token: store.state.accessToken,
       refresh_token: store.state.refreshToken
@@ -35,16 +69,27 @@ axios.interceptors.response.use(async function(response) {
       refresh_token: store.state.refreshToken
       }
     }
-    await axios.post(store.state.host+"users/customer/refresh", data, config).then(response1 =>{
+    return new Promise(function (resolve, reject) {
+    axios.post(store.state.host+"users/customer/refresh", data, config).then(response1 =>{
       console.log(response1)
       if(response1.data.Status){
         store.commit('setToken', {
           token: response1.data.Token
         });
         response.config.headers['access-token'] = response1.data.Token;
-        return axios(response.config);
+        processQueue(null, response1.data.Token);
+        resolve(axios(originalRequest));
+
+        resolve(axios(originalRequest));
+        //return axios(response.config);
+
+        
     }
-    })
+    }).catch((err) => {
+      processQueue(err, null);
+      reject(err);
+  }).finally(() => { isRefreshing = false })
+  })
   }
   return response
 })

@@ -196,7 +196,7 @@ export default {
                     customer_id: self.$store.state.id
                 },headers:{
                 timestamp: moment().format("X"),
-                'access-token': this.$store.state.accessToken,
+                'access-token': self.$store.state.accessToken,
                 }}
 
                await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
@@ -221,7 +221,7 @@ export default {
 
         let config = {headers:{
           timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
+          'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
           key: self.keyIn
         }}
@@ -244,7 +244,7 @@ export default {
         }
         let config2 = {headers:{
           timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
+          'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
           key: self.keyIn
         }}
@@ -279,7 +279,7 @@ export default {
       }else if (self.inFee == 2){
         let config = {headers:{
           timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
+          'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
           key: self.keyIn
         }}
@@ -302,7 +302,7 @@ export default {
         }
         let config2 = {headers:{
           timestamp: moment().format("X"),
-          'access-token': this.$store.state.accessToken,
+          'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
           key: self.keyIn
         }}

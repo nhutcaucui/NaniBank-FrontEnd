@@ -9,11 +9,17 @@ const store = new Vuex.Store({
   state: {
     //host: "http://52.187.69.243/",
     host: "http://localhost:3000/",
+    nguyenGetInfo: "http://7d32d69eaef0.ngrok.io/api/account/info/",
+    nguyenTranfer: "http://7d32d69eaef0.ngrok.io/api/account/money/",
+    lamGetInfo: "http://bank-backend.khuedoan.com/api/partner/get-account-info",
+    lamTranfer: "http://bank-backend.khuedoan.com/api/partner/deposit",
+    lamSecret: 'M0ec3lAqjHV82v66VYDb',
     userType: -1,
     accessToken:"",
     id: '',
     username: '',
-    refreshToken:''
+    refreshToken:'',
+    secretKey:'himom'
   },
   plugins: [createPersistedState()],
   mutations: {

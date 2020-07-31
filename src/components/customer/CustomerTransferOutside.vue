@@ -8,7 +8,7 @@
     {{ option.text }}
   </option>
             </select>
-            <select placeholder="Chọn ngân hàng"  id="source" name ="source" class="text-input" v-model="bank">
+            <select placeholder="Chọn ngân hàng"  id="source" name ="source" class="text-input" v-model="bank" @change="onBankChange()">
               <option v-for="boption in bankOptions" v-bind:value="boption.value" v-bind:key="boption.value">
   {{boption.text}}
           </option>
@@ -45,11 +45,11 @@
             </form>
         </div>
 
-        <b-popover :show.sync="showOutPop" target="container-box" triggers="manual" placement="left" container="error-popover" variant="danger">
+        <b-popover :show.sync="showOutPop" target="container-box" triggers="manual" placement="right" container="error-popover" variant="danger">
             <template v-slot:title>Lỗi</template>
             <label>{{errorMessage}}</label>
       </b-popover>
-      <b-popover :show.sync="showOutPopPos" target="container-box" triggers="manual" placement="left" container="error-popover">
+      <b-popover :show.sync="showOutPopPos" target="container-box" triggers="manual" placement="right" container="error-popover">
             <template v-slot:title>Thành công</template>
             <label>Đã chuyển khoản</label>
       </b-popover>
@@ -64,6 +64,9 @@
 import axios from 'axios'
 import moment from 'moment'
 import { VueAutosuggest } from 'vue-autosuggest';
+import Crypto from 'crypto';
+import pgp from '../../plugins/pgp'; // eslint-disable-line
+import rsa from '../../plugins/rsa'; // eslint-disable-line
 export default {
     name:'CustomerTransferOutside',
     components:{
@@ -94,10 +97,10 @@ export default {
       outSuggestions: [
         {
           data: [
-            { id: 1, name: "Frodo", race: "Hobbit" },
-            { id: 2, name: "Samwise", race: "Hobbit"},
-            { id: 3, name: "Gandalf", race: "Maia"},
-            { id: 4, name: "Aragorn", race: "Human"}
+            // { id: 1, name: "Frodo", race: "Hobbit" },
+            // { id: 2, name: "Samwise", race: "Hobbit"},
+            // { id: 3, name: "Gandalf", race: "Maia"},
+            // { id: 4, name: "Aragorn", race: "Human"}
           ]
         }
       ],
@@ -122,7 +125,16 @@ export default {
     }
   },
   methods: {
-
+    onBankChange(){
+      if(this.bank == -1){
+        return
+      }
+      if(this.outQuery == ''){
+        return
+      }
+      
+      this.doneTypingOut()
+    },
     async loadPartner(){
         var self = this
 
@@ -135,7 +147,7 @@ export default {
           console.log(response3);
           if(response3.data.Status){
               for(let i=0; i < response3.data.Partners.length;i++){
-                self.bankOptions.push({text: response3.data.Partners[i].name, value: response3.data.Partners[i].id});
+                self.bankOptions.push({text: response3.data.Partners[i].name, value: response3.data.Partners[i].id, hashMethod: response3.data.Partners[i].hashMethod});
               }
           }
             })
@@ -217,20 +229,22 @@ export default {
         this.showPopoverOut();
       }else{
         var self = this;
+         
                 let config= {params:{
-                    username: self.$store.state.username
+                    customer_id: self.$store.state.id
                 },headers:{
                 timestamp: moment().format("X"),
+                'access-token': self.$store.state.accessToken,
                 }}
 
-               await axios.get(self.$store.state.host+'otp/s-create',config).then(response =>{
+               await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
                 console.log(response);
                 if(response.data.Status){
                   self.keyOut = response.data.Key;
                      this.$bvModal.show("out-otp-modal")
                 }else{
                     self.errorMessage = 'Có lỗi khi gửi OTP'
-                    self.showPopover();
+                    self.showPopoverOut();
                 }
                 }).catch(e =>{
                 console.log(e);
@@ -250,23 +264,114 @@ export default {
         let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': this.$store.state.accessToken,
-          otp: self.outOTP,
+          otp: self.OTPout,
           key: self.keyOut
         }}
-               await axios.post(self.$store.state.host+'transaction/transfer',data, config).then(response =>{
+
+        
+               await axios.post(self.$store.state.host+'otp/check',data, config).then(async response =>{
           console.log(response);
           if(response.data.Status){
-            self.idValidIn = false;
-            self.inQuery = "";
-            self.inName='';
-            self.inEmail='';
-            self.inPhone='';
-            self.inAmount='';
-            self.inNote = '';
-            self.showPopoverPositiveIn(); 
+            
+            if(this.bankOptions[this.bank].text == "OtherBank"){
+            let detachedSignature = await pgp.detachedSign(self.$store.state.secretKey);
+            let timestamp = moment().unix();
+            let partnercode = 'nanibank';
+            let body = {
+                name: self.outName,
+                content: self.outNote,
+                dich: self.outQuery,
+                amount: self.amount
+            };
+
+            let hash = this.bankOptions[this.bank].hashMethod.split(";");
+            let parts = hash[1].split("+");
+                hash = hash[0].split("+");
+
+            let stringCheck ="";
+            for(let i =0; i <parts.length;i++){
+              if(parts[i]=="timestamp"){
+                stringCheck += timestamp
+              }else if(parts[i]=="body"){
+                stringCheck += JSON.stringify(body)
+              }else if(parts[i]== "secret"){
+                stringCheck += self.$store.state.secretKey
+              }
+            }
+
+
+            let csi = await Crypto.createHash(hash[0]).update(stringCheck).digest(hash[1]);
+
+            let config = {
+              headers: {
+                  timestamp: timestamp,
+                  partnercode: partnercode,
+                  csi: csi,
+                  detachedSignature: detachedSignature,
+              }
+            }
+
+            axios.post(self.$store.state.nguyenTransfer,body, config
+            ).then(function (res) {
+                console.log(res.data);
+            }).catch(function (error) {
+                console.log(error);
+            });
+         }else if(this.bankOptions[this.bank].text == "KiantoBank"){
+            let timestamp = moment().unix();
+            let partnercode = 'nanibank';
+            let body = {
+                credit_number: self.outName,
+                amount: self.outAmount,
+            };
+
+            let hash = this.bankOptions[this.bank].hashMethod.split(";");
+            let parts = hash[1].split("+");
+                hash = hash[0].split("+");
+
+            let stringCheck ="";
+            for(let i =0; i <parts.length;i++){
+              if(parts[i]=="timestamp"){
+                stringCheck += timestamp
+              }else if(parts[i]=="body"){
+                stringCheck += JSON.stringify(body)
+              }else if(parts[i]== "secret"){
+                stringCheck += self.$store.state.lamSecret
+              }
+            }
+
+            let authen_sig = await rsa.sign(stringCheck);
+
+            let csi = await Crypto.createHash(hash[0]).update(stringCheck).digest(hash[1]);
+
+            let config = {
+              headers: {
+                  timestamp: timestamp,
+                  "partner-code": partnercode,
+                  'authen-hash': csi,
+                 "authen-sig": authen_sig,
+              }
+            }
+
+            axios.post(self.$store.state.lamTransfer,body, config
+            ).then(res => {
+                console.log(res);
+            }).catch(function (error) {
+                console.log(error);
+            });
+         }
+
+            // self.idValidIn = false;
+            // self.inQuery = "";
+            // self.inName='';
+            // self.inEmail='';
+            // self.inPhone='';
+            // self.inAmount='';
+            // self.inNote = '';
+            // self.showPopoverPositiveIn(); 
           }else{
             self.errorMessage = 'OTP sai'
-            self.showPopoverIn();
+            self.showPopoverOut();
           }
         }).catch(e =>{
           console.log(e);
@@ -283,6 +388,7 @@ export default {
       this.doneTypingOut();
     },
     onInputChangeOut(text) {
+      self.idValidOut = false;
       clearTimeout(this.typingTimerOut);
       if (text!= '') {
         this.typingTimerOut = setTimeout(this.doneTypingOut, this.doneTypingInterval);
@@ -300,28 +406,85 @@ export default {
     },
 
  async doneTypingOut(){
-      var self = this
-        let config = {
-                headers: {timestamp: moment().format("X"),
-                    'access-token': self.$store.state.accessToken},
-                params: {
-                id: self.$store.state.id,
-                },
-                }
+   var self = this;
+   let hash = this.bankOptions[this.bank].hashMethod.split(";");
+   let parts = hash[1].split("+");
+    hash = hash[0].split("+");
 
-               await axios.get(self.$store.state.host+'transaction/history', config).then(response =>{
+     let timestamp = moment().unix();
+    let partnercode = 'nanibank';
+    let body = {
+
+    };
+
+    
+   if(this.bankOptions[this.bank].text == "OtherBank"){
+     let stringCheck ="";
+    for(let i =0; i <parts.length;i++){
+      if(parts[i]=="timestamp"){
+        stringCheck += timestamp
+      }else if(parts[i]=="body"){
+        stringCheck += JSON.stringify(body)
+      }else if(parts[i]== "secret"){
+        stringCheck += self.$store.state.secretKey
+      }
+    }
+
+    let csi = await Crypto.createHash(hash[0]).update(stringCheck).digest(hash[1]);
+        let config = {
+                headers: {
+            timestamp: timestamp,
+            partnercode: partnercode,
+            csi: csi,
+        }
+                }
+               await axios.get(self.$store.state.nguyenGetInfo+self.outQuery, config).then(response =>{
           console.log(response);
-          if(response.data.Status){
-            console.log("found 1")
-            self.idValidOut = true
-          }else{
-            self.idValidOut = false
-            self.errorMessage='Không tìm thấy người dùng';
+          
+
+        }).catch(e =>{
+          console.log(e);
+        })
+      }else if (this.bankOptions[this.bank].text == "KiantoBank"){
+        let stringCheck ="";
+    for(let i =0; i <parts.length;i++){
+      if(parts[i]=="timestamp"){
+        stringCheck += timestamp
+      }else if(parts[i]=="body"){
+        stringCheck += JSON.stringify(body)
+      }else if(parts[i]== "secret"){
+        stringCheck += self.$store.state.lamSecret
+      }
+    }
+
+        let csi = await Crypto.createHash(hash[0]).update(stringCheck).digest(hash[1]);
+        let config = {
+                headers: {
+            timestamp: timestamp,
+            'partner-code': partnercode,
+            'authen-hash': csi,
+        },
+        params:{
+          credit_number: self.outQuery
+        }
+                }
+               await axios.get(self.$store.state.lamGetInfo, config).then(response =>{
+          console.log(response);
+          if(response.status == 400){
+            self.errorMessage = 'Không tìm thấy người dùng'
             self.showPopoverOut();
+            return
+          }
+
+          if(response.status == 200){
+            self.idValidOut = true;
+            self.outName +=  response.data.lastname +" "+ response.data.firstname
           }
         }).catch(e =>{
           console.log(e);
         })
+      }
+      
     },
     hidePopoverOut(){
       this.showOutPop = false;

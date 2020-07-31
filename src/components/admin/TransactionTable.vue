@@ -83,36 +83,7 @@ export default {
         },
         }
 
-        await axios.get(self.$store.state.host + 'transaction/history/all', config).then(async response =>{
-          console.log(response);
-          if(response.data.Status){
-            self.items = [];
-            self.oriItems = [];
-            for (let  i = 0; i< response.data.Histories.length; i++){
-              if(response.data.Histories[i].type != 1 && response.data.Histories[i].type != 0){
-
-                let date = 1595427524;
-                if(response.data.Histories[i].time != null){
-                  date = response.data.Histories[i].time
-                }
-
-                self.oriItems.push({stt: response.data.Histories[i].id, 
-                sender: response.data.Histories[i].from_account,
-                receiver: response.data.Histories[i].to_account,
-                date: date,
-                bank: "NaniBank",
-                amount: response.data.Histories[i].amount
-                })
-
-                self.items.push({stt: response.data.Histories[i].id, 
-                sender: response.data.Histories[i].from_account,
-                receiver: response.data.Histories[i].to_account,
-                date: date,
-                bank: "NaniBank",
-                amount: response.data.Histories[i].amount
-                })
-              }
-            }
+        
                 await axios.get(self.$store.state.host + 'partner/history/all', config).then( async response2 =>{
           console.log(response2);
           if(response2.data.Status){
@@ -167,10 +138,8 @@ export default {
             self.total = formaterCurrency(calTotal);
           }
                 }
-                )
-              
-          }
-        }).catch(e =>{
+                )             
+        .catch(e =>{
           console.log(e);
         })
       },
