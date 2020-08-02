@@ -3,12 +3,15 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate';
 //import Cookies from 'js-cookie';
 
+//localStorage.removeItem('vuex')
+
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
+    //host: "http://localhost:3000/",
     //host: "http://52.187.69.243/",
-    host: "http://localhost:3000/",
+    host: "http://35.247.178.19/",
     nguyenGetInfo: "http://7d32d69eaef0.ngrok.io/api/account/info/",
     nguyenTranfer: "http://7d32d69eaef0.ngrok.io/api/account/money/",
     lamGetInfo: "http://bank-backend.khuedoan.com/api/partner/get-account-info",
@@ -21,7 +24,9 @@ const store = new Vuex.Store({
     refreshToken:'',
     secretKey:'himom'
   },
-  plugins: [createPersistedState()],
+  plugins: [createPersistedState({
+    overwrite:true
+  })],
   mutations: {
     setUser (state, payload) {
       state.userType = payload.type;

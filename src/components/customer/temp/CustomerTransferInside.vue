@@ -192,6 +192,21 @@ export default {
         this.showPopoverIn();
       }else{
         var self = this;
+
+        if(self.inFee == 1){
+
+          let config3 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+        }}
+        let data3 ={
+          id: self.inAccount,
+          amount: 2000 + parseInt(self.inAmount),
+        }
+
+        axios.post(self.$store.state.host+'transaction/check',data3, config3).then(async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
                 let config= {params:{
                     customer_id: self.$store.state.id
                 },headers:{
@@ -211,6 +226,51 @@ export default {
                 }).catch(e =>{
                 console.log(e);
                 })
+          }
+          else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverIn()
+          }
+        })        
+      }else if (self.inFee == 2){
+
+        let config3 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+        }}
+        let data3 ={
+          id: self.inAccount,
+          amount: self.inAmount,
+        }
+
+        axios.post(self.$store.state.host+'transaction/check',data3, config3).then(async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+            let config= {params:{
+                    customer_id: self.$store.state.id
+                },headers:{
+                timestamp: moment().format("X"),
+                'access-token': self.$store.state.accessToken,
+                }}
+
+               await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                  self.keyIn = response.data.Key;
+                            this.$bvModal.show("in-otp-modal")
+                }else{
+                    self.errorMessage = 'Có lỗi khi gửi OTP'
+                    self.showPopoverIn();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+          }else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverIn()
+          }
+        })
+      }
       }
     },
 
@@ -219,7 +279,32 @@ export default {
 
       if(self.inFee == 1){
 
-        let config = {headers:{
+            let data2 = {
+                    
+                    from: self.inAccount,
+          to: self.inQuery,
+          amount:self.inAmount,
+          message:self.inNote
+        }
+        let config2 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+          otp: self.OTPin,
+          key: self.keyIn
+        }}
+               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(async response2 =>{
+          console.log(response2);
+          if(response2.data.Status){
+            self.idValidIn = false;
+            self.inQuery = "";
+            self.inName='';
+            self.inEmail='';
+            self.inPhone='';
+            self.inAmount='';
+            self.inNote = '';
+            self.inAccount = -1;
+
+            let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
@@ -233,34 +318,15 @@ export default {
 
          await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async function(response){
           console.log(response);
+          if(response.data.Status){
           self.fee = "Phí thanh toán: 2,000"
-
-          let data2 = {
-                    
-                    from: self.inAccount,
-          to: self.inQuery,
-          amount:self.inAmount,
-          message:self.inNote
-        }
-        let config2 = {headers:{
-          timestamp: moment().format("X"),
-          'access-token': self.$store.state.accessToken,
-          otp: self.OTPin,
-          key: self.keyIn
-        }}
-               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
-          console.log(response2);
-          if(response2.data.Status){
-            self.idValidIn = false;
-            self.inQuery = "";
-            self.inName='';
-            self.inEmail='';
-            self.inPhone='';
-            self.inAmount='';
-            self.inNote = '';
-            self.inAccount = -1;
-            self.accountBalance = formatCurrency(response2.data.Account.balance);
+          self.accountBalance = formatCurrency(response.data.Account.balance);
             self.showPopoverPositiveIn(); 
+          }else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverIn()
+          }
+          })
           }else{
             if(response2.data.Message=="Balance is not enough")
             {
@@ -274,10 +340,36 @@ export default {
         }).catch(e =>{
           console.log(e);
         })
-
-          })
-      }else if (self.inFee == 2){
-        let config = {headers:{
+          
+          
+        
+      }else if(self.inFee == 2){
+             let data2 = {
+                    
+          from: self.inAccount,
+          to: self.inQuery,
+          amount: (parseInt(self.inAmount)-2000),
+          message:self.inNote
+        }
+        let config2 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+          otp: self.OTPin,
+          key: self.keyIn
+        }}
+               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(async response2 =>{
+          console.log(response2);
+          if(response2.data.Status){
+            self.idValidIn = false;
+            self.inQuery = "";
+            self.inName='';
+            self.inEmail='';
+            self.inPhone='';
+            self.inAmount='';
+            self.inNote = '';
+            self.inAccount = -1;
+            
+            let config = {headers:{
           timestamp: moment().format("X"),
           'access-token': self.$store.state.accessToken,
           otp: self.OTPin,
@@ -291,34 +383,17 @@ export default {
 
          await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async response =>{
           console.log(response);
+          if(response.data.Status){
           self.fee = ""
-
-          let data2 = {
-                    
-          from: self.inAccount,
-          to: self.inQuery,
-          amount: (self.inAmount-2000),
-          message:self.inNote
-        }
-        let config2 = {headers:{
-          timestamp: moment().format("X"),
-          'access-token': self.$store.state.accessToken,
-          otp: self.OTPin,
-          key: self.keyIn
-        }}
-               await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
-          console.log(response2);
-          if(response2.data.Status){
-            self.idValidIn = false;
-            self.inQuery = "";
-            self.inName='';
-            self.inEmail='';
-            self.inPhone='';
-            self.inAmount='';
-            self.inNote = '';
-            self.inAccount = -1;
-            self.accountBalance = formatCurrency(response2.data.Account.balance);
+          self.accountBalance = formatCurrency(response.data.Account.balance);
             self.showPopoverPositiveIn(); 
+          
+          }else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverIn()
+          }
+          })
+
           }else{
             if(response2.data.Message=="Balance is not enough")
             {
@@ -332,7 +407,9 @@ export default {
         }).catch(e =>{
           console.log(e);
         })
-          })
+
+       
+        
       }
     },
 

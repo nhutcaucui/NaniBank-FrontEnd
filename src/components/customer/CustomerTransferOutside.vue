@@ -52,6 +52,8 @@
       <b-popover :show.sync="showOutPopPos" target="container-box" triggers="manual" placement="right" container="error-popover">
             <template v-slot:title>Thành công</template>
             <label>Đã chuyển khoản</label>
+            <label>Tài khoản còn: {{accountBalance}}</label><br/>
+            <label>{{fee}}</label>
       </b-popover>
 
   <b-modal id="out-otp-modal" title="Kiểm tra Email để nhận OTP" @ok="checkOTPout()">
@@ -67,6 +69,7 @@ import { VueAutosuggest } from 'vue-autosuggest';
 import Crypto from 'crypto';
 import pgp from '../../plugins/pgp'; // eslint-disable-line
 import rsa from '../../plugins/rsa'; // eslint-disable-line
+import formatCurrency from 'format-currency'
 export default {
     name:'CustomerTransferOutside',
     components:{
@@ -111,6 +114,8 @@ export default {
       doneTypingInterval: 3000,
       idValidOut:false,
       options:[],
+      fee:'',
+      accountBalance:'',
     };
   },
   computed: {
@@ -147,7 +152,7 @@ export default {
           console.log(response3);
           if(response3.data.Status){
               for(let i=0; i < response3.data.Partners.length;i++){
-                self.bankOptions.push({text: response3.data.Partners[i].name, value: response3.data.Partners[i].id, hashMethod: response3.data.Partners[i].hashMethod});
+                self.bankOptions.push({text: response3.data.Partners[i].name, value: i+1, hashMethod: response3.data.Partners[i].hashMethod});
               }
           }
             })
@@ -168,7 +173,7 @@ export default {
           if(response.data.Status){
             self.options = []
             self.options.push({text: "- Chọn tài khoản thanh toán -", value:"-1"})
-            self.options.push({text: response.data.Debit.id, value: "1"})
+            self.options.push({text: response.data.Debit.id, value: response.data.Debit.id})
           }
         }).catch(e =>{
           console.log(e);
@@ -230,6 +235,20 @@ export default {
       }else{
         var self = this;
          
+                if(self.outFee == 1){
+
+          let config3 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+        }}
+        let data3 ={
+          id: self.outAccount,
+          amount: 2000 + parseInt(self.outAmount),
+        }
+
+        axios.post(self.$store.state.host+'transaction/check',data3, config3).then(async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
                 let config= {params:{
                     customer_id: self.$store.state.id
                 },headers:{
@@ -241,7 +260,7 @@ export default {
                 console.log(response);
                 if(response.data.Status){
                   self.keyOut = response.data.Key;
-                     this.$bvModal.show("out-otp-modal")
+                            this.$bvModal.show("out-otp-modal")
                 }else{
                     self.errorMessage = 'Có lỗi khi gửi OTP'
                     self.showPopoverOut();
@@ -249,7 +268,51 @@ export default {
                 }).catch(e =>{
                 console.log(e);
                 })
+          }
+          else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverOut()
+          }
+        })        
+      }else if (self.outFee == 2){
 
+        let config3 = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+        }}
+        let data3 ={
+          id: self.outAccount,
+          amount: self.outAmount,
+        }
+
+        axios.post(self.$store.state.host+'transaction/check',data3, config3).then(async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+            let config= {params:{
+                    customer_id: self.$store.state.id
+                },headers:{
+                timestamp: moment().format("X"),
+                'access-token': self.$store.state.accessToken,
+                }}
+
+               await axios.get(self.$store.state.host+'otp/create',config).then(response =>{
+                console.log(response);
+                if(response.data.Status){
+                  self.keyOut = response.data.Key;
+                            this.$bvModal.show("out-otp-modal")
+                }else{
+                    self.errorMessage = 'Có lỗi khi gửi OTP'
+                    self.showPopoverOut();
+                }
+                }).catch(e =>{
+                console.log(e);
+                })
+          }else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverOut()
+          }
+        })
+      }
       }
     },
    async checkOTPout(){
@@ -268,12 +331,98 @@ export default {
           key: self.keyOut
         }}
 
-        
+          if(self.outFee == 1){
+
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+          otp: self.OTPout,
+          key: self.keyOut
+        }}
+
+        let data ={
+          id: self.outAccount,
+          amount: parseInt(self.outAmount) + 2000,
+        }
+
+         await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async function(response){
+          console.log(response);
+          if(response.data.Status){
+          self.fee = "Phí thanh toán: 2,000"
+          self.accountBalance = formatCurrency(response.data.Account.balance);
+          }
+          else{
+            self.errorMessage = 'Tài khoản không đủ tiền'
+            self.showPopoverOut();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })       
+      }else if (self.outFee == 2){
+        let config = {headers:{
+          timestamp: moment().format("X"),
+          'access-token': self.$store.state.accessToken,
+          otp: self.OTPout,
+          key: self.keyOut
+        }}
+
+        let data ={
+          id: self.outAccount,
+          amount: self.outAmount,
+        }
+
+         await axios.post(self.$store.state.host+'transaction/draw',data, config).then(async response =>{
+          console.log(response);
+          self.fee = ""
+          self.accountBalance = formatCurrency(response.data.Account.balance);
+        //   let data2 = {
+                    
+        //   from: self.outAccount,
+        //   to: self.outQuery,
+        //   amount: (parseInt(self.outAmount)-2000),
+        //   message:self.outNote
+        // }
+        // let config2 = {headers:{
+        //   timestamp: moment().format("X"),
+        //   'access-token': self.$store.state.accessToken,
+        //   otp: self.OTPout,
+        //   key: self.keyOut
+        // }}
+        //        await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(response2 =>{
+        //   console.log(response2);
+        //   if(response2.data.Status){
+        //     self.idValidOut = false;
+        //     self.outQuery = "";
+        //     self.outName='';
+        //     self.outEmail='';
+        //     self.outPhone='';
+        //     self.outAmount='';
+        //     self.outNote = '';
+        //     self.outAccount = -1;
+        //     self.accountBalance = formatCurrency(response2.data.Account.balance);
+        //     self.showPopoverPositiveOut(); 
+        //   }else{
+        //     if(response2.data.Message=="Balance is not enough")
+        //     {
+        //       self.errorMessage = 'Không đủ tiền'
+        //     self.showPopoverOut();
+        //     }else{
+        //     self.errorMessage = 'OTP sai'
+        //     self.showPopoverOut();
+        //     }
+          
+        }).catch(e =>{
+          console.log(e);
+        })
+          
+      }
+
+
                await axios.post(self.$store.state.host+'otp/check',data, config).then(async response =>{
           console.log(response);
           if(response.data.Status){
             
-            if(this.bankOptions[this.bank].text == "OtherBank"){
+            if(this.bankOptions[this.bank].text == "NguyenBank"){
             let detachedSignature = await pgp.detachedSign(self.$store.state.secretKey);
             let timestamp = moment().unix();
             let partnercode = 'nanibank';
@@ -321,7 +470,7 @@ export default {
             let timestamp = moment().unix();
             let partnercode = 'nanibank';
             let body = {
-                credit_number: self.outName,
+                credit_number: self.outQuery,
                 amount: self.outAmount,
             };
 
@@ -353,28 +502,27 @@ export default {
               }
             }
 
-            axios.post(self.$store.state.lamTransfer,body, config
+            axios.post(self.$store.state.lamTranfer,body, config
             ).then(res => {
                 console.log(res);
+            self.idValidOut = false;
+            self.outQuery = "";
+            self.outName='';
+            self.outEmail='';
+            self.outPhone='';
+            self.outAmount='';
+            self.outNote = '';
+            self.showPopoverPositiveOut(); 
             }).catch(function (error) {
                 console.log(error);
             });
          }
 
-            // self.idValidIn = false;
-            // self.inQuery = "";
-            // self.inName='';
-            // self.inEmail='';
-            // self.inPhone='';
-            // self.inAmount='';
-            // self.inNote = '';
-            // self.showPopoverPositiveIn(); 
+            
           }else{
             self.errorMessage = 'OTP sai'
             self.showPopoverOut();
           }
-        }).catch(e =>{
-          console.log(e);
         })
     },
     clickHandlerOut() {
@@ -382,7 +530,7 @@ export default {
       // event fired when clickOutg on the Output
     },
     onSelectedOut(item) {
-      clearTimeout(this.typingTimerIn);
+      clearTimeout(this.typingTimerOut);
       this.outSelected = item.item;
       this.outQuery=item.item.id.toString();
       this.doneTypingOut();
@@ -418,7 +566,7 @@ export default {
     };
 
     
-   if(this.bankOptions[this.bank].text == "OtherBank"){
+   if(this.bankOptions[this.bank].text == "NguyenBank"){
      let stringCheck ="";
     for(let i =0; i <parts.length;i++){
       if(parts[i]=="timestamp"){

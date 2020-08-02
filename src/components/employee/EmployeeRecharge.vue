@@ -5,7 +5,7 @@
             <form v-on:submit.prevent="onSubmit">
               <div class="inner-form-group">
     <div class="img-holder" id="test"><img src="../../assets/user.png"/></div>
-            <input placeholder="Mã hoặc tên tài khoản"  id="usernamecode" name ="usernamecode" v-model="id"/>
+            <input placeholder="Mã tài khoản"  id="usernamecode" name ="usernamecode" v-model="id"/>
               </div>
               <div class="inner-form-group">
     <div class="img-holder" id="test"><img src="../../assets/money.png"/></div>
