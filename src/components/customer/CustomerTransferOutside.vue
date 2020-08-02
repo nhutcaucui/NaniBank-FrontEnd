@@ -152,7 +152,7 @@ export default {
           console.log(response3);
           if(response3.data.Status){
               for(let i=0; i < response3.data.Partners.length;i++){
-                self.bankOptions.push({text: response3.data.Partners[i].name, value: i+1, hashMethod: response3.data.Partners[i].hashMethod});
+                self.bankOptions.push({text: response3.data.Partners[i].name, value: i+1, hashMethod: response3.data.Partners[i].hashMethod, id: response3.data.Partners[i].id});
               }
           }
             })
@@ -505,6 +505,21 @@ export default {
             axios.post(self.$store.state.lamTranfer,body, config
             ).then(res => {
                 console.log(res);
+                let body4 = {
+                  id: self.bankOptions[self.bank].id,
+                  from: self.outAccount,
+                  to: self.outQuery,
+                  amount: self.outAmount,
+                  message: self.outNote,
+                }
+                let config4 = {
+                  headers:{
+                    timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken,
+                  }
+                }
+                axios.post(self.$store.state.host + 'partner/history/create', body4, config4)
+
             self.idValidOut = false;
             self.outQuery = "";
             self.outName='';
