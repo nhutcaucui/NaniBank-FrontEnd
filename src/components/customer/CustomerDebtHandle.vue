@@ -55,7 +55,8 @@ export default {
             showPop: false,
             showPopPositive:false,
             errorMessage:'',
-            remaining:''
+            remaining:'',
+            from:''
         }
     },
     methods:{
@@ -108,11 +109,13 @@ let data = {
           console.log(response);
           if(response.data.Status){
             self.$refs.debtTable.dealRow(self.index);
+            self.$socket.emit("send-message", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.$store.state.username + " đã thanh toán một khoản nợ", type:"Thanh toán nợ"})
             self.id = "";
             self.name='';
             self.amount='';
             self.note='';
             self.index = -1;
+            self.from = '';
             self.remaining = "Tài khoản còn: "+ formatter(response.data.Account.balance);
             self.showPopoverPositive(); 
           }else{
@@ -131,6 +134,7 @@ let data = {
         self.note = record.note;
         self.index = index;
         self.debtId = record.debtId;
+        self.from = record.from;
       },
       hidePopover(){
       this.showPop = false;

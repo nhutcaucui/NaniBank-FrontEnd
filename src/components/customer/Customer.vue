@@ -14,7 +14,8 @@ export default {
         if(item.name==='logout'){
             console.log(this.$store.state.userType);
             this.$store.commit('clearUser')
-        this.$router.push("/")
+            this.$router.push("/")
+            this.$socket.close();
     }
     }
     },

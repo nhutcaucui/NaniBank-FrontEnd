@@ -77,9 +77,9 @@ export default {
       }
     },
     methods:{
-      addRow(id, name, amount, note){
+      addRow(id, name, amount, note, to){
           var self = this;
-          self.items.push({stt: self.items.length +1 , id: id, name: name, amount: amount, status:"Chưa thanh toán", note: note})
+          self.items.push({stt: self.items.length +1 , id: id, name: name, amount: amount, status:"Chưa thanh toán", note: note, to: to})
       },
       setSelectedIndex(index){
         this.selectedIndex=index;
@@ -100,8 +100,9 @@ export default {
                await axios.delete(self.$store.state.host+'debt/', config).then(response =>{
                     console.log(response)
                     if(response.data.Status){
-                       this.items[this.selectedIndex].status='Hủy bỏ';
-                      self.reason = ""
+                       self.items[self.selectedIndex].status='Hủy bỏ';
+                      self.$socket.emit("send-message", {from: self.$store.state.id, to: self.items[self.selectedIndex].to, message: self.reason, type:"Hủy nợ"})
+                      self.reason = "";
                     }
                 })
       },

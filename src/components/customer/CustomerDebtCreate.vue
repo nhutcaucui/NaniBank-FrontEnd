@@ -82,6 +82,7 @@ export default {
       amount:'',
       debtor:0,
       idValid: false,
+      toId:'',
     };
   },
   computed: {
@@ -158,7 +159,7 @@ export default {
           await axios.post(self.$store.state.host+'debt/',data, config).then(response =>{
           console.log(response);
           if(response.data.Status){
-             self.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note);
+             self.$refs.debtTable.addRow(self.query, self.name, self.amount, self.note, self.toId);
             self.name='';
             self.email='';
             self.phone='';
@@ -166,6 +167,7 @@ export default {
             self.amount='';
             self.query="";
             self.idValid = false;
+            self.toId = '';
             self.showPopoverPositive(); 
              
           }else{
@@ -216,6 +218,7 @@ export default {
                 await axios.get(self.$store.state.host+"debit/", config).then(async response =>{
           console.log(response);
           if(response.data.Status){
+            self.toId = response.data.Debit.owner
             let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},

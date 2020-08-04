@@ -40,6 +40,11 @@
 import axios from 'axios'
 import moment from 'moment'
 import VueRecaptcha from 'vue-recaptcha';
+
+import Vue from 'vue'
+import VueSocketIO from 'vue-socket.io'
+import SocketIO from 'socket.io-client'
+
 export default {
     name:'RightLoginBox',
     components:{
@@ -101,6 +106,16 @@ export default {
                         self.$router.push('/Employee')
                     }
                     else if(response.data.Type == 1){
+                        console.log("connect to socket")
+                        Vue.use(new VueSocketIO({
+                            debug: true,
+                            connection: SocketIO('url'),
+                            vuex: {
+                            store: self.$store,
+                            actionPrefix: 'SOCKET_',
+                            mutationPrefix: 'SOCKET_'
+                        },
+                        }))
                         self.$store.commit('setId',{
                             id: response.data.Customer.id
                         })
@@ -108,6 +123,7 @@ export default {
                             refreshToken: response.data.RefreshToken
                         })
                         self.$router.push('/Customer')
+                        
                     }
                     console.log(self.$store.state.username, self.$store.state.id, self.$store.state.userType)
                 }//else{
