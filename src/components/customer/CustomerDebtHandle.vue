@@ -109,7 +109,7 @@ let data = {
           console.log(response);
           if(response.data.Status){
             self.$refs.debtTable.dealRow(self.index);
-            self.$socket.emit("send-message", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.$store.state.username + " đã thanh toán một khoản nợ", type:"Thanh toán nợ"})
+            self.$socket.emit("client-notification", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.$store.state.username + " đã thanh toán một khoản nợ", type:"Thanh toán nợ"})
             self.id = "";
             self.name='';
             self.amount='';

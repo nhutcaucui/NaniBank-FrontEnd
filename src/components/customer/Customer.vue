@@ -6,9 +6,13 @@
 </template>
 
 <script>
-
+import moment from 'moment';
+import axios from 'axios';
 export default {
     name:'Customer',
+    mounted(){
+        this.debtCheck();
+    },
     methods: {
     onItemClick(event, item) {
         if(item.name==='logout'){
@@ -17,7 +21,37 @@ export default {
             this.$router.push("/")
             this.$socket.close();
     }
+
+    if(item.name === 'debtHandle'){
+        var icon = this.$el.querySelector('.debt-handle-icon');
+        icon.classList.add('debt-handle-icon')
+        icon.classList.remove('debt-handle-noti-icon')
     }
+    },
+    async debtCheck(){
+        var self = this
+        let config = {
+                headers: {timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken},
+                params: {
+                customer_id: self.$store.state.id,
+                //filter: "sender"
+                },
+                }
+
+               await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
+          console.log(response);
+          if(response.data.Status){
+            if(response.data.Debt.length > 0){                      
+                var icon = this.$el.querySelector('.debt-handle-icon');
+        icon.classList.remove('debt-handle-icon')
+        icon.classList.add('debt-handle-noti-icon')
+            }
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+      }
     },
     data() {
             return {
@@ -63,6 +97,7 @@ export default {
                         }
                     },
                     {
+                        name:'debtHandle',
                         href: '/Customer/DebtHandle',
                         title: 'Xử lí nợ',
                         icon: {
@@ -124,6 +159,10 @@ export default {
 
 .debt-handle-icon{
     background: url('../../assets/debt.png');
+}
+
+.debt-handle-noti-icon{
+    background: url('../../assets/debt_noti.png');
 }
 
 .transfer-icon{

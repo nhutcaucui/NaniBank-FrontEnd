@@ -29,7 +29,8 @@ export default {
     return{
       showPop: false,
       message:'',
-      title:''
+      title:'',
+      numOfNotif:0
     }
   },
   components: {
@@ -48,17 +49,43 @@ export default {
         console.log("connect to socket")
         Vue.use(new VueSocketIO({
           debug: true,
-          connection: SocketIO('url'),
-          vuex: {
-          store: self.$store,
-          actionPrefix: 'SOCKET_',
-          mutationPrefix: 'SOCKET_'
-          },
+          connection: SocketIO(self.$store.state.socketUrl),
+          
         }))
+
+        self.sockets.subscribe('connect', () => {
+                            console.log("connect")
+                        });
+
+                        self.sockets.subscribe('client-notification', (data) => {
+                            console.log('message receive' + data)
+                            var self = this;
+                            if(this.showPop){
+                            
+                            setTimeout(function(){ 
+                                this.title= data.type;
+                            this.message = data.message;
+                            this.showPopover();
+                            }, 5050*self.numOfNotif);
+                            self.numOfNotif++;
+                            }else{
+                            self.numOfNotif++;
+                            this.title= data.type;
+                            this.message = data.message;
+                            this.showPopover();
+                            }
+                        });
+
+                        self.sockets.subscribe('connection-update', (data) => {
+                            console.log('connect success' + data)
+                        });
+
+        //self.$socket.emit("connection-update", {username: self.$store.username})
       }
     },
     hidePopover(){
       this.showPop = false;
+      self.numOfNotif--;
     },
     showPopover(){
       this.showPop = true;
@@ -70,12 +97,30 @@ export default {
         connect: function () {
             console.log('socket connected')
         },
-        onMessageReceived: function (data) {
+        'client-notification': function (data) {
             console.log('message receive' + data)
-            this.title= data.type;
-            this.message = data.message;
-            this.showPopover();
-        }
+            var self = this;
+            if(this.showPop){
+              
+              setTimeout(function(){ 
+                this.title= data.type;
+              this.message = data.message;
+              this.showPopover();
+               }, 5050*self.numOfNotif);
+               self.numOfNotif++;
+            }else{
+              self.numOfNotif++;
+              this.title= data.type;
+              this.message = data.message;
+              this.showPopover();
+            }
+        },
+        'connection-update': function (data){
+           console.log('connect success' + data)
+        },
+    disconnect:function() {
+      console.log("server disconnected");
+    },
     },
 }
 </script>

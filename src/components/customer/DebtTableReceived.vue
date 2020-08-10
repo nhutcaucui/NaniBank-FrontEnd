@@ -106,7 +106,7 @@ export default {
                     console.log(response)
                     if(response.data.Status){
                        this.items[this.selectedIndex].status='Hủy bỏ';
-                       self.$socket.emit("send-message", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.reason, type:"Hủy nợ"})
+                       self.$socket.emit("client-notification", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.reason, type:"Hủy nợ"})
                         self.reason = ""
                     }
                 })

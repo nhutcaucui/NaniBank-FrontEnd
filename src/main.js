@@ -12,10 +12,6 @@ import store from './store/store';
 import axios from 'axios';
 import moment from 'moment';
 
-axios.defaults.headers.common['Accept-Version']= '1';
-axios.defaults.headers.common['Accept']= 'application/json';
-axios.defaults.headers.common['Access-Control-Allow-Origin']= '*';
-axios.defaults.headers.common['Content-Type']= 'application/json; charset=utf-8';
 axios.interceptors.request.use(request => {
   console.log('Starting Request', request)
   return request
