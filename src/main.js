@@ -12,6 +12,9 @@ import store from './store/store';
 import axios from 'axios';
 import moment from 'moment';
 
+import VueSocketIO from 'vue-socket.io'
+import SocketIO from 'socket.io-client'
+
 axios.interceptors.request.use(request => {
   console.log('Starting Request', request)
   return request
@@ -91,6 +94,11 @@ axios.interceptors.response.use(async function(response) {
 })
 
 Vue.use(VueSidebarMenu)
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketIO(store.state.socketUrl),
+}))
 
 Vue.config.productionTip = false;
 

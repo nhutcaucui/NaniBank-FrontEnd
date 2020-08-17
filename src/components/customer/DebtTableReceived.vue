@@ -106,7 +106,8 @@ export default {
                     console.log(response)
                     if(response.data.Status){
                        this.items[this.selectedIndex].status='Hủy bỏ';
-                       self.$socket.emit("client-notification", {from: self.$store.state.id, to: self.items[self.selectedIndex].from, message: self.reason, type:"Hủy nợ"})
+                       console.log(self.$parent.$parent.$parent)
+                       self.$parent.$parent.$parent.emitClientNotification(self.$store.state.username+" đã hủy nợ, lí do: "+self.reason,  this.items[this.selectedIndex].from);
                         self.reason = ""
                     }
                 })
@@ -128,7 +129,7 @@ export default {
             self.items = []
             for (var i =0; i < response.data.Debt.length ; i++){
               console.log(response.data.Debt[i])
-            if(response.data.Debt[i].debtor == self.$store.state.id && response.data.Debt[i].description != "Paid"){
+            if(response.data.Debt[i].debtor == self.$store.state.id && response.data.Debt[i].description != "Paid" && response.data.Debt[i].description != "Canceled"){
                 let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},

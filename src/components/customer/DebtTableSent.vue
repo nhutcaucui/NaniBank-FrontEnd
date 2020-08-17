@@ -79,7 +79,7 @@ export default {
     methods:{
       addRow(id, name, amount, note, to){
           var self = this;
-          self.items.push({stt: self.items.length +1 , id: id, name: name, amount: amount, status:"Chưa thanh toán", note: note, to: to})
+          self.items.push({stt: self.items.length +1 , id: id, name: name, amount: amount, status:"Chưa thanh toán", note: note, to: to, debtId: id})
       },
       setSelectedIndex(index){
         this.selectedIndex=index;
@@ -101,7 +101,7 @@ export default {
                     console.log(response)
                     if(response.data.Status){
                        self.items[self.selectedIndex].status='Hủy bỏ';
-                      self.$socket.emit("client-notification", {from: self.$store.state.id, to: self.items[self.selectedIndex].to, message: self.reason, type:"Hủy nợ"})
+                      self.$parent.$parent.$parent.emitClientNotification(self.$store.state.username + " đã hủy nợ, lí do: "+self.reason, self.items[self.selectedIndex].to);
                       self.reason = "";
                     }
                 })
@@ -123,7 +123,7 @@ export default {
             self.items = []
             for (var i =0; i < response.data.Debt.length ; i++){
               console.log(response.data.Debt[i].description)
-              if(response.data.Debt[i].creditor == self.$store.state.id && response.data.Debt[i].description != "Paid"){
+              if(response.data.Debt[i].creditor == self.$store.state.id && response.data.Debt[i].description != "Paid" && response.data.Debt[i].description != "Canceled"){
                 let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
@@ -134,19 +134,17 @@ export default {
             const amount = response.data.Debt[i].amount;
             const note = response.data.Debt[i].name;
             const debtId = response.data.Debt[i].id;
-            
-
-
 
            await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
 
                     self.items.push({stt: self.items.length +1 , 
-                    id: response2.data.Info.debit.id, 
+                    id: response2.data.Info.debit.id,
                     name: response2.data.Info.info.name, 
                     amount: amount, 
                     status:"Chưa thanh toán", note: note,
-                    debtId: debtId})
+                    debtId: debtId,
+                    to: response.data.Debt[i].debtor  })
                 }
   })
             }

@@ -169,7 +169,7 @@ export default {
           if(response.data.Status){
             self.items = []
             for (var i =0; i < response.data.Debt.length ; i++){
-               if(response.data.Debt[i].description == "Paid"){
+               if(response.data.Debt[i].description == "Paid" || response.data.Debt[i].description == "Canceled"){
               let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
@@ -183,11 +183,15 @@ export default {
 
            await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
+                    let status = "Đã thanh toán";
+                    if(response.data.Debt[i].description == "Canceled"){
+                        status = "Đã hủy bỏ";
+                    }
                     items.push({stt: self.items.length +1 , 
                     id: response2.data.Info.debit.id, 
                     name: response2.data.Info.info.name, 
                     amount: amount, 
-                    status:"Đã thanh toán", note: note,
+                    status:status, note: note,
                     debtId: debtId})
                 }
                 })
@@ -212,7 +216,7 @@ export default {
           if(response3.data.Status){
               self.items = []
             for (var i =0; i < response3.data.Debt.length ; i++){
-               if(response3.data.Debt[i].description == "Paid"){
+               if(response3.data.Debt[i].description == "Paid" || response.data.Debt[i].description == "Canceled"){
               let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
@@ -225,12 +229,16 @@ export default {
             const debtId = response3.data.Debt[i].id;
 
            await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
+               let status = "Đã thanh toán";
+                    if(response.data.Debt[i].description == "Canceled"){
+                        status = "Đã hủy bỏ";
+                    }
                 if(response2.data.Status){
                     items.push({stt: self.items.length +1 , 
                     id: response2.data.Info.debit.id, 
                     name: response2.data.Info.info.name, 
                     amount: amount, 
-                    status:"Đã thanh toán", note: note,
+                    status:status, note: note,
                     debtId: debtId})
                 }
                 })

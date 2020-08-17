@@ -32,6 +32,9 @@ export default {
           {
             key: 'date',
             label: 'Ngày',
+            formatter: value => {
+              return moment(value).format("DD/MM/YYYY");
+            },
             sortable: false,
           },
           {

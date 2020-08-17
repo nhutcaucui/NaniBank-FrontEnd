@@ -16,9 +16,9 @@
 <script>
 import NavigationBar from './components/NavigationBar.vue';
 import Footer from './components/Footer.vue';
-import Vue from 'vue'
-import VueSocketIO from 'vue-socket.io'
-import SocketIO from 'socket.io-client'
+// import Vue from 'vue'
+// import VueSocketIO from 'vue-socket.io'
+// import SocketIO from 'socket.io-client'
 
 export default {
   name: 'App',
@@ -43,45 +43,64 @@ export default {
       }
   },
   methods:{
-    connectSocket(){
+    async connectSocket(){
       var self = this;
       if(this.$store.state.userType == 1){
         console.log("connect to socket")
-        Vue.use(new VueSocketIO({
-          debug: true,
-          connection: SocketIO(self.$store.state.socketUrl),
-          
-        }))
 
-        self.sockets.subscribe('connect', () => {
+        this.sockets.subscribe('connect', () => {
                             console.log("connect")
                         });
 
-                        self.sockets.subscribe('client-notification', (data) => {
+                        this.sockets.subscribe('notification', (data) => {
                             console.log('message receive' + data)
                             var self = this;
                             if(this.showPop){
                             
                             setTimeout(function(){ 
-                                this.title= data.type;
-                            this.message = data.message;
+                              this.title = "Thông báo"
+                            this.message = data;
                             this.showPopover();
                             }, 5050*self.numOfNotif);
                             self.numOfNotif++;
                             }else{
                             self.numOfNotif++;
-                            this.title= data.type;
-                            this.message = data.message;
+                            this.title = "Thông báo"
+                            this.message = data;
                             this.showPopover();
                             }
                         });
 
-                        self.sockets.subscribe('connection-update', (data) => {
+                        this.sockets.subscribe('connection-update', (data) => {
                             console.log('connect success' + data)
                         });
 
-        //self.$socket.emit("connection-update", {username: self.$store.username})
+                        this.sockets.subscribe('disconnect', () => {
+                            console.log('disconnection')
+                        });
+
+        self.emitConnectionUpdate(self.$store.state.id)
       }
+    },
+    emitConnectionUpdate(username){
+     // var self = this;
+     console.log(username);
+     console.log("connect update")
+      this.$socket.emit("connection-update", username);
+    },
+    emitClientNotification(message, username){
+      //var self = this;
+      console.log("emit notifi")
+      this.$socket.emit('client-notification', username, message );
+    },
+    emitDisconnect(){
+      //var self = this;
+      console.log("disconnect emit")
+      this.sockets.unsubscribe('connect');
+      this.sockets.unsubscribe('client-notification');
+      this.sockets.unsubscribe('connection-update');
+      this.sockets.unsubscribe('disconnect');
+      this.$socket.emit("disconnect");
     },
     hidePopover(){
       this.showPop = false;

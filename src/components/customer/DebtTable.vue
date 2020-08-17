@@ -82,7 +82,7 @@ export default {
           if(response.data.Status){
             self.items = []
             for (var i =0; i < response.data.Debt.length ; i++){
-               if(response.data.Debt[i].description == "Paid"){
+               if(response.data.Debt[i].description == "Paid" || response.data.Debt[i].description == "Canceled"){
               let config2 = {
               headers: {timestamp: moment().format("X"),
                     'access-token': self.$store.state.accessToken},
@@ -96,12 +96,15 @@ export default {
             
            await axios.get(self.$store.state.host+"users/customer/info", config2).then(response2 =>{
                 if(response2.data.Status){
-
+                    let status = "Đã thanh toán"
+                    if(response.data.Debt[i].description == "Canceled"){
+                      status = "Đã hủy nợ"
+                    }
                     self.items.push({stt: self.items.length +1 , 
                     id: response2.data.Info.debit.id, 
                     name: response2.data.Info.info.name, 
                     amount: amount, 
-                    status:"Đã thanh toán", note: note,
+                    status: status, note: note,
                     debtId: debtId})
                 }
   })

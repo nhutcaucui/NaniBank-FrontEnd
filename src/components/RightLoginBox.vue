@@ -106,7 +106,7 @@ export default {
                         self.$router.push('/Employee')
                     }
                     else if(response.data.Type == 1){
-                        console.log(self.$parent.$parent.connectSocket())
+                        self.$parent.$parent.connectSocket()
                         console.log("connect to socket")
                         // Vue.use(new VueSocketIO({
                         //     debug: true,

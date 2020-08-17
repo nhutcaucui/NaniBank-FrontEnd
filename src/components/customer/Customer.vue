@@ -17,13 +17,16 @@ export default {
     onItemClick(event, item) {
         if(item.name==='logout'){
             console.log(this.$store.state.userType);
+            this.$parent.emitDisconnect(this.$store.state.id);
             this.$store.commit('clearUser')
-            this.$router.push("/")
-            this.$socket.close();
+            this.$router.push("/")    
     }
 
     if(item.name === 'debtHandle'){
         var icon = this.$el.querySelector('.debt-handle-icon');
+        if(icon == undefined){
+            icon = this.$el.querySelector('.debt-handle-noti-icon');
+        }
         icon.classList.add('debt-handle-icon')
         icon.classList.remove('debt-handle-noti-icon')
     }
@@ -35,17 +38,24 @@ export default {
                     'access-token': self.$store.state.accessToken},
                 params: {
                 customer_id: self.$store.state.id,
-                //filter: "sender"
+                filter: "receiver"
                 },
                 }
 
                await axios.get(self.$store.state.host+'debt/', config).then(async response =>{
           console.log(response);
           if(response.data.Status){
-            if(response.data.Debt.length > 0){                      
+              var debtCount = 0;
+              for(let i =0; i<response.data.Debt.length ; i ++){
+                if(response.data.Debt[i].description != "Paid" && response.data.Debt[i].description != "Canceled"){
+                    debtCount++;
+                }
+              }
+              console.log(debtCount)
+            if(debtCount > 0){                      
                 var icon = this.$el.querySelector('.debt-handle-icon');
-        icon.classList.remove('debt-handle-icon')
-        icon.classList.add('debt-handle-noti-icon')
+                icon.classList.remove('debt-handle-icon')
+                icon.classList.add('debt-handle-noti-icon')
             }
           }
         }).catch(e =>{

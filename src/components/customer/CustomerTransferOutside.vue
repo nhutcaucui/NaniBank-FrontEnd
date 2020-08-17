@@ -518,9 +518,42 @@ export default {
                     'access-token': self.$store.state.accessToken,
                   }
                 }
-                axios.post(self.$store.state.host + 'partner/history/create', body4, config4)
+                axios.post(self.$store.state.host + 'partner/history/create', body4, config4).then(res=>{
+                  console.log(res);
+                  var account = self.outQuery;
+            var name = self.outName;
+            if(confirm("Bạn có muốn lưu lại người nhận không?")){
 
-            self.idValidOut = false;
+        let config = {
+            headers:{
+               timestamp: moment().format("X"),
+               'access-token': self.$store.state.accessToken
+              }
+         }
+
+         let data = {
+                customer_id: self.$store.state.id,
+                receiver: account,
+                remind_name: name
+        }
+         axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              self.id= '';
+              self.name= '';
+              self.loadReceiver();
+              alert("Đã thêm người nhận")
+          }
+          else{
+            alert("Người nhận đã tồn tại")
+            // self.errorMessage = 'Người nhận đã tồn tại'
+            // self.showPopoverIn();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })}
+
+        self.idValidOut = false;
             self.outQuery = "";
             self.outName='';
             self.outEmail='';
@@ -528,6 +561,10 @@ export default {
             self.outAmount='';
             self.outNote = '';
             self.showPopoverPositiveOut(); 
+                })
+
+
+            
             }).catch(function (error) {
                 console.log(error);
             });
@@ -551,7 +588,10 @@ export default {
       this.doneTypingOut();
     },
     onInputChangeOut(text) {
-      self.idValidOut = false;
+      this.outName='';
+            this.outEmail='';
+            this.outPhone='';
+      this.idValidOut = false;
       clearTimeout(this.typingTimerOut);
       if (text!= '') {
         this.typingTimerOut = setTimeout(this.doneTypingOut, this.doneTypingInterval);

@@ -295,6 +295,40 @@ export default {
                await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(async response2 =>{
           console.log(response2);
           if(response2.data.Status){
+            var account = self.inQuery;
+            var name = self.inName;
+            if(confirm("Bạn có muốn lưu lại người nhận không?")){
+
+        let config = {
+            headers:{
+               timestamp: moment().format("X"),
+               'access-token': self.$store.state.accessToken
+              }
+         }
+
+         let data = {
+                customer_id: self.$store.state.id,
+                receiver: account,
+                remind_name: name
+        }
+         axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              self.id= '';
+              self.name= '';
+              self.loadReceiver();
+              alert("Đã thêm người nhận")
+          }
+          else{
+            alert("Người nhận đã tồn tại")
+            // self.errorMessage = 'Người nhận đã tồn tại'
+            // self.showPopoverIn();
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+          
+        }
             self.idValidIn = false;
             self.inQuery = "";
             self.inName='';
@@ -302,7 +336,9 @@ export default {
             self.inPhone='';
             self.inAmount='';
             self.inNote = '';
+            var drawAccount = self.inAccount;
             self.inAccount = -1;
+            self.inFee = -1;
 
             let config = {headers:{
           timestamp: moment().format("X"),
@@ -312,7 +348,7 @@ export default {
         }}
 
         let data ={
-          id: self.inAccount,
+          id: drawAccount,
           amount: 2000,
         }
 
@@ -360,6 +396,40 @@ export default {
                await axios.post(self.$store.state.host+'transaction/transfer',data2, config2).then(async response2 =>{
           console.log(response2);
           if(response2.data.Status){
+            var account = self.inQuery;
+            var name = self.inName;
+            if(confirm("Bạn có muốn lưu lại người nhận không?")){
+
+        let config = {
+            headers:{
+               timestamp: moment().format("X"),
+               'access-token': self.$store.state.accessToken
+              }
+         }
+
+         let data = {
+                customer_id: self.$store.state.id,
+                receiver: account,
+                remind_name: name
+        }
+         axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              self.id= '';
+              self.name= '';
+              self.loadReceiver();
+              alert("Đã thêm người nhận")
+          }
+          else{
+            // self.errorMessage = 'Người nhận đã tồn tại'
+            // self.showPopoverIn();
+            alert("Người nhận đã tồn tại")
+          }
+        }).catch(e =>{
+          console.log(e);
+        })
+          
+        }
             self.idValidIn = false;
             self.inQuery = "";
             self.inName='';
@@ -367,7 +437,9 @@ export default {
             self.inPhone='';
             self.inAmount='';
             self.inNote = '';
+            var drawAccount = self.inAccount;
             self.inAccount = -1;
+            self.inFee=-1;
             
             let config = {headers:{
           timestamp: moment().format("X"),
@@ -377,7 +449,7 @@ export default {
         }}
 
         let data ={
-          id: self.inAccount,
+          id: drawAccount,
           amount: 2000,
         }
 
@@ -423,6 +495,10 @@ export default {
       this.doneTypingIn();
     },
     onInputChangeIn(text) {
+      this.inName='';
+            this.inEmail='';
+            this.inPhone='';
+            this.idValidIn = false; 
       clearTimeout(this.typingTimerIn);
       if (text!= '') {
         this.typingTimerIn = setTimeout(this.doneTypingIn, this.doneTypingInterval);
