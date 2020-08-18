@@ -106,7 +106,7 @@ export default {
                         self.$router.push('/Employee')
                     }
                     else if(response.data.Type == 1){
-                        self.$parent.$parent.connectSocket()
+                        
                         console.log("connect to socket")
                         // Vue.use(new VueSocketIO({
                         //     debug: true,
@@ -126,6 +126,7 @@ export default {
                         self.$store.commit('setRefresh',{
                             refreshToken: response.data.RefreshToken
                         })
+                        self.$parent.$parent.connectSocket()
                         self.$router.push('/Customer')
                         
                     }

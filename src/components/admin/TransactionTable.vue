@@ -107,7 +107,7 @@ export default {
 
                 let bankName = ""
 
-                for(let j =0; j< bankId.length;i++){
+                for(let j =0; j< bankId.length;j++){
                 if(response2.data.Histories[i].partner_id == bankId[j].id){
                   bankName = bankId[j].name;
                 }

@@ -47,7 +47,8 @@ export default {
           if(response.data.Status){
               var debtCount = 0;
               for(let i =0; i<response.data.Debt.length ; i ++){
-                if(response.data.Debt[i].description != "Paid" && response.data.Debt[i].description != "Canceled"){
+                  console.log(self.$store.state.id, response.data.Debt[i].debtor)
+                if(response.data.Debt[i].description != "Paid" && response.data.Debt[i].description != "Canceled" && response.data.Debt[i].debtor == self.$store.state.id){
                     debtCount++;
                 }
               }

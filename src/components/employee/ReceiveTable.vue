@@ -70,7 +70,7 @@ export default {
               
               let bank = "NaniBank";
               if(data[i].partner_id != null){
-              for(let j=0;j<self.$props.bank.length;i++){
+              for(let j=0;j<self.$props.bank.length;j++){
                   if(data[i].partner_id == self.$props.bank[j].id){
                     bank = self.$props.bank[j].name
                   }

@@ -109,6 +109,8 @@ let data = {
           console.log(response);
           if(response.data.Status){
             self.$refs.debtTable.dealRow(self.index);
+            console.log(self.$parent.$parent.$parent)
+            console.log(self.$parent.$parent)
             self.$parent.$parent.$parent.emitClientNotification(self.$store.state.username + " đã thanh toán một khoản nợ", self.from)
             self.id = "";
             self.name='';
@@ -118,8 +120,11 @@ let data = {
             self.from = '';
             self.remaining = "Tài khoản còn: "+ formatter(response.data.Account.balance);
             self.showPopoverPositive(); 
-          }else{
+          }else if (response.status == 401){
             self.errorMessage = 'OTP sai'
+            self.showPopover();
+          }else{
+            self.errorMessage = 'Không đủ tiền'
             self.showPopover();
           }
         }).catch(e =>{

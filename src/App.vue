@@ -50,32 +50,22 @@ export default {
   methods:{
     async test(){
       //
-    //   let timestamp = moment().unix();
-    // let partnercode = 'KiantoBank';
-    // let body = {
-    //     "from_id": 123456,
-    //     "to_id": 9704366600000002, 
-    //     "amount": 100000,
-    //     "message": "nội dung chuyển tiền"
-    // };
-    // // let detechedSignature = '';
-    // let detechedSignature = await pgp.detachedSign2('himom');
-    
-    // let csi = await Crypto.createHash('sha256')
-    //                .update(timestamp + JSON.stringify(body) + 'himom')
-    //                .digest('hex');
-    // axios.post('http://35.247.178.19:3000/partner/transfer',body, {
-    //     headers: {
-    //         timestamp: timestamp,
-    //         partnercode: partnercode,
-    //         'authen-hash': csi,
-    //         sig: detechedSignature,
-    //     }
-    // }).then(function (res) {
-    //     console.log(res.data);
-    // }).catch(function (error) {
-    //     console.log(error);
-    // });
+  //     const body = {
+  //   from_id: 123456789,
+  //   to_id: 9704366600000002,
+  //   amount: 1000000,
+  //   message: 'this is a fake test',
+  // }
+  //   var config={headers: {
+  //       origin: "www.nguyen.com",
+  //       name: "NguyenBank",
+  //       timestamp,
+  //       "authen-hash": sha256(timestamp + secretKey + JSON.stringify(body)),
+  //       sig: new Buffer.from(detachedSignature).toString('base64')
+  //     }
+  //   }
+      
+    //axios.post()
     },
     async connectSocket(){
       var self = this;
@@ -88,20 +78,19 @@ export default {
 
                         this.sockets.subscribe('notification', (data) => {
                             console.log('message receive' + data)
-                            var self = this;
                             if(this.showPop){
                             
                             setTimeout(function(){ 
-                              this.title = "Thông báo"
-                            this.message = data;
-                            this.showPopover();
+                              self.title = "Thông báo"
+                            self.message = data;
+                            self.showPopover();
                             }, 5050*self.numOfNotif);
                             self.numOfNotif++;
                             }else{
                             self.numOfNotif++;
-                            this.title = "Thông báo"
-                            this.message = data;
-                            this.showPopover();
+                            self.title = "Thông báo"
+                            self.message = data;
+                            self.showPopover();
                             }
                         });
 
@@ -146,35 +135,35 @@ export default {
       setTimeout(() => self.hidePopover(), 5000);
     },
   },
-  sockets: {
-        connect: function () {
-            console.log('socket connected')
-        },
-        'client-notification': function (data) {
-            console.log('message receive' + data)
-            var self = this;
-            if(this.showPop){
+ // sockets: {
+    //     connect: function () {
+    //         console.log('socket connected')
+    //     },
+    //     'client-notification': function (data) {
+    //         console.log('message receive' + data)
+    //         var self = this;
+    //         if(this.showPop){
               
-              setTimeout(function(){ 
-                this.title= data.type;
-              this.message = data.message;
-              this.showPopover();
-               }, 5050*self.numOfNotif);
-               self.numOfNotif++;
-            }else{
-              self.numOfNotif++;
-              this.title= data.type;
-              this.message = data.message;
-              this.showPopover();
-            }
-        },
-        'connection-update': function (data){
-           console.log('connect success' + data)
-        },
-    disconnect:function() {
-      console.log("server disconnected");
-    },
-    },
+    //           setTimeout(function(){ 
+    //             this.title= data.type;
+    //           this.message = data.message;
+    //           this.showPopover();
+    //            }, 5050*self.numOfNotif);
+    //            self.numOfNotif++;
+    //         }else{
+    //           self.numOfNotif++;
+    //           this.title= data.type;
+    //           this.message = data.message;
+    //           this.showPopover();
+    //         }
+    //     },
+    //     'connection-update': function (data){
+    //        console.log('connect success' + data)
+    //     },
+    // disconnect:function() {
+    //   console.log("server disconnected");
+    // },
+    //},
 }
 </script>
 
