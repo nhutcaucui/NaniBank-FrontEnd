@@ -27,7 +27,7 @@ import moment from 'moment';
 export default {
     name:'CustomerHistory',
     mounted(){
-        this.loadPartner
+        //this.loadPartner();
     },
     methods: {
         async loadPartner(){
@@ -52,7 +52,7 @@ export default {
             console.log('help   ')
             if(this.selected === '1'){
                 if(self.$route.path != '/Customer/History/Send'){
-                    self.$router.push({name:"CustomerSend"})
+                    self.$router.push({name:"CustomerSend",  params:{bank: self.partner}})
                     console.log(self.$route.path);
                     }else{
                         self.$router.push("/Customer/History").then(() =>
@@ -64,7 +64,7 @@ export default {
             }
             else if(this.selected === '2'){
                 if(self.$route.path != '/Customer/History/Receive'){
-                    self.$router.push({name:"CustomerReceive"})
+                    self.$router.push({name:"CustomerReceive",  params:{bank: self.partner}})
                     }else{
                         self.$router.push("/Customer/History").then(() =>
                             {

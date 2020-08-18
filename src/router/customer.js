@@ -122,6 +122,7 @@ export default[
                 }
               },
               component: SendTable,
+              props:true
             },
             {
               path: 'Receive',
@@ -141,6 +142,7 @@ export default[
                 }
               },
               component: ReceiveTable,
+              props:true
             },
             {
               path: 'Debt',

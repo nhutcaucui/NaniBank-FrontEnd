@@ -11,13 +11,14 @@ import axios from 'axios';
 import moment from 'moment';
 import formaterCurrency from 'format-currency';
 export default {
-  props:['bank'],
     name: "SendTable",
     mounted(){
       this.loadData();
+      this.loadPartner();
     },
     data(){
       return{
+        bank:[],
         fields: [
           {
             key: 'stt',
@@ -33,7 +34,7 @@ export default {
             key: 'date',
             label: 'Ngày',
             formatter: value => {
-              return moment(value).format("DD/MM/YYYY");
+              return moment.unix(value).format("DD/MM/YYYY");
             },
             sortable: false,
           },
@@ -65,6 +66,23 @@ export default {
       }
     },
     methods:{
+      async loadPartner(){
+        var self = this
+
+        let config = {headers:{
+          timestamp: moment().unix(),
+          'access-token': this.$store.state.accessToken,
+        },
+        }
+        await axios.get(self.$store.state.host + 'partner/all', config).then( async response3 =>{
+          console.log(response3);
+          if(response3.data.Status){
+              for(let i=0; i < response3.data.Partners.length;i++){
+                self.bank.push({id: response3.data.Partners[i].id, name: response3.data.Partners[i].name});
+              }
+          }
+            })
+      },
      async loadData(){
         var self = this
         let config = {
@@ -72,7 +90,7 @@ export default {
                     'access-token': self.$store.state.accessToken},
                 params: {
                 id: self.$store.state.username,
-                filter: "receiver",
+                filter: "sender",
                 },
                 }
 
@@ -86,7 +104,10 @@ export default {
 
                 Array.prototype.push.apply(data,response2.data.Histories)
                 
+
+                console.log(data)
                 for(let i = 0; i< data.length; i++){
+                  console.log(data[i])
           if(data[i].type != 1 && data[i].type != 0){
             let date = 1595427524;
                 if(data[i].time != null){
@@ -95,9 +116,9 @@ export default {
               
               let bank = "NaniBank";
               if(data[i].partner_id != null){
-              for(let j=0;j<self.$props.bank.length;i++){
-                  if(data[i].partner_id == self.$props.bank[j].id){
-                    bank = self.$props.bank[j].name
+              for(let j=0;j<self.bank.length;j++){
+                  if(data[i].partner_id == self.bank[j].id){
+                    bank = self.bank[j].name
                   }
                 }
               }

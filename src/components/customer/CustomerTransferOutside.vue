@@ -331,7 +331,19 @@ export default {
           key: self.keyOut
         }}
 
-          if(self.outFee == 1){
+          
+
+
+               await axios.post(self.$store.state.host+'otp/check',data, config).then(async response =>{
+          console.log(response);
+          if(response.status == 401){
+            self.errorMessage="OTP sai"
+            self.showPopoverOut();
+            return
+          }
+          if(response.data.Status){
+
+            if(self.outFee == 1){
 
         let config = {headers:{
           timestamp: moment().format("X"),
@@ -416,21 +428,17 @@ export default {
         })
           
       }
-
-
-               await axios.post(self.$store.state.host+'otp/check',data, config).then(async response =>{
-          console.log(response);
-          if(response.data.Status){
             
             if(this.bankOptions[this.bank].text == "NguyenBank"){
+              console.log(self.$store.state.secretKey)
             let detachedSignature = await pgp.detachedSign(self.$store.state.secretKey);
             let timestamp = moment().unix();
             let partnercode = 'nanibank';
             let body = {
-                name: self.outName,
+                fromAccountNumber: self.outAccount,
                 content: self.outNote,
-                dich: self.outQuery,
-                amount: self.amount
+                toAccountNumber: self.outQuery,
+                amount: self.outAmount
             };
 
             let hash = this.bankOptions[this.bank].hashMethod.split(";");
@@ -456,16 +464,78 @@ export default {
                   timestamp: timestamp,
                   partnercode: partnercode,
                   csi: csi,
-                  detachedSignature: detachedSignature,
+                  detachedsignature: new Buffer.from(detachedSignature).toString('base64'),
               }
             }
-
-            axios.post(self.$store.state.nguyenTransfer,body, config
+            
+            axios.post(self.$store.state.nguyenTranfer,body, config
             ).then(function (res) {
                 console.log(res.data);
-            }).catch(function (error) {
-                console.log(error);
-            });
+                if(res.data.status == 'successful'){
+                  let body4 = {
+                  id: self.bankOptions[self.bank].id,
+                  from: self.outAccount,
+                  to: self.outQuery,
+                  amount: self.outAmount,
+                  message: self.outNote,
+                }
+                let config4 = {
+                  headers:{
+                    timestamp: moment().format("X"),
+                    'access-token': self.$store.state.accessToken,
+                  }
+                }
+                axios.post(self.$store.state.host + 'partner/history/create', body4, config4).then(res=>{
+                  console.log(res);
+                  if(res.status == 200){
+                  var account = self.outQuery;
+            var name = self.outName;
+            if(confirm("Bạn có muốn lưu lại người nhận không?")){
+
+        let config = {
+            headers:{
+               timestamp: moment().format("X"),
+               'access-token': self.$store.state.accessToken
+              }
+         }
+
+         let data = {
+                customer_id: self.$store.state.id,
+                receiver: account,
+                remind_name: name
+        }
+         axios.post(self.$store.state.host+ 'users/customer/receiver',data,config).then(response =>{
+          console.log(response);
+          if(response.data.Status){
+              self.id= '';
+              self.name= '';
+              self.loadReceiver();
+              alert("Đã thêm người nhận")
+          }
+          else{
+            alert("Người nhận đã tồn tại")
+            // self.errorMessage = 'Người nhận đã tồn tại'
+            // self.showPopoverIn(); //449909617
+          }
+        }).catch(e =>{
+          console.log(e);
+
+        })}
+
+        self.idValidOut = false;
+            self.outQuery = "";
+            self.outName='';
+            self.outEmail='';
+            self.outPhone='';
+            self.outAmount='';
+            self.outNote = '';
+            self.showPopoverPositiveOut(); 
+                 }else{
+
+                   self.errorMessage = 'Lỗi khi tạo lịch sử'
+          self.showPopoverOut();
+                 }})
+                }})
          }else if(this.bankOptions[this.bank].text == "KiantoBank"){
             let timestamp = moment().unix();
             let partnercode = 'nanibank';
@@ -490,6 +560,7 @@ export default {
             }
 
             let authen_sig = await rsa.sign(stringCheck);
+            console.log(authen_sig)
 
             let csi = await Crypto.createHash(hash[0]).update(stringCheck).digest(hash[1]);
 
@@ -520,6 +591,7 @@ export default {
                 }
                 axios.post(self.$store.state.host + 'partner/history/create', body4, config4).then(res=>{
                   console.log(res);
+                  if(res.status == 200){
                   var account = self.outQuery;
             var name = self.outName;
             if(confirm("Bạn có muốn lưu lại người nhận không?")){
@@ -547,10 +619,11 @@ export default {
           else{
             alert("Người nhận đã tồn tại")
             // self.errorMessage = 'Người nhận đã tồn tại'
-            // self.showPopoverIn();
+            // self.showPopoverIn(); //449909617
           }
         }).catch(e =>{
           console.log(e);
+
         })}
 
         self.idValidOut = false;
@@ -561,7 +634,11 @@ export default {
             self.outAmount='';
             self.outNote = '';
             self.showPopoverPositiveOut(); 
-                })
+                 }else{
+
+                   self.errorMessage = 'Lỗi khi tạo lịch sử'
+          self.showPopoverOut();
+                 } })
 
 
             
@@ -575,6 +652,10 @@ export default {
             self.errorMessage = 'OTP sai'
             self.showPopoverOut();
           }
+        }).catch(e=>{
+          console.log(e)
+          self.errorMessage = 'OTP sai'
+            self.showPopoverOut();
         })
     },
     clickHandlerOut() {
@@ -643,8 +724,13 @@ export default {
                 }
                await axios.get(self.$store.state.nguyenGetInfo+self.outQuery, config).then(response =>{
           console.log(response);
-          
-
+          if(response.data.status == 'successful'){
+          self.outName = response.data.data.name;
+          self.idValidOut = true;
+          }else{
+            self.errorMessage = 'Không tìm thấy người dùng'
+            self.showPopoverOut();
+          }
         }).catch(e =>{
           console.log(e);
         })
@@ -676,6 +762,7 @@ export default {
           if(response.status == 400){
             self.errorMessage = 'Không tìm thấy người dùng'
             self.showPopoverOut();
+            console.log(400)
             return
           }
 
@@ -685,6 +772,8 @@ export default {
           }
         }).catch(e =>{
           console.log(e);
+          self.errorMessage = 'Không tìm thấy người dùng'
+            self.showPopoverOut();
         })
       }
       

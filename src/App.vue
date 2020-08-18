@@ -19,11 +19,16 @@ import Footer from './components/Footer.vue';
 // import Vue from 'vue'
 // import VueSocketIO from 'vue-socket.io'
 // import SocketIO from 'socket.io-client'
+// import moment from 'moment'
+// import axios from 'axios'
+// import pgp from './plugins/pgp'
+// import Crypto from 'crypto'
 
 export default {
   name: 'App',
   mounted(){
     this.connectSocket();
+    this.test();
   },
   data(){
     return{
@@ -43,6 +48,35 @@ export default {
       }
   },
   methods:{
+    async test(){
+      //
+    //   let timestamp = moment().unix();
+    // let partnercode = 'KiantoBank';
+    // let body = {
+    //     "from_id": 123456,
+    //     "to_id": 9704366600000002, 
+    //     "amount": 100000,
+    //     "message": "nội dung chuyển tiền"
+    // };
+    // // let detechedSignature = '';
+    // let detechedSignature = await pgp.detachedSign2('himom');
+    
+    // let csi = await Crypto.createHash('sha256')
+    //                .update(timestamp + JSON.stringify(body) + 'himom')
+    //                .digest('hex');
+    // axios.post('http://35.247.178.19:3000/partner/transfer',body, {
+    //     headers: {
+    //         timestamp: timestamp,
+    //         partnercode: partnercode,
+    //         'authen-hash': csi,
+    //         sig: detechedSignature,
+    //     }
+    // }).then(function (res) {
+    //     console.log(res.data);
+    // }).catch(function (error) {
+    //     console.log(error);
+    // });
+    },
     async connectSocket(){
       var self = this;
       if(this.$store.state.userType == 1){
